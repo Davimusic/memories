@@ -1,0 +1,376 @@
+/* Contenedor principal (sin cambios) */
+.fullscreen-div {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  /*background-color: rgba(0, 0, 0, 0.8);*/
+}
+
+.editor-container {
+  display: flex;
+  height: 90vh;
+  /*background: #1a1a1a;*/
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  overflow: auto;
+  scroll-behavior: smooth;
+}
+
+.timeline-scroll-wrapper {
+  overflow: auto;
+  flex-grow: 1;
+  position: relative;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;  /* Oculta la barra en Internet Explorer y Edge */
+  scrollbar-width: none;  /* Oculta la barra en Firefox */
+  height: 75vh; /* Altura por defecto */
+}
+
+@media (min-width: 740px) {
+  .timeline-scroll-wrapper {
+    height: 88vh !important; /* Forzamos la altura para evitar estilos en conflicto */
+  }
+}
+
+
+.timeline-scroll-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* Contenido de timeline (sin cambios) */
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;/*en prueba*/
+}
+
+
+.track-container {
+  display: block; 
+  position: relative;
+  width: max-content;
+  margin-bottom: 10px;
+}
+
+
+
+/* Track Waveform (modificado para sticky) */
+.track-waveform {
+  position: relative;
+  /*height: 100px;*/
+  /*background-color: #1a1a1a;*/
+}
+
+/* Estilo para el nombre sticky (usa tu clase .mirar) */
+.mirar {
+  position: sticky;
+  left: 10px;
+  top: -20px;
+  z-index: 10;
+  
+  padding: 5px 10px;
+  
+  border-radius: 4px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  width: auto;
+  margin-left: -180px; /* Compensa el padding */
+  float: left; /* Mantiene posición */
+}
+
+/* Canvas del waveform (sin cambios) */
+.track-waveform canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /*background: #1896a7;*/
+  border-radius: 0.7em;
+}
+
+/* ------------------------- */
+/* Todos tus otros estilos EXISTENTES se mantienen IGUALES */
+/* ------------------------- */
+
+/* Sidebar de controles (comentado) */
+.track-controls-sidebar {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: #1a1a1a;
+  flex-shrink: 0;
+}
+
+/* Time ruler (comentado) */
+.time-ruler {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.time-mark {
+  flex-shrink: 0;
+}
+
+/* Global Controls (sin cambios) 
+.global-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background: #2d2d2d;
+  border-top: 1px solid #404040;
+  flex-shrink: 0;
+}*/
+
+.global-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 20px;
+  padding-left: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin: 10px;
+  border-radius: 0.7em;
+  flex-shrink: 0;
+  position: fixed;
+  bottom: 0;
+  width: calc(100% - 20px); /* Resta los márgenes para evitar desbordamiento */
+  z-index: 1000;
+  box-sizing: border-box; /* Incluye padding en el ancho total */
+  gap: 10px; /* Espacio uniforme entre elementos hijos */
+}
+
+/* Estilos para pantallas pequeñas */
+@media (max-width: 600px) {
+  .global-controls {
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan */
+    justify-content: center; /* Centra los elementos cuando se envuelven */
+    padding: 8px;
+    margin: 5px;
+    width: calc(100% - 10px);
+  }
+  
+  .global-controls > div {
+    flex: 1 1 auto; /* Permite que los divs internos crezcan y se ajusten */
+    min-width: fit-content; /* Asegura que el contenido no se corte */
+    display: flex;
+    justify-content: center;
+  }
+  
+  .time-display {
+    order: 3; /* Mueve el tiempo al final en móviles */
+    width: 100%;
+    text-align: center;
+    margin-left: 25px;
+  }
+}
+
+
+/*.global-controls button {
+  background-color: #444;
+  border: none;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0 5px;
+  transition: background-color 0.3s ease;
+}
+
+.global-controls button:hover {
+  background-color: #555;
+}
+
+.global-controls input[type="range"] {
+  width: 100px;
+  margin: 0 10px;
+}
+
+.global-controls label {
+  background-color: #444;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.global-controls label:hover {
+  background-color: #555;
+}*/
+
+.current-time-display {
+  font-size: 14px;
+  color: #ccc;
+  margin: 0 10px;
+}
+
+/* Iconos (sin cambios) */
+.icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.icon:hover {
+  opacity: 0.8;
+}
+
+/* Modal (sin cambios) */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #2d2d2d;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-content input[type="range"] {
+  width: 100%;
+  margin: 10px 0;
+}
+
+.modal-content label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.modal-content button {
+  margin: 5px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  background: #444;
+  color: #fff;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background: #555;
+}
+
+/* Clases varias (sin cambios) */
+.responsive-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toggle-mute, .toggle-solo, .trash-icon, .pan-icon {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.toggle-mute:hover, .toggle-solo:hover, .trash-icon:hover, .pan-icon:hover {
+  background-color: #555;
+}
+
+
+
+.trackSolo {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 10px red;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 10px red;
+  }
+  50% {
+    box-shadow: 0 0 20px red;
+  }
+  100% {
+    box-shadow: 0 0 10px red;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@keyframes pulse-opacity {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+.track-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 5;
+  border-radius: 4px;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.loading-content p {
+  color: #0c283f;
+  font-size: 14px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+

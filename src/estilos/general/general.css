@@ -1,0 +1,198 @@
+.fullscreen-floating {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999; /* Asegura que esté por encima de otros elementos */
+  
+}
+
+
+/* Colores de texto */
+.color1 { color: #000000; }
+.color2 { color: #ffffff; }
+.color3 { color: #1d6188; }
+.color4 { color: #ee00f7; }
+.color5 { color: #bbb018; }
+
+:root {
+  --backgroundColor1: #3b3636;
+  --backgroundColor2: hwb(0 18% 82%);
+  --backgroundColor3: #113558;
+  --backgroundColor4: #2cb9e4;
+  --backgroundColor5: #000000;
+  --color1: #000000;
+  --color2: #ffffff;
+  --color3: #1d6188;
+  --color4: #2b95c8;
+  --color5: #2bc6c8;
+}
+
+
+.backgroundColor1 { background-color: var(--backgroundColor1); }
+.backgroundColor2 { background-color: var(--backgroundColor2); }
+.backgroundColor3 { background-color: var(--backgroundColor3); }
+.backgroundColor4 { background-color: var(--backgroundColor4); }
+.backgroundColor5 { background-color: var(--backgroundColor5); }
+
+/* Font Sizes for Titles */
+.title-xl { font-size: 2.5rem; }
+.title-lg { font-size: 2rem; }
+.title-md { font-size: 1.75rem; }
+.title-sm { font-size: 1.5rem; }
+.title-xs { font-size: 1.25rem; }
+.title-xxs { font-size: 1rem; }
+
+/* Font Sizes for Content */
+.content-default { font-size: 1rem; }
+.content-small { font-size: 0.875rem; }
+
+/* Responsive Font Sizes */
+@media (max-width: 1200px) {
+  .title-xl { font-size: 2.25rem; }
+  .title-lg { font-size: 1.75rem; }
+  .title-md { font-size: 1.5rem; }
+  .title-sm { font-size: 1.25rem; }
+  .title-xs { font-size: 1rem; }
+  .title-xxs { font-size: 0.875rem; }
+  
+  .content-default { font-size: 0.875rem; }
+  .content-small { font-size: 0.75rem; }
+}
+
+@media (max-width: 768px) {
+  .title-xl { font-size: 2rem; }
+  .title-lg { font-size: 1.5rem; }
+  .title-md { font-size: 1.25rem; }
+  .title-sm { font-size: 1rem; }
+  .title-xs { font-size: 0.875rem; }
+  .title-xxs { font-size: 0.75rem; }
+  
+  .content-default { font-size: 0.75rem; }
+  .content-small { font-size: 0.625rem; }
+}
+
+@media (max-width: 576px) {
+  .title-xl { font-size: 1.75rem; }
+  .title-lg { font-size: 1.25rem; }
+  .title-md { font-size: 1rem; }
+  .title-sm { font-size: 0.875rem; }
+  .title-xs { font-size: 0.75rem; }
+  .title-xxs { font-size: 0.625rem; }
+  
+  .content-default { font-size: 0.625rem; }
+  .content-small { font-size: 0.5rem; }
+}
+
+
+.video-normal, .video-fullscreen {
+  transition: all 1.5s ease-in-out;
+}
+
+.video-normal {
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+}
+
+.video-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+button {
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
+
+.effectHover {
+  background-color: none;
+  transition: background-color 0.3s ease; /* Aquí agregamos la transición */
+}
+
+.effectHover:hover {
+  background-color: rgba(0, 0, 0, 0.61);
+}
+
+
+/* Estilos para el contenedor principal (visible en pantallas grandes) */
+.input-container {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 10px;
+  width: auto;
+}
+
+.input-container-CellUP {
+  display: none; /* Oculta el contenedor móvil por defecto */
+  align-items: center;
+  padding: 5px;
+  border-radius: 10px;
+  position: fixed; /* Fija el contenedor en la pantalla */
+  top: 0; /* Lo posiciona en la parte superior */
+  left: 50%; /* Lo posiciona en el centro horizontalmente */
+  transform: translateX(-50%); /* Lo centra horizontalmente */
+  width: auto; /* Ajusta el ancho según el contenido */
+  z-index: 1000; /* Se asegura de que esté por encima de otros elementos */
+}
+
+.spaceTopOnlyPhone{
+    margin-top: 0px;
+}
+
+.audioPLayerContent{
+  height: 130px;
+}
+
+/* Media query para móviles */
+@media (max-width: 768px) {
+  .input-container {
+    display: none; /* Oculta el contenedor principal en móviles */
+  }
+  .input-container-CellUP {
+    display: inline-flex; /* Muestra el contenedor móvil en pantallas pequeñas */
+  }
+
+  .spaceTopOnlyPhone {
+    margin-top: '35px';
+  }
+
+  .audioPLayerContent{
+    height: 210px;
+  }
+  
+}
+
+.highlight {
+  background-color: var(--backgroundColor2);
+  transition: background-color 0.3s ease;
+}
+
+
+/* Clase para aplicar la animación */
+.spin {
+  background-color: #2bc6c8;
+  animation: spin 1s linear infinite;
+}
+
+/* Definición de la animación de giro */
+@keyframes spin {
+  from {
+      transform: rotate(0deg);
+  }
+  to {
+      transform: rotate(360deg);
+  }
+}
+
+.borderRadius1{
+  border-radius: 0.7em;
+}
+
+

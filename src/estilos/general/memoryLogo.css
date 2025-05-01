@@ -1,0 +1,94 @@
+/* Estilos para el logo de recuerdos animado */
+
+/* Pulso suave del fondo */
+.animate.background-pulse {
+    animation: backgroundPulse 8s infinite ease-in-out;
+  }
+  
+  @keyframes backgroundPulse {
+    0%, 100% { opacity: 0.9; }
+    50% { opacity: 1; }
+  }
+  
+  /* Respiración de la forma principal */
+  .animate.shape-breathing {
+    animation: breathing 5s infinite ease-in-out;
+    transform-origin: center;
+  }
+  
+  @keyframes breathing {
+    0%, 100% { 
+      transform: scale(1) rotate(0deg); 
+      opacity: 0.8;
+    }
+    25% { 
+      transform: scale(1.03) rotate(0.5deg); 
+      opacity: 0.9;
+    }
+    50% { 
+      transform: scale(1.01) rotate(-0.5deg); 
+      opacity: 1;
+    }
+    75% { 
+      transform: scale(0.99) rotate(0.3deg); 
+      opacity: 0.95;
+    }
+  }
+  
+  /* Flujo de las líneas interiores */
+  .animate.line-flow {
+    animation: lineFlow 4s infinite ease-in-out;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  
+  @keyframes lineFlow {
+    0% { 
+      stroke-dashoffset: 100;
+      opacity: 0.5;
+    }
+    50% { 
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    100% { 
+      stroke-dashoffset: -100;
+      opacity: 0.5;
+    }
+  }
+  
+  /* Animación de las tres bolas */
+  .animate.memory-dot {
+    animation: dotFloat 4s infinite ease-in-out;
+  }
+  
+  @keyframes dotFloat {
+    0%, 100% { 
+      transform: translateY(0) scale(1);
+      opacity: 0.8;
+    }
+    50% { 
+      transform: translateY(-6px) scale(1.1);
+      opacity: 1;
+    }
+  }
+  
+  /* Movimiento orgánico del borde */
+  .animate.organic-border {
+    animation: organicBorder 7s infinite ease-in-out;
+  }
+  
+  @keyframes organicBorder {
+    0% { 
+      stroke-dashoffset: 0;
+      opacity: 0.7;
+    }
+    50% { 
+      stroke-dashoffset: 20;
+      opacity: 1;
+    }
+    100% { 
+      stroke-dashoffset: 0;
+      opacity: 0.7;
+    }
+  }

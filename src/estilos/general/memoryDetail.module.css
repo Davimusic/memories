@@ -1,0 +1,270 @@
+.container {
+    padding: 1.5rem;
+    min-height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Encabezado compacto */
+.headerCompact {
+    margin-bottom: 2rem;
+    flex-shrink: 0;
+}
+
+.memoryTitleCompact {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+    width: 85vw;
+    overflow: auto;
+}
+
+.memoryDescriptionCompact {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 0.8rem;
+    width: 85vw;
+    overflow: auto;
+}
+
+.datesCompact {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Sección de carpetas */
+.foldersContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 0;
+    max-height: calc(100vh - 1.5rem * 2 - [altura-del-header]); /* Ajusta según la altura real del header */
+}
+
+.foldersContent {
+    width: 100%;
+}
+
+.foldersContainer h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--primary-color);
+}
+
+.folderSection {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 0.8rem;
+    overflow: hidden;
+}
+
+.folderHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    cursor: pointer;
+}
+
+.folderHeader:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.folderInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.folderInfo h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.folderCount {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.folderToggle {
+    font-size: 1.2rem;
+}
+
+/* Modal de previsualización */
+.folderPreviewModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    padding: 2rem;
+    
+}
+
+.previewTitle {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-transform: capitalize;
+}
+
+.previewContent {
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow-y: auto;
+    height: 80vh;
+}
+
+.previewGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.previewItem {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.previewItem:hover {
+    transform: scale(1.02);
+}
+
+.imagePreview {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.imagePreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.videoPreview {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.videoPreview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.playIcon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    color: white;
+    opacity: 0.8;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+
+  
+
+.audioIcon {
+    font-size: 2rem;
+}
+
+.filePreview {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Media Overlay */
+.mediaOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closeButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.closeButton:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-size: 1.2rem;
+    gap: 20px;
+  }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .memoryTitleCompact {
+        font-size: 1.5rem;
+    }
+    
+    .datesCompact {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+    
+    .foldersContainer h2 {
+        font-size: 1.3rem;
+    }
+
+    .previewGrid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .imagePreview,
+    .videoPreview {
+        height: 150px;
+    }
+}

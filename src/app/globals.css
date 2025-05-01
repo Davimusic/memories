@@ -1,0 +1,163 @@
+/* app/global.css */
+
+/* Importa primero todas las fuentes que necesitas */
+@import url('https://fonts.googleapis.com/css2?family=Caprasimo&family=Dancing+Script&family=Montserrat+Alternates:ital,wght@0,300;1,100&family=PT+Serif:ital@1&family=Playfair+Display:ital,wght@1,500&family=Roboto+Slab:wght@100..900&family=Rubik+Vinyl&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Aplica globalmente la fuente deseada a la etiqueta body */
+body {
+  font-family: 'Caprasimo', 'Dancing Script', 'Montserrat Alternates', 'PT Serif', 'Playfair Display', 'Roboto Slab', 'Rubik Vinyl', sans-serif;
+}
+
+/* Ejemplo de clase personalizada para usar Roboto específicamente */
+/* Reemplaza <uniquifier> por un nombre único para diferenciar este estilo */
+.roboto-custom {
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400; /* Puedes cambiar este valor (100-900) según tu necesidad */
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+
+
+
+/* Reset Stylesheet */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+
+body {
+    line-height: 1;
+    color: white;
+    font-size: 2.5vh;
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
+
+
+h1, h2, h3, h4, h5, p {
+    margin: 0;
+}
+
+h1 {
+    font-size: 2vh;
+    font-family: 'Caprasimo', sans-serif;
+}
+
+h2 {
+    font-size: 1.5vh;
+    font-family: 'Dancing Script', sans-serif;
+}
+
+p {
+    font-size: 3vh;
+    font-family: 'Roboto Slab', sans-serif;
+}
+
+@media (min-width: 1000px) {
+    h1 {
+        font-size: 5vh;
+        font-family: 'Playfair Display', serif;
+    }
+
+    h2 {
+        font-size: 2.5vh;
+        font-family: 'PT Serif', serif;
+    }
+
+    p {
+        font-size: 3vh;
+    }
+}
+
+
+  
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+nav ul {
+    list-style: none;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+
+a {
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+
+ins {
+    background-color: #ff9;
+    color: #000;
+    text-decoration: none;
+}
+
+mark {
+    background-color: #ff9;
+    color: #000;
+    font-style: italic;
+    font-weight: bold;
+}
+
+del {
+    text-decoration: line-through;
+}
+
+abbr[title], dfn[title] {
+    border-bottom: 1px dotted;
+    cursor: help;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #cccccc;
+    margin: 1em 0;
+    padding: 0;
+}
+
+input, select {
+    vertical-align: middle;
+}
+
+* {
+    box-sizing: border-box;
+}
+

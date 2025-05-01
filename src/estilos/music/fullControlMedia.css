@@ -1,0 +1,60 @@
+  :root {
+    --audioPlayerHeight: 115px;
+  }
+  
+  .audioPlayerContent {
+    padding-right: 10px;
+    padding-left: 10px;
+    position: fixed;
+    bottom: -10px; /* Note this will be overridden later */
+    left: 0;
+    right: 0;
+    z-index: 2;
+    border-radius: 20px;
+    margin: 10px;
+    height: 120px; /* CSS approach */
+    /* height: var(--audioPlayerHeight); */ /* Optional variable for dynamic adjustment */
+    box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+
+  
+  /* Clase para el contenedor flexible que contiene el ícono de menú, la imagen y el corazón, y el ícono de descarga */
+  .flexContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* Clase para el contenedor de la imagen y el corazón */
+  .imageHeartContainer {
+    max-width: 30vw;
+    overflow-y: auto;
+  }
+  
+  
+  
+  /* Clase para el contenedor de los controles de medios */
+  .mediaControlContainer {
+    display: flex;
+    justify-content: center;
+  }
+
+  .changeModeView {
+    display: flex;
+  }
+  
+  
+  @media (max-width: 767px) {
+    :root {
+      --audioPlayerHeight: 170px;
+    }
+    .changeModeView {
+      display: none;
+    }
+
+    .audioPlayerContent{
+      height: 200px;
+    }
+  }
