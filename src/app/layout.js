@@ -1,25 +1,29 @@
-// app/layout.js
-'use client'; // Indica que este archivo es del lado del cliente
+'use client';
 
-import { Root } from './root'; // Importa el componente Root
+import React from 'react';
+import Head from 'next/head';
+import './globals.css';
 
 export default function RootLayout({ children }) {
   return (
-    <Root>{children}</Root> 
+    <html lang="es">
+      <Head>
+        {/* Preconexión para optimizar la carga de fuentes */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+        {/* Integración de la fuente "Montserrat" */}
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
+        <title>Mi Aplicación con Fuente Global</title>
+      </Head>
+      <body>
+        <main>
+          {children}
+        </main>
+      </body>
+    </html>
   );
 }
 
 
 
 
-
-/*"use client"
-
-import { Root } from './root';
-
-
-export default function RootLayout() {
-  return (
-    <Root></Root>
-  );
-}*/

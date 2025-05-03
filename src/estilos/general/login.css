@@ -171,12 +171,15 @@
   background-color: #333;
 }
 
-/* RESPONSIVE: ajustes para móviles */
-@media (max-width: 480px) {
+@media (max-width: 1023px) {
   .login-form {
     padding: 25px;
     background-color: rgba(255, 255, 255, 0.747);
   }
+}
+
+/* RESPONSIVE: ajustes para móviles */
+@media (max-width: 480px) {
   
   .login-title {
     font-size: 1.5rem;

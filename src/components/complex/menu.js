@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../../firebase';
 '../../estilos/general/general.css';
-import checkUserName from '@/functions/music/checkUserName';
+
 
 const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);

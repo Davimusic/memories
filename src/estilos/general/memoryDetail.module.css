@@ -1,104 +1,195 @@
-.container {
-    padding: 1.5rem;
+/* Contenedor principal */
+.fullscreenContainer {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .loading {
+    position: fixed; /* Hace que sea flotante y permanezca en su lugar */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    gap: 20px;
+    z-index: 9999; /* Asegura que esté por encima de otros elementos */
+  }
+
+  
+  
+  .backgroundWrapper {
+    width: 100%;
     min-height: 100vh;
-    width: 100vw;
+    padding: 30px;
     box-sizing: border-box;
     display: flex;
-    flex-direction: column;
-}
-
-/* Encabezado compacto */
-.headerCompact {
-    margin-bottom: 2rem;
-    flex-shrink: 0;
-}
-
-.memoryTitleCompact {
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--primary-color);
-    width: 85vw;
-    overflow: auto;
-}
-
-.memoryDescriptionCompact {
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 0.8rem;
-    width: 85vw;
-    overflow: auto;
-}
-
-.datesCompact {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.7);
-}
-
-/* Sección de carpetas */
-.foldersContainer {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    margin-top: 0;
-    max-height: calc(100vh - 1.5rem * 2 - [altura-del-header]); /* Ajusta según la altura real del header */
-}
-
-.foldersContent {
-    width: 100%;
-}
-
-.foldersContainer h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--primary-color);
-}
-
-.folderSection {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    margin-bottom: 0.8rem;
+  }
+  
+  .memoryContainer {
+    width: 90%;
+    max-width: 1200px;
+    height: 75vh;
+    padding: 24px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
-}
-
-.folderHeader {
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Header */
+  .headerSection {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    cursor: pointer;
-}
-
-.folderHeader:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.folderInfo {
+    padding: 15px 20px;
+    
+  }
+  
+  .titleContainer {
     display: flex;
     align-items: center;
-    gap: 1rem;
-}
-
-.folderInfo h3 {
-    margin: 0;
-    font-size: 1.1rem;
-}
-
-.folderCount {
+    gap: 15px;
+    flex-grow: 1;
+  }
+  
+  .memoryTitle {
+    font-size: 1.8rem;
+    min-height: 2.5em;
+    padding: 10px;
+    line-height: 1.4;
+    border: none;
+    background: transparent;
+    resize: none;
+    width: 100%;
+    font-weight: bold;
+    font-family: inherit;
+  }
+  
+  /* Contenido principal */
+  .contentWrapper {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+  
+  /* Columna de información */
+  .infoColumn {
+    flex: 1;
+    min-width: 300px;
+    max-width: 400px;
+    overflow-y: auto;
+    
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .metadataContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .memoryDescription {
+    resize: none;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 150px;
+    border-radius: 0.7em;
+    border: none;
+    flex: 1;
+    margin-bottom: 15px;
+    padding: 15px;
+    line-height: 1.5;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+  
+  .datesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+    padding: 10px 0;
+    font-size: 0.9em;
+    color: #666;
+  }
+  
+  /* Columna de archivos */
+  .filesColumn {
+    flex: 2;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .foldersHeader {
+    margin-bottom: 20px;
+  }
+  
+  .foldersList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  /* Estilos de carpetas */
+  .folderItem {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 0.5em;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+  }
+  
+  .folderItem:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .folderHeader {
+    padding: 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .folderInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .folderCount {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
     font-size: 0.85rem;
-    opacity: 0.7;
-}
-
-.folderToggle {
+  }
+  
+  .folderToggle {
     font-size: 1.2rem;
-}
-
-/* Modal de previsualización */
-.folderPreviewModal {
+  }
+  
+  .noFoldersMessage {
+    color: #666;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  /* Modal de previsualización */
+  .folderPreviewModal {
     position: fixed;
     top: 0;
     left: 0;
@@ -107,108 +198,104 @@
     background: rgba(0, 0, 0, 0.95);
     z-index: 1000;
     padding: 2rem;
-    
-}
-
-.previewTitle {
+    display: flex;
+    flex-direction: column;
+    color: white;
+  }
+  
+  .previewTitle {
+    margin: 1rem 0;
     text-align: center;
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    text-transform: capitalize;
-}
-
-.previewContent {
-    max-width: 1200px;
-    margin: 0 auto;
+  }
+  
+  .previewContent {
+    flex: 1;
     overflow-y: auto;
-    height: 80vh;
-}
-
-.previewGrid {
+    padding: 1rem;
+  }
+  
+  .previewGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-}
-
-.previewItem {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .previewItem {
     cursor: pointer;
     transition: transform 0.2s;
-}
-
-.previewItem:hover {
-    transform: scale(1.02);
-}
-
-.imagePreview {
+  }
+  
+  .previewItem:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Previews específicos */
+  .imagePreview {
     width: 100%;
-    height: 200px;
-    border-radius: 8px;
+    height: 150px;
     overflow: hidden;
-}
-
-.imagePreview img {
+    border-radius: 8px;
+  }
+  
+  .imagePreview img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.videoPreview {
+  }
+  
+  .videoPreview {
     width: 100%;
-    height: 200px;
-    border-radius: 8px;
-    overflow: hidden;
+    height: 150px;
     position: relative;
-}
-
-.videoPreview video {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .videoPreview video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.playIcon {
+  }
+  
+  .playIcon {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 3rem;
-    color: white;
-    opacity: 0.8;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-
-  
-
-.audioIcon {
     font-size: 2rem;
-}
-
-.filePreview {
-    padding: 1.5rem;
+    color: white;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .audioPreview {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    height: 100%;
+  }
+  
+  .audioIcon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+  }
+  
+  .filePreview {
+    width: 100%;
+    height: 150px;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-/* Media Overlay */
-.mediaOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.95);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.closeButton {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+  }
+  
+  /* Botones de cierre */
+  .closeButton {
     position: absolute;
     top: 20px;
     right: 20px;
@@ -219,52 +306,86 @@
     border-radius: 50%;
     font-size: 1.5rem;
     cursor: pointer;
-    z-index: 1001;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-}
-
-.closeButton:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-.loading {
+    z-index: 10;
+  }
+  
+  /* Overlay de reproductor multimedia */
+  .mediaOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    font-size: 1.2rem;
-    gap: 20px;
   }
-
-/* Responsive */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
+  
+  /* Estilos responsivos */
+  @media (max-width: 768px) {
+    .memoryContainer {
+        width: 100%;
+        height: 100vh; /* Forzamos a ocupar 100% de la altura del viewport */
+        max-width: none;
+        margin: 0;
+        border-radius: 0;
+        /* Puedes ajustar el padding si es necesario, por ejemplo: padding: 16px; */
+      }
+  
+    .contentWrapper {
+      flex-direction: column;
+      height: calc(100vh - 80px);
     }
-    
-    .memoryTitleCompact {
-        font-size: 1.5rem;
+  
+    .infoColumn {
+      max-width: none;
+      border-right: none;
+      
+      height: 35%;
+      min-height: 250px;
+      padding: 15px;
     }
-    
-    .datesCompact {
-        flex-direction: column;
-        gap: 0.3rem;
+  
+    .filesColumn {
+      height: 65%;
+      padding: 15px;
     }
-    
-    .foldersContainer h2 {
-        font-size: 1.3rem;
+  
+    .memoryTitle {
+      font-size: 1.4rem;
+      min-height: 3em;
     }
-
+  
+    .memoryDescription {
+      height: 150px;
+      padding: 10px !important;
+      min-height: auto !important;
+    }
+  
+    .datesContainer {
+      font-size: 0.8em;
+      padding: 8px 0;
+    }
+  
     .previewGrid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
-    
+  
     .imagePreview,
-    .videoPreview {
-        height: 150px;
+    .videoPreview,
+    .audioPreview,
+    .filePreview {
+      height: 120px;
     }
-}
+
+    .backgroundWrapper{
+        padding: 0px;
+    }
+  }

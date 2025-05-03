@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-'../../estilos/general/general.css'
 import styles from '../../estilos/general/memoriesIndex.module.css'; 
+import '../../estilos/general/general.css'
+import '../../app/globals.css'
 import MemoryLogo from './memoryLogo';
 import Menu from './menu';
 import MenuIcon from './menuIcon';
@@ -115,7 +116,7 @@ const MemoriesIndex = () => {
         <BackgroundGeneric showImageSlider={false}>
           <div className={`${styles.loading}`}>
             <MemoryLogo size={300} />
-            <p className={'color2'}>Loading memories...</p>
+            <p className={'color2 title-lg'}>Loading memories...</p>
           </div>
         </BackgroundGeneric>
       </div>
@@ -123,40 +124,48 @@ const MemoriesIndex = () => {
   }
 
   if (error) {
-    return <div className={styles.error}>Error: {error}</div>;
+    return(
+      <div className='fullscreen-floating'>
+        <BackgroundGeneric showImageSlider={false}>
+          <div className={`${styles.loading}`}>
+            <MemoryLogo size={300} />
+            <p className={'color2 title-xl'}>Error: {error}</p>
+          </div>
+        </BackgroundGeneric>
+      </div>
+    )
   }
 
   return (
-    <div className={`${styles.container} ${styles.fadeIn} fullscreen-floating backgroundColor1 color1`}>
-      {/* Integración del Menu */}
+    <div className={`${styles.container} ${styles.fadeIn} fullscreen-floating color1 mainFont`}>
       <Menu 
         isOpen={isMenuOpen} 
         onClose={() => setIsMenuOpen(false)} 
-        className="backgroundColor1"
+        className="backgroundColor1 mainFont"
       />
   
-      {/* Controles superiores */}
       <div className={styles.controlsContainer}>
-        <MenuIcon size={30} onClick={() => setIsMenuOpen(true)} />
-        {filteredMemories.length > 0 && (
-          <div className={styles.filterContainer}>
-            <label htmlFor="sort">Sort by:</label>
-            <select className={styles.appleSelect} value={sortType} onChange={handleSortChange}>
-              <option value="alphabetical">Name</option>
-              <option value="creationDate">Creation Date</option>
-              <option value="lastModified">Last Modified</option>
-            </select>
-          </div>
-        )}
-        <button
-          className={`${styles.appleButton} ${filteredMemories.length === 0 ? styles.highlightButton : ''}`}
+        <div className={styles.leftControls}>
+          <MenuIcon size={30} onClick={() => setIsMenuOpen(true)} />
+          {filteredMemories.length > 0 && (
+            <div className={styles.filterContainer}>
+              <label htmlFor="sort">Sort by:</label>
+              <select className={styles.appleSelect} value={sortType} onChange={handleSortChange}>
+                <option value="alphabetical">Name</option>
+                <option value="creationDate">Creation Date</option>
+                <option value="lastModified">Last Modified</option>
+              </select>
+            </div>
+          )}
+        </div>
+        <div
+          className={`mainFont ${styles.appleButton} ${filteredMemories.length === 0 ? styles.highlightButton : ''}`}
           onClick={handleCreateMemory}
         >
           New Memory
-        </button>
+        </div>
       </div>
   
-      {/* Renderizado condicional del contenido */}
       {filteredMemories.length === 0 ? (
         <div className={styles.emptyState}>
           <MemoryLogo size={300} />
@@ -164,7 +173,7 @@ const MemoriesIndex = () => {
         </div>
       ) : (
         <div className={`${styles.appleTableContainer}`}>
-          <div className={`${styles.tableHeader} backgroundColor2`}>
+          <div className={`${styles.tableHeader} backgroundColor2 title-sm`}>
             <div className={styles.headerCell} style={{ flex: 3 }}>Name</div>
             <div className={styles.headerCell} style={{ flex: 2 }}>Description</div>
             <div className={styles.headerCell} style={{ flex: 2 }}>Types</div>
@@ -176,6 +185,11 @@ const MemoriesIndex = () => {
             <div
               key={index}
               className={styles.tableRow}
+              style={{
+                backgroundColor: index % 2 === 0 
+                  ? '#33333377'  
+                  : 'none'  
+              }}
               onClick={() => router.push(`/memories/${encodeURIComponent(memoryTitle)}`)}
             >
               <div className={styles.tableCell} style={{ flex: 3 }}>
@@ -211,7 +225,6 @@ const MemoriesIndex = () => {
       )}
     </div>
   );
-  
   
 };
 

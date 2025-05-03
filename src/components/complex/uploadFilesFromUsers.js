@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import '../../estilos/general/fileUploader.css'
 '../../estilos/general/general.css'
+import '../../app/globals.css'
 import Menu from './menu';
 import MenuIcon from './menuIcon';
 import { useRouter } from 'next/router';
@@ -214,7 +215,7 @@ const FileUploader = ({ userId, onUploadComplete, onClose }) => {
   );
 
   return (
-    <div className="fullscreen-floating">
+    <div className="fullscreen-floating mainFont">
       {/* Menu Component */}
       <Menu 
         isOpen={isMenuOpen} 
@@ -226,7 +227,7 @@ const FileUploader = ({ userId, onUploadComplete, onClose }) => {
       <div className="file-uploader">
         <div className="uploader-header">
           <div className="menu-icon-container">
-            <MenuIcon onClick={handleOpenMenu} style={{ zIndex: 10000 }} />
+            <MenuIcon onClick={handleOpenMenu} style={{ zIndex: 10 }} />
           </div>
           <h2 className="title">Upload New Memory</h2>
           <div className="spacer"></div>
@@ -234,7 +235,7 @@ const FileUploader = ({ userId, onUploadComplete, onClose }) => {
   
         <div className="uploader-content">
           <div className="form-column">
-            <form onSubmit={handleSubmit} id="memory-form">
+            <form className='memory-form' onSubmit={handleSubmit} id="memory-form">
               <div className="form-group">
                 <label>Memory Title *</label>
                 <input

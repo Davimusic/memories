@@ -2,27 +2,17 @@
 
 import RootLayout from "./layout";
 
-function Home() {
-    return (
-      <div > 
-      </div>
-    );
+
+// app/page.js
+export default function HomePage() {
+  return (
+    <main>
+      <h1 className="mainFont">fuente principal</h1>
+      <p>
+        Si ves este estilo peculiar y distorsionado, es la fuente "Nosifer" en acción.
+      </p>
+    </main>
+  );
 }
 
-export default Home;
 
-/**
- * "use client"; //no sé por qué lo necesita
-
-import RootLayout from "./layout";
-
-function Home() {
-  const { tasks } = useTasks();
-    return (
-      <div > 
-      </div>
-    );
-}
-
-export default Home;
- */

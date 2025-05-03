@@ -14,7 +14,7 @@
   height: 90vh;
   /*background: #1a1a1a;*/
   color: #ffffff;
-  font-family: Arial, sans-serif;
+  
   overflow: auto;
   scroll-behavior: smooth;
 }

@@ -1,9 +1,9 @@
-/* ------------------------------- Base Styles ---------------------------------- */
 .container {
   width: 100%;
   min-height: 100vh;
   padding: 20px;
   box-sizing: border-box;
+  background: #ffffff;
 }
 
 /* Animation */
@@ -16,19 +16,23 @@
 }
 
 .loading {
+  position: fixed; /* Hace que sea flotante y permanezca en su lugar */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   font-size: 1.2rem;
   gap: 20px;
+  z-index: 9999; /* Asegura que esté por encima de otros elementos */
 }
 
 .highlightButton {
-  position: relative; /* necesario para posicionar el pseudoelemento */
-  z-index: 1; /* asegura que el contenido del botón quede por encima */
-  /* aquí incluyen otros estilos propios del botón (padding, background, border, etc.) */
+  position: relative;
+  z-index: 1;
 }
 
 .highlightButton::before {
@@ -41,7 +45,7 @@
   background: linear-gradient(45deg, #ff0000, #ffcc00, #00ffcc, #ff00ff, #ff0000);
   background-size: 400%;
   filter: blur(8px);
-  z-index: -1; /* lo coloca detrás del botón */
+  z-index: -1;
   animation: glowing 30s linear infinite;
   opacity: 0.75;
 }
@@ -68,19 +72,35 @@
   font-size: 1.1rem;
 }
 
-/* ------------------------------- Controls ---------------------------------- */
+/* Controls */
 .controlsContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
-  padding: 0 10px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.leftControls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-grow: 1;
 }
 
 .filterContainer {
   display: flex;
   align-items: center;
   gap: 10px;
+  color: black;
+  border: solid var(--backgroundColor1) 2px;
+  border-radius: 0.7em;
+  padding: 4px;
+  margin-left: auto;
 }
 
 .filterContainer label {
@@ -88,7 +108,7 @@
   color: #ffffff;
 }
 
-/* ------------------------------- Apple Style Components ---------------------------------- */
+/* Apple Style Components */
 .appleSelect {
   padding: 8px 12px;
   border: 1px solid rgba(255, 255, 255, 0.623);
@@ -123,6 +143,7 @@
   align-items: center;
   gap: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
 }
 
 .appleButton:hover {
@@ -130,27 +151,21 @@
   box-shadow: 0 2px 6px rgba(0, 112, 243, 0.3);
 }
 
-/* ------------------------------- Apple Table ---------------------------------- */
+/* Apple Table */
 .appleTableContainer {
   background: #ffffff;
   border-radius: 12px;
   overflow: auto;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--backgroundColor1);
   height: 75vh;
-
-  /* Para Firefox */
-  scrollbar-width: none; 
-
-  /* Para Internet Explorer y Edge */
+  scrollbar-width: none;
   -ms-overflow-style: none; 
 }
 
-/* Para Chrome, Safari y Opera */
 .appleTableContainer::-webkit-scrollbar {
   display: none;
 }
-
 
 .tableHeader {
   display: flex;
@@ -159,13 +174,10 @@
   font-weight: 500;
   font-size: 0.85rem;
   backdrop-filter: blur(10px);
-  
   position: sticky;
   top: 0;
-  z-index: 10; /* Ajusta este valor según la jerarquía de contenidos */
-  
+  z-index: 10;
 }
-
 
 .tableRow {
   display: flex;
@@ -201,12 +213,11 @@
 
 .titleText {
   font-weight: 500;
-  
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* ------------------------------- Badges & Typography ---------------------------------- */
+/* Badges & Typography */
 .typeBadges {
   display: flex;
   gap: 8px;
@@ -216,7 +227,6 @@
 
 .typeBadge {
   background: linear-gradient(to bottom, #0070f3, #0061d1);
-  
   padding: 4px 10px;
   border-radius: 10px;
   font-size: 0.75rem;
@@ -231,19 +241,26 @@
   font-size: 0.95rem;
 }
 
-/* ------------------------------- Responsive ---------------------------------- */
+/* Responsive */
 @media (max-width: 768px) {
   .controlsContainer {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .leftControls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .filterContainer {
+    margin-left: 0;
+    width: 100%;
+    order: 2;
   }
   
   .appleTableContainer {
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: 0 -10px;
-    width: calc(100% + 20px);
+    height: 60vh;
   }
   
   .tableHeader,
@@ -253,10 +270,5 @@
   
   .tableCell, .headerCell {
     min-width: 120px;
-  }
-  
-  .appleButton {
-    width: 100%;
-    justify-content: center;
   }
 }

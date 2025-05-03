@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import FullControlMedia from '../complex/fullControlMedia';
+
 import '../../estilos/music/video.css';
-import mixUrlWithQuality from '@/functions/music/mixUrlWithQuality';
-import UseControlVisibility from '../complex/useControlVisibility';
+
 import TogglePlayPause from '../complex/TogglePlayPause';
 
 
@@ -17,14 +16,14 @@ import TogglePlayPause from '../complex/TogglePlayPause';
 
 
 import DownloadIcon from '../complex/downloadIcon';
-import ImageAndHeart from '../complex/imageAndHeart';
+
 import HeartIcon from '../complex/heartIcon';
 import ShuffleButton from '../complex/ShuffleButton';
 import RepeatButton from '../complex/RepeatButton';
 import NextBeforeIcon from '../complex/nextBeforeIcon';
 import QualityIcon from '../complex/ToggleIcon';
 import ToggleMute from '../complex/ToggleMute';
-import getCSSVariableValue from '@/functions/music/getCSSVariableValue';
+
 import RangeInput from '../complex/rangeInput';
 
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ImageSlider from './imageSlider';
 import '../../estilos/general/imageSlider.css';
+import '../../app/globals.css'
 
 
 
@@ -116,7 +117,7 @@ const BackgroundGeneric = ({
       overflow: 'hidden',
       padding: '0',
       backgroundColor: 'white',
-      height: '100%',
+      height: '488px',
       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
       paddingLeft: '10px',
       marginLeft: '-50px'
@@ -132,7 +133,7 @@ const BackgroundGeneric = ({
   // Versión para móvil
   if (isMobile) {
     return (
-      <div style={styles.mainContainer} className={`${backgroundClass} ${className}`}>
+      <div style={styles.mainContainer} className={`${backgroundClass} ${className} mainFont`}>
         {showImageSlider && (
           <div style={styles.mobileOverlay}>
             <ImageSlider
@@ -154,20 +155,20 @@ const BackgroundGeneric = ({
 
   // Versión para desktop/tablet
   return (
-    <div style={styles.mainContainer} className={`${backgroundClass} ${className}`}>
+    <div style={styles.mainContainer} className={`${backgroundClass} ${className} mainFont`}>
       <div style={styles.desktopContainer}>
         <div ref={loginContainerRef} style={styles.loginContainer}>
           {children}
         </div>
         {showImageSlider && (
           <div style={styles.sliderContainer}>
-            <div style={styles.sliderWrapper}>
+            <div >
               <ImageSlider
                 images={images}
                 fixedEffect="random"
                 timeToShow={3000}
                 showControls={false}
-                style={{ height: '100%' }}
+                style={{ height: '488px' }}
                 initializeAutomatically={true}
               />
             </div>

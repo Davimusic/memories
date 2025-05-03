@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import FileUploader from "@/components/complex/uploadFilesFromUsers";
-import Modal from "@/components/complex/modal";
+import FileUploader from '../components/complex/uploadFilesFromUsers';
+import Modal from "../components/complex/modal";
 
 
 

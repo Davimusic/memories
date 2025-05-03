@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import FullControlMedia from '../complex/fullControlMedia';
+
 //import mixUrlWithQuality from '@/functions/music/mixUrlWithQuality';
 import MenuIcon from '../complex/menuIcon';
 import {
@@ -15,7 +15,7 @@ import {
   getNextMedia,
   getPreviousMedia,
   formatTime,
-} from '@/functions/music/mediaUtils';
+} from '../../functions/music/mediaUtils';
 import DownloadIcon from '../complex/downloadIcon';
 import TogglePlayPause from '../complex/TogglePlayPause';
 import ShuffleButton from '../complex/ShuffleButton';

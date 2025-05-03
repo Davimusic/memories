@@ -11,7 +11,7 @@
 
 /* Colores de texto */
 .color1 { color: #000000; }
-.color2 { color: #ffffff; }
+.color2 { color: #3498db; }
 .color3 { color: #1d6188; }
 .color4 { color: #ee00f7; }
 .color5 { color: #bbb018; }
@@ -21,9 +21,9 @@
   --backgroundColor2: hwb(0 18% 82%);
   --backgroundColor3: #113558;
   --backgroundColor4: #2cb9e4;
-  --backgroundColor5: #000000;
-  --color1: #000000;
-  --color2: #ffffff;
+  --backgroundColor5: #ffffff;
+  --color1: #2c3e50;
+  --color2: #3498db;
   --color3: #1d6188;
   --color4: #2b95c8;
   --color5: #2bc6c8;

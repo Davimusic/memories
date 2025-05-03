@@ -141,9 +141,7 @@ const SearchTagInDb = ({
                         transition: opacity 0.3s ease; /* Transición suave */
                     }
 
-                    input::placeholder {
-                        font-family: 'Caprasimo', sans-serif;
-                    }
+                    
 
                     input {
                         width: 100%;
@@ -151,7 +149,7 @@ const SearchTagInDb = ({
                         border: none;
                         border-radius: 10px;
                         outline: none;
-                        font-family: 'Montserrat Alternates', sans-serif;
+                        
                         font-size: 1rem;
                         position: relative; /* Asegura que el input tenga un contexto de apilamiento */
                         z-index: 20; /* El input debe tener un zIndex mayor que las sugerencias */
@@ -175,7 +173,7 @@ const SearchTagInDb = ({
                         padding: 10px;
                         cursor: pointer;
                         color: #333;
-                        font-family: 'Montserrat Alternates', sans-serif;
+                       
                         font-weight: bold;
                     }
 

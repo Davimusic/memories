@@ -73,7 +73,7 @@ const cssStyles = `
   margin-left: 10px;
   min-width: 30px;
   text-align: center;
-  font-family: 'Arial', sans-serif;
+  ;
 }
 
 /* Clases de colores dinámicos */
