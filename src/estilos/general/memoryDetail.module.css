@@ -23,7 +23,7 @@
     z-index: 9999; /* Asegura que esté por encima de otros elementos */
   }
 
-  
+
   
   .backgroundWrapper {
     width: 100%;
@@ -75,7 +75,14 @@
     width: 100%;
     font-weight: bold;
     font-family: inherit;
-  }
+    outline: none; /* Evita que aparezca el borde al hacer clic */
+}
+
+.memoryTitle:focus {
+    outline: none;
+    box-shadow: none;
+}
+
   
   /* Contenido principal */
   .contentWrapper {
@@ -115,7 +122,14 @@
     line-height: 1.5;
     font-size: 1rem;
     font-family: inherit;
+    outline: none;
   }
+
+  .memoryDescription:focus {
+    outline: none;
+    box-shadow: none;
+}
+
   
   .datesContainer {
     display: flex;

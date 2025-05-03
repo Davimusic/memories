@@ -1,274 +1,403 @@
+/* Estilos base */
 .container {
   width: 100%;
   min-height: 100vh;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
   box-sizing: border-box;
-  background: #ffffff;
+  background-color: var(--backgroundColor1);
+  gap: 20px;
 }
 
-/* Animation */
-.fadeIn {
-  animation: fadeInAnimation 0.5s ease forwards;
-}
-@keyframes fadeInAnimation {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.desktopFrame{
+  background-color: #0070f3;
+  padding: 28px;
 }
 
-.loading {
-  position: fixed; /* Hace que sea flotante y permanezca en su lugar */
+/* Marco para tablet/desktop */
+.desktop-frame {
+  display: none;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  border: 20px solid #f0f0f0;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Contenedor principal */
+.mainContainer {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  gap: 20px;
-  z-index: 9999; /* Asegura que esté por encima de otros elementos */
 }
 
-.highlightButton {
-  position: relative;
-  z-index: 1;
-}
-
-.highlightButton::before {
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  width: calc(100% + 20px);
-  height: calc(100% + 20px);
-  background: linear-gradient(45deg, #ff0000, #ffcc00, #00ffcc, #ff00ff, #ff0000);
-  background-size: 400%;
-  filter: blur(8px);
-  z-index: -1;
-  animation: glowing 30s linear infinite;
-  opacity: 0.75;
-}
-
-@keyframes glowing {
-  0% {
-    background-position: 0% 0%;
-    opacity: 0.75;
-  }
-  50% {
-    background-position: 400% 0%;
-    opacity: 1;
-  }
-  100% {
-    background-position: 0% 0%;
-    opacity: 0.75;
-  }
-}
-
-.error {
-  padding: 40px;
-  color: #ff453a;
-  text-align: center;
-  font-size: 1.1rem;
-}
-
-/* Controls */
+/* Controles superiores */
 .controlsContainer {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto 25px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  flex-wrap: wrap;
-  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid rgb(0, 0, 0);
+  position: sticky;
+  top: 0;
+  
+  z-index: 100;
+  backdrop-filter: blur(5px);
 }
 
 .leftControls {
   display: flex;
   align-items: center;
-  gap: 15px;
-  flex-grow: 1;
+  gap: 20px;
 }
 
 .filterContainer {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: black;
-  border: solid var(--backgroundColor1) 2px;
-  border-radius: 0.7em;
-  padding: 4px;
-  margin-left: auto;
+  gap: 12px;
 }
 
-.filterContainer label {
-  font-size: 0.9rem;
-  color: #ffffff;
-}
-
-/* Apple Style Components */
+/* Componentes interactivos */
 .appleSelect {
-  padding: 8px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.623);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.575);
-  color: #000000;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
+  padding: 10px 35px 10px 15px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: #ffffff;
+  color: #2d3436;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232d3436'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 8px center;
+  background-position: right 12px center;
   background-size: 12px;
-  padding-right: 30px;
-}
-
-.appleSelect:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .appleButton {
-  background: linear-gradient(to bottom, #0070f3, #0061d1);
+  background: linear-gradient(to bottom right, #0070f3, #0051a8);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 0.9rem;
+  border-radius: 10px;
+  padding: 12px 25px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 112, 243, 0.15);
   white-space: nowrap;
 }
 
 .appleButton:hover {
-  background: linear-gradient(to bottom, #0061d1, #0052b8);
-  box-shadow: 0 2px 6px rgba(0, 112, 243, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 112, 243, 0.2);
 }
 
-/* Apple Table */
+.highlightButton {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Tabla con scroll funcional */
 .appleTableContainer {
-  background: #ffffff;
-  border-radius: 12px;
+  flex: 1;
   overflow: auto;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--backgroundColor1);
-  height: 75vh;
-  scrollbar-width: none;
-  -ms-overflow-style: none; 
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  height: 70vh;
 }
 
 .appleTableContainer::-webkit-scrollbar {
-  display: none;
+  width: 8px;
+  height: 8px;
+}
+
+.appleTableContainer::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.appleTableContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.frame{
+  height: 100%;
+  padding: 28px;
+  border-radius: 0.7em;
 }
 
 .tableHeader {
   display: flex;
-  padding: 12px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  font-weight: 500;
-  font-size: 0.85rem;
-  backdrop-filter: blur(10px);
+  padding: 16px 25px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  font-weight: 600;
+  color: #2d3436;
   position: sticky;
   top: 0;
-  z-index: 10;
 }
 
 .tableRow {
   display: flex;
-  padding: 12px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  padding: 16px 25px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
   cursor: pointer;
   align-items: center;
-}
-
-.tableRow:last-child {
-  border-bottom: none;
+  background: #ffffff;
+  min-height: 60px;
 }
 
 .tableRow:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: #f8faff;
 }
 
 .tableCell, .headerCell {
-  padding: 8px 12px;
-  display: flex;
-  align-items: center;
-  min-width: 0;
+  padding: 12px 15px;
+  font-size: 0.95rem;
+  color: #2d3436;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .headerCell {
-  font-weight: 500;
-  color: rgb(255, 255, 255);
+  color: #0070f3;
+  font-weight: 600;
 }
 
-.titleText {
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* Celdas con scroll interno */
+.cellWithScroll {
+  overflow-y: auto;
+  max-height: 60px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
 }
 
-/* Badges & Typography */
+.cellWithScroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.cellWithScroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+/* Badges con scroll */
 .typeBadges {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
-  color:#ffffff
+  gap: 8px;
+  max-height: 60px;
+  overflow-y: auto;
+  padding-right: 5px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+}
+
+.typeBadges::-webkit-scrollbar {
+  width: 4px;
+}
+
+.typeBadges::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
 }
 
 .typeBadge {
-  background: linear-gradient(to bottom, #0070f3, #0061d1);
+  background: #e0f2fe;
+  color: #0369a1;
   padding: 4px 10px;
-  border-radius: 10px;
-  font-size: 0.75rem;
-  border: none;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
   white-space: nowrap;
 }
 
+/* Estado vacío */
 .emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  padding: 50px;
   text-align: center;
-  padding: 40px 20px;
-  color: #868686;
-  font-size: 0.95rem;
 }
 
-/* Responsive */
+.emptyText {
+  font-size: 30px;
+  color: white;
+  margin-top: 20px;
+}
+
+/* ------------------------- */
+/* ESTILOS PARA MÓVIL (≤768px) */
+/* ------------------------- */
 @media (max-width: 768px) {
-  .controlsContainer {
-    padding: 10px;
-    gap: 10px;
+  .container {
+    padding: 15px;
   }
-  
+
+  .mainContainer {
+    padding: 15px;
+    height: auto;
+    min-height: calc(100vh - 30px);
+  }
+
+  .controlsContainer {
+    position: static;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px 0;
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .frame{
+    max-height: 100vh;
+    padding: 0;
+    border-radius: 0px;
+    background-color: var(--backgroundColor5);
+  }
+
+  .container {
+    background-color: var(--backgroundColor5);
+  }
+
   .leftControls {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .filterContainer {
-    margin-left: 0;
     width: 100%;
-    order: 2;
+    justify-content: space-between;
   }
-  
-  .appleTableContainer {
-    height: 60vh;
+
+  .appleSelect {
+    width: auto;
+    min-width: 150px;
   }
-  
-  .tableHeader,
+
+  .appleButton {
+    width: 100%;
+  }
+
+  .tableHeader {
+    display: none;
+  }
+
   .tableRow {
-    min-width: 800px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
+    gap: 10px;
+    position: relative;
   }
-  
-  .tableCell, .headerCell {
-    min-width: 120px;
+
+  .tableCell {
+    width: 100%;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    flex: none !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
+
+  .tableCell::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #0070f3;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .mobileScrollContent {
+    max-height: 100px;
+    overflow-y: auto;
+    width: 100%;
+    padding-right: 5px;
+  }
+
+  .typeBadges {
+    max-height: none;
+    overflow: visible;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 5px;
+  }
+
+  .emptyState {
+    padding: 30px 15px;
+  }
+
+  .emptyText {
+    font-size: 24px;
+  }
+}
+
+/* ------------------------- */
+/* ESTILOS PARA TABLET/DESKTOP (≥769px) */
+/* ------------------------- */
+@media (min-width: 769px) {
+  .desktop-frame {
+    display: block;
+  }
+
+  .mainContainer {
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+                0 20px 50px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Asignación de anchos para desktop */
+  .headerCell:nth-child(1),
+  .tableCell:nth-child(1) { flex: 3; }
+
+  .headerCell:nth-child(2),
+  .tableCell:nth-child(2) { flex: 2; }
+
+  .headerCell:nth-child(3),
+  .tableCell:nth-child(3) { flex: 2; }
+
+  .headerCell:nth-child(4),
+  .tableCell:nth-child(4),
+  .headerCell:nth-child(5),
+  .tableCell:nth-child(5) { flex: 1; }
+}
+
+/* Animaciones */
+.fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.titleText {
+  font-weight: 600;
+  color: #0070f3;
 }

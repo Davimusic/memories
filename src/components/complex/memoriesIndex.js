@@ -137,95 +137,101 @@ const MemoriesIndex = () => {
   }
 
   return (
-    <div className={`${styles.container} ${styles.fadeIn} fullscreen-floating color1 mainFont`}>
-      <Menu 
-        isOpen={isMenuOpen} 
-        onClose={() => setIsMenuOpen(false)} 
-        className="backgroundColor1 mainFont"
-      />
-  
-      <div className={styles.controlsContainer}>
-        <div className={styles.leftControls}>
-          <MenuIcon size={30} onClick={() => setIsMenuOpen(true)} />
-          {filteredMemories.length > 0 && (
-            <div className={styles.filterContainer}>
-              <label htmlFor="sort">Sort by:</label>
-              <select className={styles.appleSelect} value={sortType} onChange={handleSortChange}>
-                <option value="alphabetical">Name</option>
-                <option value="creationDate">Creation Date</option>
-                <option value="lastModified">Last Modified</option>
-              </select>
-            </div>
-          )}
-        </div>
-        <div
-          className={`mainFont ${styles.appleButton} ${filteredMemories.length === 0 ? styles.highlightButton : ''}`}
-          onClick={handleCreateMemory}
-        >
-          New Memory
-        </div>
-      </div>
-  
-      {filteredMemories.length === 0 ? (
-        <div className={styles.emptyState}>
-          <MemoryLogo size={300} />
-          <p style={{fontSize: '30px', color: 'white'}}>No memories found. Click "New Memory" to create one.</p>
-        </div>
-      ) : (
-        <div className={`${styles.appleTableContainer}`}>
-          <div className={`${styles.tableHeader} backgroundColor2 title-sm`}>
-            <div className={styles.headerCell} style={{ flex: 3 }}>Name</div>
-            <div className={styles.headerCell} style={{ flex: 2 }}>Description</div>
-            <div className={styles.headerCell} style={{ flex: 2 }}>Types</div>
-            <div className={styles.headerCell} style={{ flex: 1 }}>Created</div>
-            <div className={styles.headerCell} style={{ flex: 1 }}>Modified</div>
+    <>
+      {/* Marco para tablet/desktop */}
+      
+      
+      <div className={`${styles.container} ${styles.fadeIn} fullscreen-floating color1 mainFont`}>
+      <div className={`backgroundColor5 ${styles.frame}`} >
+        <Menu 
+          isOpen={isMenuOpen} 
+          onClose={() => setIsMenuOpen(false)} 
+          className="backgroundColor1 mainFont"
+        />
+    
+        <div className={styles.controlsContainer}>
+          <div className={styles.leftControls}>
+            <MenuIcon size={30} onClick={() => setIsMenuOpen(true)} />
+            {filteredMemories.length > 0 && (
+              <div className={styles.filterContainer}>
+                <label htmlFor="sort">Sort by:</label>
+                <select className={styles.appleSelect} value={sortType} onChange={handleSortChange}>
+                  <option value="alphabetical">Name</option>
+                  <option value="creationDate">Creation Date</option>
+                  <option value="lastModified">Last Modified</option>
+                </select>
+              </div>
+            )}
           </div>
-  
-          {filteredMemories.map(([memoryTitle, details], index) => (
-            <div
-              key={index}
-              className={styles.tableRow}
-              style={{
-                backgroundColor: index % 2 === 0 
-                  ? '#33333377'  
-                  : 'none'  
-              }}
-              onClick={() => router.push(`/memories/${encodeURIComponent(memoryTitle)}`)}
-            >
-              <div className={styles.tableCell} style={{ flex: 3 }}>
-                <span className={styles.titleText}>{memoryTitle}</span>
-              </div>
-              <div className={styles.tableCell} style={{ flex: 2 }}>
-                {details.metadata?.descripcion || "—"}
-              </div>
-              <div className={styles.tableCell} style={{ flex: 2 }}>
-                <div className={styles.typeBadges}>
-                  {Object.entries(details)
-                    .filter(([key, value]) => Array.isArray(value) && value.length > 0)
-                    .map(([key, value]) => (
-                      <span key={key} className={styles.typeBadge}>
-                        {key.toUpperCase()} ({value.length})
-                      </span>
-                    ))}
+          <div
+            className={`mainFont ${styles.appleButton} ${filteredMemories.length === 0 ? styles.highlightButton : ''}`}
+            onClick={handleCreateMemory}
+          >
+            New Memory
+          </div>
+        </div>
+    
+        {filteredMemories.length === 0 ? (
+          <div className={styles.emptyState}>
+            <MemoryLogo size={300} />
+            <p className={styles.emptyText}>No memories found. Click "New Memory" to create one.</p>
+          </div>
+        ) : (
+          <div className={styles.appleTableContainer}>
+            <div className={`${styles.tableHeader} backgroundColor1 title-sm`}>
+              <div className={styles.headerCell} style={{ flex: 3 }}>Name</div>
+              <div className={styles.headerCell} style={{ flex: 2 }}>Description</div>
+              <div className={styles.headerCell} style={{ flex: 2 }}>Types</div>
+              <div className={styles.headerCell} style={{ flex: 1 }}>Created</div>
+              <div className={styles.headerCell} style={{ flex: 1 }}>Modified</div>
+            </div>
+    
+            {filteredMemories.map(([memoryTitle, details], index) => (
+              <div
+                key={index}
+                className={styles.tableRow}
+                style={{
+                  backgroundColor: index % 2 === 0 ? '#00000042' : 'none'
+                }}
+                onClick={() => router.push(`/memories/${encodeURIComponent(memoryTitle)}`)}
+              >
+                <div className={`${styles.tableCell} ${styles.cellWithScroll}`} style={{ flex: 3 }}>
+                  <span className={styles.titleText}>{memoryTitle}</span>
+                </div>
+                <div className={`${styles.tableCell} ${styles.cellWithScroll}`} style={{ flex: 2 }}>
+                  <div className={styles.mobileScrollContent}>
+                    {details.metadata?.descripcion || "—"}
+                  </div>
+                </div>
+                <div className={styles.tableCell} style={{ flex: 2 }}>
+                  <div className={styles.typeBadges}>
+                    {Object.entries(details)
+                      .filter(([key, value]) => Array.isArray(value) && value.length > 0)
+                      .map(([key, value]) => (
+                        <span key={key} className={styles.typeBadge}>
+                          {key.toUpperCase()} ({value.length})
+                        </span>
+                      ))}
+                  </div>
+                </div>
+                <div className={styles.tableCell} style={{ flex: 1 }}>
+                  {details.metadata?.fecha_creacion 
+                    ? new Date(details.metadata.fecha_creacion).toLocaleDateString() 
+                    : "—"}
+                </div>
+                <div className={styles.tableCell} style={{ flex: 1 }}>
+                  {details.metadata?.ultima_modificacion 
+                    ? new Date(details.metadata.ultima_modificacion).toLocaleDateString() 
+                    : "—"}
                 </div>
               </div>
-              <div className={styles.tableCell} style={{ flex: 1 }}>
-                {details.metadata?.fecha_creacion 
-                  ? new Date(details.metadata.fecha_creacion).toLocaleDateString() 
-                  : "—"}
-              </div>
-              <div className={styles.tableCell} style={{ flex: 1 }}>
-                {details.metadata?.ultima_modificacion 
-                  ? new Date(details.metadata.ultima_modificacion).toLocaleDateString() 
-                  : "—"}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        )}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
-  
 };
 
 export default MemoriesIndex;
