@@ -29,7 +29,6 @@ import ToggleMute from '../complex/ToggleMute';
 
 
 
-const validQualities = [25, 50, 75, 100];
 
 
 
@@ -63,7 +62,6 @@ const Audio = ({
   currentTimeMedia,
   setVolumeMedia,
   volumeMedia,
-  // Se elimina qualityMedia y setQualityMedia, ya que no se usan más
   setIsRepeatMedia,
   isRepeatMedia,
   setIsShuffleMedia,
@@ -80,9 +78,9 @@ const Audio = ({
 
   const playAudio = () => {
     if (audioRef.current) {
-      audioRef.current.play().catch((error) => {
-        console.error("Error al reproducir el audio:", error);
-      });
+      audioRef.current
+        .play()
+        .catch((error) => console.error("Error al reproducir el audio:", error));
       setIsPlaying(true);
     }
   };
@@ -133,19 +131,38 @@ const Audio = ({
   };
 
   return (
-    <div className="backgroundColor2 audioPlayerContent">
-      {/* Barra superior de controles */}
-      <div className="flexContainer">
+    <div className="audioPlayerContent">
+      {/* Fila superior: Barra de progreso y botón de mute */}
+      <div className="top-row">
+        <div className="audio-progress">
+          <span className="time-text">{currentTimeMedia.toFixed(2)}</span>
+          <input
+            type="range"
+            min="0"
+            max={duration || 100}
+            value={currentTimeMedia}
+            onChange={(e) => setCurrentTimeMedia(Number(e.target.value))}
+            className="seek-slider backgroundColor5"
+          />
+          <span className="time-text">{duration.toFixed(2)}</span>
+        </div>
+        <div className="mute-control">
+          <ToggleMute
+            size={30}
+            isMuted={isMutedMedia}
+            onToggle={() => setIsMutedMedia(!isMutedMedia)}
+          />
+        </div>
+      </div>
+
+      {/* Fila inferior: Controles restantes */}
+      <div className="bottom-row">
         <MenuIcon onClick={() => setIsMenuOpen(!isMenuOpen)} />
         <DownloadIcon
           size={30}
           isOpen={isContentVisible}
           onToggle={toggleContentVisibility}
         />
-      </div>
-
-      {/* Controles de reproducción */}
-      <div className="mediaControlContainer">
         <TogglePlayPause
           size={30}
           isPlaying={isPlaying}
@@ -166,38 +183,6 @@ const Audio = ({
         <QualityIcon size={30} onClick={() => console.log("Abrir modal de calidad")} />
       </div>
 
-      {/* Barra de progreso */}
-      <div className="audioControlContainer">
-        <span style={{ color: "white" }}>{currentTimeMedia.toFixed(2)}</span>
-        <input
-          type="range"
-          min="0"
-          max={duration || 100}
-          value={currentTimeMedia}
-          onChange={(e) => setCurrentTimeMedia(Number(e.target.value))}
-          className="seek-slider backgroundColor5"
-        />
-        <span style={{ color: "white" }}>{duration.toFixed(2)}</span>
-      </div>
-
-      {/* Controles de volumen */}
-      <div className="volume-controls">
-        <ToggleMute
-          size={30}
-          isMuted={isMutedMedia}
-          onToggle={() => setIsMutedMedia(!isMutedMedia)}
-        />
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={isMutedMedia ? 0 : volumeMedia}
-          onChange={(e) => setVolumeMedia(Number(e.target.value))}
-          className="volume-slider backgroundColor5"
-        />
-      </div>
-
       {/* Elemento de audio */}
       <audio
         ref={audioRef}
@@ -214,11 +199,58 @@ const Audio = ({
       >
         Tu navegador no admite el elemento de audio.
       </audio>
+
+      {/* Estilos integrados en el componente */}
+      <style>{`
+        .audioPlayerContent {
+          width: 100%;
+          max-width: 100vw;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          background-color: #2c2c2c;
+          padding: 1rem;
+          box-sizing: border-box;
+        }
+        .top-row,
+        .bottom-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+        }
+        .top-row {
+          margin-bottom: 1rem;
+        }
+        .audio-progress {
+          flex: 1;
+          display: flex;
+          align-items: center;
+        }
+        .audio-progress .time-text {
+          color: white;
+          margin: 0 0.5rem;
+        }
+        .audio-progress .seek-slider {
+          flex: 1;
+        }
+        .mute-control {
+          margin-left: 1rem;
+        }
+        .bottom-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+      `}</style>
     </div>
   );
 };
 
 export default Audio;
+
 
 
 

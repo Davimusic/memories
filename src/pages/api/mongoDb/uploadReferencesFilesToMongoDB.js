@@ -1,4 +1,4 @@
-import { connectToDatabase } from '../connectToDatabase';
+import clientPromise from '../connectToDatabase';
 
 export default async function handler(req, res) {
   try {
@@ -57,8 +57,8 @@ export default async function handler(req, res) {
     }
 
     // 5. Conexión a MongoDB
-    const db = await connectToDatabase();
-    if (!db) throw new Error("Error de conexión a MongoDB");
+    const client = await clientPromise;
+    const db = client.db('goodMemories');
     const collection = db.collection('MemoriesCollection');
 
     // 6. Preparar la actualización del documento para preservar el historial
@@ -101,7 +101,7 @@ export default async function handler(req, res) {
         }
       }
     });
-
+    
   } catch (error) {
     console.error('Error en el backend:', {
       error: error.message,

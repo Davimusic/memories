@@ -1,5 +1,4 @@
-// pages/api/mongoDb/getMemoryDetail.js
-import { connectToDatabase } from '../connectToDatabase';
+import clientPromise from '../connectToDatabase';
 
 export default async function handler(req, res) {
   try {
@@ -22,9 +21,9 @@ export default async function handler(req, res) {
     const transformUserId = (userId) => userId.replace(/[@.]/g, '_');
     const transformedUserId = transformUserId(userId);
 
-    // Conectar a la base de datos.
-    const db = await connectToDatabase();
-    if (!db) throw new Error("Error de conexión a MongoDB");
+    // Obtener la conexión reutilizada.
+    const client = await clientPromise;
+    const db = client.db('goodMemories');
 
     const collection = db.collection('MemoriesCollection');
     const doc = await collection.findOne({ _id: "globalMemories" });

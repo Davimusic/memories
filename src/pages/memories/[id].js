@@ -8,17 +8,6 @@ import '../../estilos/general/general.css'
 import Menu from '../../components/complex/menu';
 import MenuIcon from '../../components/complex/menuIcon';
 import SpinnerIcon from '@/components/complex/spinnerIcon';
-
-
-
-
-
-
-
-
-
-
-
 import Video from '../../components/simple/video';
 import Audio from '../../components/simple/audio';
 import ImageSlider from '../../components/complex/imageSlider';
