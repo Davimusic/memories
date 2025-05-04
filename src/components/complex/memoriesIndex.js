@@ -174,7 +174,7 @@ const MemoriesIndex = () => {
         {filteredMemories.length === 0 ? (
           <div className={styles.emptyState}>
             <MemoryLogo size={300} />
-            <p className={styles.emptyText}>No memories found. Click "New Memory" to create one.</p>
+            <p className={`${styles.emptyText} color2`}>No memories found. Click "New Memory" to create one.</p>
           </div>
         ) : (
           <div className={styles.appleTableContainer}>

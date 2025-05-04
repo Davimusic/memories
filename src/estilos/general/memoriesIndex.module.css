@@ -248,6 +248,21 @@
   margin-top: 20px;
 }
 
+.loading {
+  position: fixed; /* Hace que sea flotante y permanezca en su lugar */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  gap: 20px;
+  z-index: 9999; /* Asegura que esté por encima de otros elementos */
+}
+
 /* ------------------------- */
 /* ESTILOS PARA MÓVIL (≤768px) */
 /* ------------------------- */
