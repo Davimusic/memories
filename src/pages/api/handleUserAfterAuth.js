@@ -1,5 +1,5 @@
 import { getAuth } from 'firebase-admin/auth';
-import { connectToDatabase } from './connectToDatabase';
+import { clientPromise } from './connectToDatabase';
 import admin from 'firebase-admin';
 
 // Inicializar Firebase Admin SDK
@@ -17,7 +17,7 @@ if (!admin.apps.length) {
 }
 
 export default async function handleUserAfterAuth(req, res) {
-  const db = await connectToDatabase();
+  const db = await clientPromise();
   const collection = db.collection('users'); // Colección principal
   const { uid, email, authType } = req.body; // Recibir datos del frontend
 
