@@ -63,6 +63,7 @@ const MemoriesIndex = () => {
       })
       .then((data) => {
         if (data.success) {
+          console.log(data);
           setMemoriesState(data.memories);
         } else {
           throw new Error("Error fetching memories");

@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
 import '../../estilos/general/fileUploader.css'
 '../../estilos/general/general.css'
 import '../../app/globals.css'
@@ -127,7 +126,7 @@ const FileUploader = ({ userId, onUploadComplete, onClose }) => {
         formData.append('fileType', fileType);
   
         files[fileType].forEach(fileObj => {
-          formData.append('file', fileObj.file); // Changed from 'file' to 'files' to match typical multi-file upload convention
+          formData.append('file', fileObj.file); 
         });
   
         const response = await fetch('/api/blackBlaze/uploadFilesToBackBlaze', {
@@ -140,22 +139,31 @@ const FileUploader = ({ userId, onUploadComplete, onClose }) => {
         }
   
         const result = await response.json();
+        console.log(result);
+  
+        // Extraemos solo la propiedad uploadedFiles
+        const { uploadedFiles } = result;
+  
+        // Verificamos que uploadedFiles sea un array; en caso de recibir un único objeto lo envolvemos.
+        const archivos = Array.isArray(uploadedFiles) ? uploadedFiles : [uploadedFiles];
         
-        // Check if result is an array (for multiple files) or a single object
-        const uploadedFiles = Array.isArray(result) ? result : [result];
-        
-        uploadedFiles.forEach(uploadedFile => {
+        archivos.forEach(uploadedFile => {
+          // Asegurarse de que memoryData[memoryTitle] y memoryData[memoryTitle][fileType] existan.
           memoryData[memoryTitle][fileType].push({
             file_name: uploadedFile.file_name || uploadedFile.originalFilename,
             storage_path: uploadedFile.storage_path || uploadedFile.finalFileName,
             metadata: {
               fecha_subida: new Date().toISOString(),
-              formato: uploadedFile.metadata?.formato || uploadedFile.file_name?.split('.').pop() || 'unknown',
+              formato:
+                uploadedFile.metadata?.formato ||
+                uploadedFile.file_name?.split('.').pop() ||
+                'unknown',
               size: uploadedFile.metadata?.size || '0MB'
             }
           });
         });
       }
+      console.log(memoryData);
   
       const mongoResponse = await fetch('/api/mongoDb/uploadReferencesFilesToMongoDB', {
         method: 'POST',
@@ -183,6 +191,7 @@ const FileUploader = ({ userId, onUploadComplete, onClose }) => {
       setIsUploading(false);
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();

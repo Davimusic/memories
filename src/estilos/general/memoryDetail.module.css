@@ -7,6 +7,11 @@
     justify-content: center;
   }
 
+  .audioPlayerWrapper {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+  }
 
   .loading {
     position: fixed; /* Hace que sea flotante y permanezca en su lugar */
@@ -26,9 +31,9 @@
 
   
   .backgroundWrapper {
-    width: 100%;
+    width: 100vw;
     min-height: 100vh;
-    padding: 30px;
+    
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -289,7 +294,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(39, 39, 39);
     border-radius: 8px;
   }
   

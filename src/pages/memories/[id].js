@@ -10,6 +10,7 @@ import MenuIcon from '../../components/complex/menuIcon';
 import SpinnerIcon from '@/components/complex/spinnerIcon';
 import Video from '../../components/simple/video';
 import Audio from '../../components/simple/audio';
+import AudioPlayer from '@/components/complex/audioPlayer';
 import ImageSlider from '../../components/complex/imageSlider';
 
 
@@ -270,6 +271,8 @@ const MemoryDetail = () => {
 
   const { metadata } = memoryData || {};
 
+  
+
   return (
     <div className={styles.fullscreenContainer}>
       <div className={styles.backgroundWrapper}>
@@ -412,49 +415,18 @@ const MemoryDetail = () => {
               )}
 
               {mediaType === 'audio' && (
-                <Audio
-                  src={selectedMedia}
-                  allMusicProyects={mediaState.content}
-                  currentIndex={mediaState.currentIndex}
-                  setCurrentIndex={(val) => setMediaState(prev => ({ ...prev, currentIndex: val }))}
-                  setContent={(content) => setMediaState(prev => ({ ...prev, content }))}
-                  isFirstTimeLoading={false}
-                  tags={mediaState.tags}
-                  setTags={(tags) => setMediaState(prev => ({ ...prev, tags }))}
-                  isMenuOpen={mediaState.isMenuOpen}
-                  toggleMenu={() => setMediaState(prev => ({ ...prev, isMenuOpen: !prev.isMenuOpen }))}
-                  content={mediaState.content}
-                  isContentVisible={mediaState.isContentVisible}
-                  toggleContentVisibility={() => setMediaState(prev => ({ 
-                    ...prev, 
-                    isContentVisible: !prev.isContentVisible 
-                  }))}
-                  componentInUse={mediaState.componentInUse}
-                  setComponentInUse={(comp) => setMediaState(prev => ({ ...prev, componentInUse: comp }))}
-                  currentTimeMedia={mediaState.currentTimeMedia}
-                  setCurrentTimeMedia={(time) => setMediaState(prev => ({ ...prev, currentTimeMedia: time }))}
-                  volumeMedia={mediaState.volumeMedia}
-                  setVolumeMedia={(vol) => setMediaState(prev => ({ ...prev, volumeMedia: vol }))}
-                  qualityMedia={mediaState.qualityMedia}
-                  setQualityMedia={(quality) => setMediaState(prev => ({ ...prev, qualityMedia: quality }))}
-                  isRepeatMedia={mediaState.isRepeatMedia}
-                  setIsRepeatMedia={(repeat) => setMediaState(prev => ({ ...prev, isRepeatMedia: repeat }))}
-                  isShuffleMedia={mediaState.isShuffleMedia}
-                  setIsShuffleMedia={(shuffle) => setMediaState(prev => ({ ...prev, isShuffleMedia: shuffle }))}
-                  isMutedMedia={mediaState.isMutedMedia}
-                  setIsMutedMedia={(muted) => setMediaState(prev => ({ ...prev, isMutedMedia: muted }))}
-                  isModalOpen={mediaState.isModalOpen}
-                  openQualityModal={() => setMediaState(prev => ({ ...prev, isModalOpen: true }))}
-                  isLike={mediaState.isLike}
-                  setIsLike={(like) => setMediaState(prev => ({ ...prev, isLike: like }))}
-                  isHybridView={mediaState.isHybridView}
-                />
+                <div className={styles.audioPlayerWrapper}>
+                  <AudioPlayer 
+                    audioFiles={mediaState.content}
+                    className={styles.customAudioPlayer}
+                  />
+                </div>
               )}
 
               {mediaType === 'image' && (
                 <ImageSlider
                   images={mediaState.content.map(item => item.src)}
-                  currentIndex={mediaState.currentIndex}
+                  initialCurrentIndex={mediaState.currentIndex}
                   onIndexChange={(index) => setMediaState(prev => ({ ...prev, currentIndex: index }))}
                   controls={{
                     showPrevious: true,

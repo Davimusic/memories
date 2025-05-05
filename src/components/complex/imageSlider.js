@@ -9,6 +9,7 @@ import SpinnerIcon from "./spinnerIcon";
 import PropTypes from 'prop-types';
 import "../../estilos/general/imageSlider.css";
 import "../../estilos/general/general.css";
+import { log } from "tone/build/esm/core/util/Debug";
 
 
 
@@ -38,8 +39,13 @@ const ImageSlider = ({
   showControls = false,
   initializeAutomatically = false,
   style = {},
+  initialCurrentIndex = 0
 }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  console.log(images);
+  
+
+
+  const [currentIndex, setCurrentIndex] = useState(initialCurrentIndex);
   const [isPlaying, setIsPlaying] = useState(initializeAutomatically);
   const [modalOpen, setModalOpen] = useState(false);
   const [isShuffle, setIsShuffle] = useState(false);
