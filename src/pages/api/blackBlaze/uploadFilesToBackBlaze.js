@@ -69,7 +69,9 @@ export default async function handler(req, res) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 
     // Prepare storage path according to your model
+    //const folderPath = `user_uploads/${userId}/${memoryTitle}/${fileType}`;
     const folderPath = `user_uploads/${userId}/${memoryTitle}/${fileType}`;
+
 
     let filesArray = [];
     if (files.file) {

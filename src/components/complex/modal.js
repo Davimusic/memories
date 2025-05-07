@@ -67,7 +67,7 @@ const Modal = ({ isOpen, onClose, children, style, className }) => {
       <div
         className={`${className} borderRadius1`}
         style={{
-          backgroundColor: '#000000bd',
+          backgroundColor: 'white',
           ...style,
           padding: '0',
           borderRadius: '8px',
@@ -85,11 +85,12 @@ const Modal = ({ isOpen, onClose, children, style, className }) => {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{
+        <div 
+        className='backgroundColor1'
+        style={{
           position: 'sticky',
           top: 0,
           zIndex: 2,
-          background: '#000000bd',
           padding: '5px 15px',
           minHeight: '40px',
           display: 'flex',

@@ -381,6 +381,7 @@ textarea.text-input {
 /* Responsive Design */
 @media (max-width: 768px) {
   .uploader-content {
+    gap: 0;
     flex-direction: column;
   }
 

@@ -9,12 +9,12 @@ import RepeatButton from '@/components/complex/RepeatButton';
 import NextBeforeIcon from '@/components/complex/nextBeforeIcon';
 import ToggleMute from '@/components/complex/ToggleMute';
 
-export default function AudioPlayer({ audioFiles = [] }) {
+export default function AudioPlayer({ audioFiles = [], currentIndex = 0 }) {
     console.log(audioFiles);
     
   const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(currentIndex);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);

@@ -1,0 +1,231 @@
+/* Componente File Uploader - Estilos Específicos */
+.fullscreen-floating {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+    padding: 20px;
+  }
+  
+  .file-uploader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centra completamente */
+    width: 95%;
+    max-width: 1200px;
+    min-height: 70vh;
+    padding: 20px;
+    margin: 0; /* No es necesario margen cuando está flotando */
+    border-radius: 0.7em;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    background-color: var(--backgroundColor5);
+  }
+  
+  
+  .uploader-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    padding: 1.5rem;
+    height: 60vh;
+  }
+  
+  /* Sección de Permisos */
+  .permission-details {
+    padding: 1.5rem;
+    
+    margin-top: 1rem;
+    
+  }
+  
+  .permission-item {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color4);
+  }
+  
+  .permission-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+    color: var(--color2);
+  }
+  
+  .permission-value {
+    display: block;
+    padding: 0.6rem;
+    font-size: 0.95rem;
+    
+    color: var(--color5);
+  }
+  
+  .permission-value.allowed {
+    color: #2ecc71; /* Verde para permitido */
+    font-weight: 600;
+  }
+  
+  .permission-value.denied {
+    color: #e74c3c; /* Rojo para denegado */
+    font-weight: 600;
+  }
+  
+  /* Sección de Formulario */
+  .form-column {
+    height: 100%;
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+  
+  .memory-form {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .file-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .file-section-container {
+    padding: 1rem;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .section-header h3 {
+    margin: 0;
+    color: var(--color2);
+    font-size: 1.1rem;
+  }
+  
+  /* Botones */
+  .add {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background-color: var(--color3);
+    color: white;
+    border: none;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  
+  .add:hover {
+    opacity: 0.9;
+  }
+  
+  .submit-btn {
+    padding: 1rem;
+    margin-top: auto;
+    align-self: flex-start;
+    background-color: var(--color4);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .submit-btn:hover {
+    background-color: var(--color3);
+  }
+  
+  .submit-btn:disabled {
+    background-color: var(--backgroundColor1);
+    cursor: not-allowed;
+  }
+  
+  /* Preview Items */
+  .preview-item img,
+  .preview-item video {
+    height: 180px;
+    object-fit: cover;
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .section-controls {
+    display: flex;
+    gap: 20px;
+  }
+
+  .counter-label{
+    margin-left: 20px;
+  }
+
+  .submitButton {
+    background: #2ecc71;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    
+    transition: background-color 0.2s;
+    box-sizing: border-box;
+  }
+  
+  .submitButton:hover {
+    background: #27ae60;
+  }
+  
+  .submitButton:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+  }
+  
+  .title{
+    display: flex;
+    justify-content: center; 
+    width: 100%;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .uploader-content {
+      grid-template-columns: 1fr;
+      padding: 0;
+      margin: 0;
+    }
+
+    .form-column {
+        height: 40vh;
+      }
+    
+    .file-section-container{
+        background-color: #27ae60;
+    }
+    
+    
+    
+    .file-uploader {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 10px;
+      box-sizing: border-box;
+      border-radius: 0;
+    }
+  }
+  
+  /* Animaciones */
+  @keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .preview-modal {
+    animation: modalFadeIn 0.3s ease forwards;
+  }

@@ -18,6 +18,7 @@ import BackgroundGeneric from './backgroundGeneric';
 
 
 
+
 const MemoriesIndex = () => {
   const router = useRouter();
 
@@ -35,6 +36,9 @@ const MemoriesIndex = () => {
 
   useEffect(() => {
     const storedEmail = localStorage.getItem("userEmail");
+    //localStorage.removeItem('userEmail');
+    console.log(storedEmail);
+    
     if (!storedEmail) {
       setUserEmail(null);
       setLoading(false);
@@ -64,7 +68,9 @@ const MemoriesIndex = () => {
       .then((data) => {
         if (data.success) {
           console.log(data);
-          setMemoriesState(data.memories);
+          const { userInformation, ...actualMemories } = data.memories;
+          setMemoriesState(actualMemories);
+          //setMemoriesState(data.memories);
         } else {
           throw new Error("Error fetching memories");
         }
@@ -175,7 +181,7 @@ const MemoriesIndex = () => {
         {filteredMemories.length === 0 ? (
           <div className={styles.emptyState}>
             <MemoryLogo size={300} />
-            <p className={`${styles.emptyText} color2`}>No memories found. Click "New Memory" to create one.</p>
+            <p className={`${styles.emptyText} color1`}>No memories found. Click "New Memory" to create one.</p>
           </div>
         ) : (
           <div className={styles.appleTableContainer}>

@@ -6,11 +6,6 @@ import Menu from './menu';
 import MenuIcon from './menuIcon';
 import { useRouter } from 'next/router';
 
-
-
-
-
- 
 const FileUploader = ({ userId, onUploadComplete, onClose }) => {
   // States
   const [memoryTitle, setMemoryTitle] = useState('');

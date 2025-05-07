@@ -41,7 +41,7 @@ const ImageSlider = ({
   style = {},
   initialCurrentIndex = 0
 }) => {
-  console.log(images);
+  //console.log(images);
   
 
 

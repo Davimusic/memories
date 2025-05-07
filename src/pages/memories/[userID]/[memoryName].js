@@ -1,28 +1,22 @@
 // pages/memories/[id].js
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import styles from '../../estilos/general/memoryDetail.module.css'; // Asegúrate de tener o crear los estilos correspondientes
-import MemoryLogo from '../../components/complex/memoryLogo';
-import BackgroundGeneric from '../../components/complex/backgroundGeneric';
-import '../../estilos/general/general.css'
-import Menu from '../../components/complex/menu';
-import MenuIcon from '../../components/complex/menuIcon';
+import styles from '../../../estilos/general/memoryDetail.module.css'; // Asegúrate de tener o crear los estilos correspondientes
+import MemoryLogo from '../../../components/complex/memoryLogo';
+import BackgroundGeneric from '../../../components/complex/backgroundGeneric';
+import '../../../estilos/general/general.css'
+import Menu from '../../../components/complex/menu';
+import MenuIcon from '../../../components/complex/menuIcon';
 import SpinnerIcon from '@/components/complex/spinnerIcon';
-import Video from '../../components/simple/video';
-import Audio from '../../components/simple/audio';
+import Video from '../../../components/simple/video';
 import AudioPlayer from '@/components/complex/audioPlayer';
-import ImageSlider from '../../components/complex/imageSlider';
-
-
-
-
-
-
+import ImageSlider from '../../../components/complex/imageSlider';
+import Modal from '@/components/complex/modal';
 
 
 const MemoryDetail = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { userID, memoryName } = router.query; 
 
   // Estados principales
   const [userEmail, setUserEmail] = useState(null);
@@ -57,33 +51,46 @@ const MemoryDetail = () => {
 
   // Cache de medios
   const mediaCache = useRef(new Map());
+  let backBlazeRefs = useRef(null);
   const [isMainMenuOpen, setIsMainMenuOpen] = useState(false);
 
-  // Obtener datos de la memoria
-  useEffect(() => {
-    const fetchMemoryData = async () => {
-      const storedEmail = localStorage.getItem("userEmail");
-      if (!storedEmail) {
-        setError("Debes iniciar sesión");
-        setLoading(false);
-        return;
-      }
-      setUserEmail(storedEmail);
 
-      if (!id) return;
+
+
+  useEffect(() => {
+    console.log(memoryData);
+  }, []); 
+
+
+
+
+
+
+  useEffect(() => {
+    const fetchMemoryData = async () => {  
+      if (!userID || !memoryName) return;
 
       try {
+        /*const storedEmail = localStorage.getItem("userEmail");
+        if (!storedEmail) {
+          throw new Error("User email not found in localStorage");
+        }
+        setUserEmail(storedEmail);
+
+        // Transformar email para coincidir con rutas de Backblaze
+        const correoFormatted = storedEmail.replace(/[@.]/g, '_');*/
+
         const [mongoResponse, blackBlazeResponse] = await Promise.all([
           fetch("/api/mongoDb/postMemoryReferenceUser", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId: storedEmail, memoryTitle: id }),
+            body: JSON.stringify({ userID: userID, memoryTitle: memoryName }),
           }),
-          fetch(`/api/blackBlaze/getMemoryReferenceUser?correo=${storedEmail}&memoryTitle=${id}`)
+          fetch(`/api/blackBlaze/getMemoryReferenceUser?correo=${userID}&memoryTitle=${memoryName}`)
         ]);
 
         if (!mongoResponse.ok || !blackBlazeResponse.ok) {
-          throw new Error("Error al obtener datos de la memoria");
+          throw new Error("Error fetching data from services");
         }
 
         const [mongoData, blackBlazeData] = await Promise.all([
@@ -92,27 +99,53 @@ const MemoryDetail = () => {
         ]);
 
         if (mongoData.success && blackBlazeData.success) {
-          const formattedData = {
-            ...mongoData.memory,
-            backBlazeRefs: blackBlazeData.memories[id] || {},
+          const specificMemory = mongoData.memory;
+          const backBlazeMedia = blackBlazeData.memories[memoryName] || { fotos: [], videos: [], audios: [] };
+
+          // Función para combinar datos de MongoDB y Backblaze
+          const transformMediaWithUrl = (mongoMedia, backBlazeFiles) => {
+            return mongoMedia.map(item => {
+              const bbFile = backBlazeFiles.find(f => f.fileName === item.storage_path);
+              return {
+                ...item,
+                url: bbFile?.url || '#', // Usar URL de Backblaze
+              };
+            });
           };
 
-          // Precargar miniaturas
+          const formattedData = {
+            ...specificMemory,
+            backBlazeRefs: {
+              photos: transformMediaWithUrl(specificMemory.media.photos, backBlazeMedia.fotos),
+              videos: transformMediaWithUrl(specificMemory.media.videos, backBlazeMedia.videos),
+              audios: transformMediaWithUrl(specificMemory.media.audios, backBlazeMedia.audios),
+              documents: transformMediaWithUrl(specificMemory.media.documents, [])
+            }
+          };
+
+          // Precargar medios para cache
           Object.entries(formattedData.backBlazeRefs).forEach(([folderName, files]) => {
             files.forEach(file => {
               if (!mediaCache.current.has(file.url)) {
-                const media = folderName === 'fotos' ? new Image() : document.createElement(folderName === 'videos' ? 'video' : 'audio');
-                media.src = file.url;
-                media.onload = () => mediaCache.current.set(file.url, true);
-                media.onerror = () => mediaCache.current.set(file.url, false);
+                let media;
+                if (folderName === 'photos') {
+                  media = new Image();
+                  media.onload = () => mediaCache.current.set(file.url, true);
+                  media.onerror = () => mediaCache.current.set(file.url, false);
+                } else if (folderName === 'videos') {
+                  media = document.createElement('video');
+                  media.preload = 'metadata';
+                  media.onloadeddata = () => mediaCache.current.set(file.url, true);
+                  media.onerror = () => mediaCache.current.set(file.url, false);
+                  media.load();
+                }
+                if (media) media.src = file.url;
               }
             });
           });
 
           setMemoryData(formattedData);
           setLoading(false);
-        } else {
-          throw new Error("Error en los datos recibidos");
         }
       } catch (err) {
         setError(err.message);
@@ -121,7 +154,9 @@ const MemoryDetail = () => {
     };
 
     fetchMemoryData();
-  }, [id]);
+  }, [userID, memoryName]);
+
+
 
   const handleFolderClick = async (folderName) => {
     setFolderLoadingStates(prev => ({ ...prev, [folderName]: true }));
@@ -157,14 +192,15 @@ const MemoryDetail = () => {
     const mediaTypeMap = {
       'videos': 'video',
       'audios': 'audio',
-      'fotos': 'image'
+      'photos': 'image'
     };
     
     setMediaType(mediaTypeMap[folderName] || 'image');
     
     const mediaContent = files.map(file => ({
       src: file.url,
-      type: mediaTypeMap[folderName],
+      //type: mediaTypeMap[folderName],
+      type: mediaTypeMap[folderName], // Usar el mapeo actualizado
       fileName: file.fileName,
       cached: file.cached
     }));
@@ -202,7 +238,7 @@ const MemoryDetail = () => {
           </div>
         )}
         
-        {folderName === "fotos" ? (
+        {folderName === "photos" ? (
           <div className={styles.imagePreview}>
             <img 
               src={isCached ? file.url : '/placeholder-image.jpg'} 
@@ -218,7 +254,19 @@ const MemoryDetail = () => {
         ) : folderName === "videos" ? (
           <div className={styles.videoPreview}>
             {isCached ? (
-              <video src={file.url} muted playsInline preload="metadata" />
+              <video 
+                src={file.url} 
+                muted 
+                playsInline 
+                preload="metadata"
+                onLoadedData={(e) => {
+                  // Forzar actualización de caché si es necesario
+                  if (!mediaCache.current.has(file.url)) {
+                    mediaCache.current.set(file.url, true);
+                  }
+                }}
+                style={{ display: 'block', width: '100%', height: '100%' }}
+              />
             ) : (
               <img src="/video-placeholder.jpg" alt="Video loading" />
             )}
@@ -227,7 +275,7 @@ const MemoryDetail = () => {
         ) : folderName === "audios" ? (
           <div className={styles.audioPreview}>
             <div className={styles.audioIcon}>🎵</div>
-            <span>{file.fileName.split('_').pop()}</span>
+            {/*<span>{file.fileName.split('_').pop()}</span>*/}
           </div>
         ) : (
           <div className={styles.filePreview}>
@@ -264,7 +312,7 @@ const MemoryDetail = () => {
     );
   }
 
-  const backBlazeRefs = memoryData?.backBlazeRefs || {};
+  backBlazeRefs = memoryData?.backBlazeRefs || {};
   const foldersWithContent = Object.keys(backBlazeRefs).filter(
     (folderName) => Array.isArray(backBlazeRefs[folderName]) && backBlazeRefs[folderName].length > 0
   );
@@ -291,7 +339,7 @@ const MemoryDetail = () => {
               </div>
               <textarea
                 className={`${styles.memoryTitle} title-xl`}
-                value={id || "No title available"}
+                value={userID || "No title available"}
                 readOnly
                 rows={2}
               />
@@ -417,6 +465,7 @@ const MemoryDetail = () => {
               {mediaType === 'audio' && (
                 <div className={styles.audioPlayerWrapper}>
                   <AudioPlayer 
+                    currentIndex={mediaState.currentIndex}
                     audioFiles={mediaState.content}
                     className={styles.customAudioPlayer}
                   />
@@ -448,10 +497,4 @@ const MemoryDetail = () => {
 };
 
 export default MemoryDetail;
-
-
-
-
-
-
 

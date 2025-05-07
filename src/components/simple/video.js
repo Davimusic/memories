@@ -1,48 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
-
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import '../../estilos/music/video.css';
-
 import TogglePlayPause from '../complex/TogglePlayPause';
-
-
-
-
-
-
-
-
-
-
-
-
 import DownloadIcon from '../complex/downloadIcon';
-
 import HeartIcon from '../complex/heartIcon';
 import ShuffleButton from '../complex/ShuffleButton';
 import RepeatButton from '../complex/RepeatButton';
 import NextBeforeIcon from '../complex/nextBeforeIcon';
 import QualityIcon from '../complex/ToggleIcon';
 import ToggleMute from '../complex/ToggleMute';
-
 import RangeInput from '../complex/rangeInput';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import SpinnerIcon from '../complex/spinnerIcon';
 
 
 
@@ -88,6 +55,27 @@ const Video = ({
   const [isHovering, setIsHovering] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [autoPlayNext, setAutoPlayNext] = useState(false);
+  const [blurredBackground, setBlurredBackground] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const updateBlurredBackground = useCallback(() => {
+    if (!videoRef.current || videoRef.current.readyState < 2) return;
+    
+    const canvas = document.createElement('canvas');
+    const video = videoRef.current;
+    const width = video.videoWidth || 640;
+    const height = video.videoHeight || 360;
+    
+    canvas.width = width;
+    canvas.height = height;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, width, height);
+    ctx.filter = 'blur(20px)';
+    ctx.drawImage(canvas, 0, 0, width, height);
+    
+    setBlurredBackground(canvas.toDataURL());
+  }, []);
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -130,15 +118,34 @@ const Video = ({
   useEffect(() => {
     if (videoRef.current && srcs.length > 0) {
       const handleCanPlay = () => {
+        if (!videoRef.current) return;
         const { videoWidth, videoHeight } = videoRef.current;
         setVideoDimensions({ width: videoWidth, height: videoHeight });
+        updateBlurredBackground();
       };
+
+      const handleSourceChange = () => {
+        if (videoRef.current.src !== srcs[currentIndex]) {
+          setIsLoading(true);
+          videoRef.current.src = srcs[currentIndex];
+        }
+      };
+
       videoRef.current.addEventListener('canplay', handleCanPlay);
+      videoRef.current.addEventListener('loadeddata', updateBlurredBackground);
+      videoRef.current.addEventListener('waiting', () => setIsLoading(true));
+      videoRef.current.addEventListener('playing', () => setIsLoading(false));
+      
+      handleSourceChange();
+
       return () => {
         videoRef.current?.removeEventListener('canplay', handleCanPlay);
+        videoRef.current?.removeEventListener('loadeddata', updateBlurredBackground);
+        videoRef.current?.removeEventListener('waiting', () => setIsLoading(true));
+        videoRef.current?.removeEventListener('playing', () => setIsLoading(false));
       };
     }
-  }, [srcs, currentIndex]);
+  }, [srcs, currentIndex, updateBlurredBackground]);
 
   const playVideo = () => {
     if (srcs.length === 0) return;
@@ -179,7 +186,6 @@ const Video = ({
       ? Math.floor(Math.random() * srcs.length)
       : (currentIndex + 1) % srcs.length;
     
-    // Si es el mismo video (puede pasar en shuffle)
     if (nextIndex === currentIndex) {
       videoRef.current.currentTime = 0;
       playVideo();
@@ -203,8 +209,8 @@ const Video = ({
   const handleLoadedMetadata = () => {
     setDuration(videoRef.current.duration);
     setIsLoadingMedia?.(false);
+    setIsLoading(false);
     
-    // Reproducir automáticamente cuando está listo
     if (autoPlayNext) {
       playVideo();
       setAutoPlayNext(false);
@@ -312,7 +318,9 @@ const Video = ({
         width: '100%', 
         height: '100%', 
         overflow: 'hidden',
-        backgroundColor: '#000'
+        background: blurredBackground 
+          ? `url(${blurredBackground}) center/cover` 
+          : '#000'
       }}
       onClick={(e) => {
         if (e.target === videoContainerRef.current || e.target === videoRef.current) {
@@ -332,18 +340,30 @@ const Video = ({
             position: 'absolute',
             top: '50%',
             left: '50%',
-            transform: 'translate(-50%, -50%)'
+            transform: 'translate(-50%, -50%)',
+            zIndex: 2
           }}
           onEnded={handleEnded}
           onLoadedMetadata={handleLoadedMetadata}
           onTimeUpdate={() => setCurrentTimeMedia(videoRef.current?.currentTime || 0)}
-          onLoadStart={() => setIsLoadingMedia?.(true)}
-          onWaiting={() => setIsLoadingMedia?.(true)}
-          onPlaying={() => setIsLoadingMedia?.(false)}
+          onLoadStart={() => {
+            setIsLoading(true);
+            setIsLoadingMedia?.(true);
+          }}
+          onWaiting={() => {
+            setIsLoading(true);
+            setIsLoadingMedia?.(true);
+          }}
+          onPlaying={() => {
+            setIsLoading(false);
+            setIsLoadingMedia?.(false);
+          }}
           muted={isMutedMedia}
           loop={isRepeatMedia}
         />
       )}
+
+      {isLoading && <SpinnerIcon size={40} />}
 
       <div style={{
         position: 'absolute',
