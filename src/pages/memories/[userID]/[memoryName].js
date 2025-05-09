@@ -25,6 +25,7 @@ const MemoryDetail = () => {
   const [error, setError] = useState(null);
   const [folderContents, setFolderContents] = useState({});
   const [folderLoadingStates, setFolderLoadingStates] = useState({});
+  const [roll, setRoll] = useState('false');
   
   // Estados para el reproductor multimedia
   const [selectedMedia, setSelectedMedia] = useState(null);
@@ -62,6 +63,73 @@ const MemoryDetail = () => {
   }, []); 
 
 
+//access validation
+  useEffect(() => {
+    if (!memoryData) return;
+  
+    const checkViewPermissions = () => {
+      const viewAccess = memoryData.access?.view;
+      if (!viewAccess) {
+        console.error("Estructura de acceso no válida");
+        setError("Configuración de acceso inválida");
+        return;
+      }
+  
+      const { visibility, invitedEmails = [] } = viewAccess;
+      const currentPath = window.location.pathname;
+  
+      // Caso 1: Visibilidad Pública
+      if (visibility === 'public') {
+        console.log("Acceso público permitido");
+        setRoll('Anyone can upload memories')
+        return;
+      }
+  
+      // Requerir autenticación para otros casos
+      const userEmail = localStorage.getItem('userEmail');
+      if (!userEmail) {
+        console.log("Usuario no autenticado, redirigiendo...");
+        localStorage.setItem('redirectPath', currentPath);
+        localStorage.setItem('reason', 'userEmailValidationOnly');
+        router.push('/login');
+        return;
+      }
+  
+      // Transformar IDs para comparación
+      const transformEmail = (email) => email.replace(/[@.]/g, '_');
+      const currentUserTransformed = transformEmail(userEmail);
+      const ownerTransformed = memoryData.metadata.createdBy;
+  
+      // Caso 2: Visibilidad Privada
+      if (visibility === 'private') {
+        if (currentUserTransformed === ownerTransformed) {
+          console.log("Acceso privado concedido (propietario)");
+          setRoll('You are the owner')
+          return;
+        }
+        console.log("Acceso privado denegado");
+        setRoll('User not allowed')
+        setMemoryData(null)
+        return;
+      }
+  
+      // Caso 3: Visibilidad por Invitación
+      if (visibility === 'invitation') {
+        const transformedInvites = invitedEmails.map(transformEmail);
+        if (transformedInvites.includes(currentUserTransformed)) {
+          console.log("Acceso por invitación concedido");
+          setRoll('Invited to upload memories')
+          return;
+        }
+        setRoll('User not allowed')
+        console.log("Usuario no invitado");
+        setMemoryData(null)
+        //router.push('/unauthorized');
+      }
+    };
+  
+    checkViewPermissions();
+  }, [memoryData, router]);
 
 
 
@@ -338,8 +406,8 @@ const MemoryDetail = () => {
                 <MenuIcon size={30} onClick={() => setIsMainMenuOpen(true)} />
               </div>
               <textarea
-                className={`${styles.memoryTitle} title-xl`}
-                value={userID || "No title available"}
+                className={`${styles.memoryTitle} title-xl color2`}
+                value={memoryName || "No title available"}
                 readOnly
                 rows={2}
               />
@@ -350,8 +418,12 @@ const MemoryDetail = () => {
           <div className={styles.contentWrapper}>
             {/* Columna izquierda - Información */}
             <div className={styles.infoColumn}>
+                  <span  className={`${roll != 'User not allowed' ? 'color2' : 'alertColor'}`} >Roll:</span>
+                  <span  className={`${roll != 'User not allowed' ? 'color2' : 'alertColor'}`} >{roll}</span>
+                  {roll === 'User not allowed' ? <h3 style={{color: 'red'}}>If you believe this is a mistake, please contact the account owner.</h3> : null}
               {metadata && (
                 <div className={styles.metadataContainer}>
+                  
                   <textarea
                     className={`${styles.memoryDescription} color1`}
                     value={metadata.descripcion || "No description available"}
@@ -367,36 +439,39 @@ const MemoryDetail = () => {
             </div>
 
             {/* Columna derecha - Archivos */}
-            <div className={styles.filesColumn}>
-              <div className={styles.foldersHeader}>
-                <h2 className={'color1'}>Folders</h2>
-              </div>
-              
-              {foldersWithContent.length > 0 ? (
-                <div className={`${styles.foldersList} color2`}>
-                  {foldersWithContent.map((folderName) => (
-                    <div key={folderName} className={styles.folderItem}>
-                      <div
-                        className={styles.folderHeader}
-                        onClick={() => handleFolderClick(folderName)}
-                        aria-expanded={previewFolder === folderName}
-                      >
-                        <div className={styles.folderInfo}>
-                          <h3>{folderName}</h3>
-                          <span className={styles.folderCount}>
-                            {backBlazeRefs[folderName].length} {backBlazeRefs[folderName].length === 1 ? 'item' : 'items'}
-                          </span>
-                          {folderLoadingStates[folderName] && <SpinnerIcon size={16} />}
-                        </div>
-                        <span className={styles.folderToggle}>→</span>
-                      </div>
-                    </div>
-                  ))}
+            {memoryData != null ? (
+              <div className={styles.filesColumn}>
+                <div className={styles.foldersHeader}>
+                  <h2 className={'color1'}>Folders</h2>
                 </div>
-              ) : (
-                <p className={styles.noFoldersMessage}>No folders available for this memory.</p>
-              )}
-            </div>
+                
+                {foldersWithContent.length > 0 ? (
+                  <div className={`${styles.foldersList} color2`}>
+                    {foldersWithContent.map((folderName) => (
+                      <div key={folderName} className={styles.folderItem}>
+                        <div
+                          className={styles.folderHeader}
+                          onClick={() => handleFolderClick(folderName)}
+                          aria-expanded={previewFolder === folderName}
+                        >
+                          <div className={styles.folderInfo}>
+                            <h3>{folderName}</h3>
+                            <span className={styles.folderCount}>
+                              {backBlazeRefs[folderName]?.length} {backBlazeRefs[folderName]?.length === 1 ? 'item' : 'items'}
+                            </span>
+                            {folderLoadingStates[folderName] && <SpinnerIcon size={16} />}
+                          </div>
+                          <span className={styles.folderToggle}>→</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={styles.noFoldersMessage}>No folders available for this memory.</p>
+                )}
+              </div>
+            ) : null}
+
           </div>
 
           {/* Modal de previsualización de carpeta */}

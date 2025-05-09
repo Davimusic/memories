@@ -36,7 +36,7 @@ const Login = () => {
 
   const initialMount = useRef(true);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const userEmail = user.providerData[0]?.email || user.email || '';
@@ -48,6 +48,49 @@ const Login = () => {
         // Redirigir solo en el montaje inicial si el usuario ya está autenticado
         if (initialMount.current) {
           const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+          localStorage.removeItem('redirectPath');
+          localStorage.removeItem('reason');
+          router.push(redirectPath);
+        }
+      } else {
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userImage');
+        localStorage.removeItem('userEmail');
+      }
+      initialMount.current = false;
+    });
+    
+    return () => unsubscribe();
+  }, [router]);*/
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userEmail = user.providerData[0]?.email || user.email || '';
+        
+        localStorage.setItem('userName', user.displayName || 'User');
+        localStorage.setItem('userImage', user.photoURL || '');
+        localStorage.setItem('userEmail', userEmail);
+  
+        if (initialMount.current) {
+          const reason = localStorage.getItem('reason');
+          const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+  
+          try {
+            // Manejar diferentes razones de redirección
+            if (reason === 'userEmailValidationOnly') {
+              await handleUserAfterAuth(user.uid, user.email, 'login');
+            } else if (reason === 'createNewUser') {
+              // Forzar creación de nuevo usuario en backend
+              await handleUserAfterAuth(user.uid, user.email, 'signIn');
+            }
+          } catch (error) {
+            console.error('Error handling post-auth:', error);
+            setError('Failed to complete registration process');
+            return;
+          }
+  
+          // Limpiar y redirigir
           localStorage.removeItem('redirectPath');
           localStorage.removeItem('reason');
           router.push(redirectPath);
@@ -95,7 +138,6 @@ const Login = () => {
       setError(`Error: ${error.message}`);
     }
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -168,8 +210,6 @@ const Login = () => {
       setError(`Error: ${error.message}`);
     }
   };
-
-
 
   const handleLogout = async () => {
     try {

@@ -54,6 +54,8 @@ const FilePermissionViewer = () => {
     };
   }, [files]);
 
+
+  //verifica permisos
   useEffect(() => {
     if (!userID || !memoryName) {
       console.log("Falta alguno de los parámetros requeridos: userID o memoryName.");

@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Menu from '@/components/complex/menu';
 import MenuIcon from '@/components/complex/menuIcon';
 import '../estilos/general/createNewMemory.css';
 import '../estilos/general/general.css';
 import '../app/globals.css';
 import Modal from '@/components/complex/modal';
+import MemoryLogo from '@/components/complex/memoryLogo';
+import Link from 'next/link';
 
 // Componente para el modal de visibilidad (extraído como componente independiente)
 const VisibilityModal = ({
@@ -336,6 +339,8 @@ const UploadPermissionsModal = ({
 
 // Componente principal CreateNewMemory
 const CreateNewMemory = () => {
+  const router = useRouter();
+
   // Estados principales del formulario
   const [memoryTitle, setMemoryTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -343,6 +348,10 @@ const CreateNewMemory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAlreadyUser, setIsAlreadyUser] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(null);
+  
+
 
   // Estados para visibilidad del recuerdo
   const [visibility, setVisibility] = useState('private');
@@ -356,7 +365,7 @@ const CreateNewMemory = () => {
   const [isVisibilityModalOpen, setIsVisibilityModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
-  // Obtener el email del usuario al cargar el componente
+  /*/ Obtener el email del usuario al cargar el componente
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const email = localStorage.getItem('userEmail');
@@ -366,7 +375,59 @@ const CreateNewMemory = () => {
         setUserEmail(transformUserId(email));
       }
     }
-  }, []);
+  }, []);*/
+
+  //verifica permisos
+    useEffect(() => {
+      if (typeof window === 'undefined') return;
+      const email = localStorage.getItem('userEmail');
+      
+      if (email) {
+        // Transformar el email para usarlo como ID (reemplazar @ y . por _)
+        const transformUserId = (userId) => userId.replace(/[@.]/g, '_');
+        setUserEmail(transformUserId(email));
+        console.log(transformUserId(email));
+        
+      } else {
+        console.log('no hay correo en createNewMemory')
+        const path = window.location.pathname
+        localStorage.setItem('redirectPath', path);
+        localStorage.setItem('reason', 'userEmailValidationOnly');
+        router.push('/login');
+        return
+      }
+    
+      const fetchPermission = async () => {
+        try {
+          console.log("Iniciando consulta para correo:", userEmail);
+          const response = await fetch('/api/mongoDb/queries/verifyUserExistence', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: userEmail
+            }),
+          });
+    
+          const data = await response.json();
+          if(data.success){
+            if(data.exists){
+              console.log('usuario existente en la plataforma ' + userEmail);
+              setIsAlreadyUser(true)
+              return
+            } else {
+              console.log('usuario  NO existente en la plataforma ');
+              setAlertMessage(`The user ${localStorage.getItem('userEmail')} is not registered on the platform. To register, please use the next link.`)
+            }
+          }
+          
+        } catch (err) {
+          console.error("Error al obtener permisos:", err.message);
+          setUploadError(err.message);
+        }
+      };
+    
+      fetchPermission();
+    }, [userEmail]);
 
   // Handlers para abrir/cerrar el menú
   const handleOpenMenu = () => setIsMenuOpen(true);
@@ -412,6 +473,7 @@ const CreateNewMemory = () => {
     if (!userEmail) {
       setError('User not authenticated');
       setIsLoading(false);
+      alert('falta')
       return;
     }
 
@@ -458,167 +520,200 @@ const CreateNewMemory = () => {
     }
   };
 
+  const handleRedirect = () => {
+    localStorage.setItem('redirectPath', '/payment');
+    localStorage.setItem('reason', 'createNewUser');
+    router.push('/login');
+  };
+
   return (
     <div className="fullscreen-floating mainFont backgroundColor1 mainFont color2">
       {/* Componente del menú lateral */}
-      <Menu isOpen={isMenuOpen} onClose={handleCloseMenu} className="backgroundColor1" />
 
-      <div className="file-uploader">
-        {/* Encabezado con icono de menú y título */}
-        <div style={{ display: 'flex' }}>
-          <div className="menu-icon-container">
-            <MenuIcon onClick={handleOpenMenu} style={{ zIndex: 10 }} />
-          </div>
-          <h2 className="title">Create New Memory</h2>
-        </div>
+      {isAlreadyUser ? (
+        <>
+          <Menu
+            isOpen={isMenuOpen}
+            onClose={handleCloseMenu}
+            className="backgroundColor1"
+          />
 
-        {/* Contenido principal del formulario */}
-        <div className="uploader-content">
-          {/* Columna del formulario */}
-          <div className="form-column">
-            <form className="memory-form" onSubmit={handleSubmit}>
-              {/* Campo para el título del recuerdo */}
-              <div className="form-group">
-                <h3>Memory Title *</h3>
-                <input
-                  type="text"
-                  className="text-input"
-                  value={memoryTitle}
-                  onChange={(e) => setMemoryTitle(e.target.value)}
-                  required
-                  disabled={isLoading}
-                />
+          <div className="file-uploader">
+            {/* Encabezado con icono de menú y título */}
+            <div style={{ display: 'flex' }}>
+              <div className="menu-icon-container">
+                <MenuIcon onClick={handleOpenMenu} style={{ zIndex: 10 }} />
               </div>
-
-              {/* Campo para la descripción */}
-              <div className="form-group">
-                <h3>Description (Optional)</h3>
-                <textarea
-                  className="text-input"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows="5"
-                  disabled={isLoading}
-                />
-              </div>
-
-              {/* Mensaje de error */}
-              {error && <div className="error-message">{error}</div>}
-
-              {/* Botón para enviar el formulario */}
-              <div className="actions">
-                <button 
-                  type="submit" 
-                  className="submit-btn" 
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Creating...' : 'Create Memory'}
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* Columna de configuración */}
-          <div className="files-column">
-            {/* Sección de visibilidad del recuerdo */}
-            <div className="file-section-container">
-              <div className="section-header">
-                <h4>Memory Visibility</h4>
-              </div>
-              
-              {/* Configuración actual de visibilidad */}
-              <div className="selected-settings" onClick={() => setIsVisibilityModalOpen(true)}>
-                {visibility === 'private' && (
-                  <div className="privacy-option active">
-                    <div className="privacy-icon">🔒</div>
-                    <div className="privacy-details">
-                      <h4>Private</h4>
-                      <p>Only visible to you</p>
-                    </div>
-                  </div>
-                )}
-                
-                {visibility === 'public' && (
-                  <div className="privacy-option active">
-                    <div className="privacy-icon">🌍</div>
-                    <div className="privacy-details">
-                      <h4>Public</h4>
-                      <p>Visible to everyone</p>
-                    </div>
-                  </div>
-                )}
-                
-                {visibility === 'invitation' && (
-                  <div className="privacy-option active">
-                    <div className="privacy-icon">📩</div>
-                    <div className="privacy-details">
-                      <h4>By Invitation</h4>
-                      <p>{invitedEmails.length} invited users</p>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <h2 className="title">Create New Memory</h2>
             </div>
 
-            {/* Sección de permisos de subida */}
-            <div className="file-section-container">
-              <div className="section-header">
-                <h4>Upload Permissions</h4>
+            {/* Contenido principal del formulario */}
+            <div className="uploader-content">
+              {/* Columna del formulario */}
+              <div className="form-column">
+                <form className="memory-form" onSubmit={handleSubmit}>
+                  {/* Campo para el título del recuerdo */}
+                  <div className="form-group">
+                    <h3>Memory Title *</h3>
+                    <input
+                      type="text"
+                      className="text-input"
+                      value={memoryTitle}
+                      onChange={(e) => setMemoryTitle(e.target.value)}
+                      required
+                      disabled={isLoading}
+                    />
+                  </div>
+
+                  {/* Campo para la descripción */}
+                  <div className="form-group">
+                    <h3>Description (Optional)</h3>
+                    <textarea
+                      className="text-input"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows="5"
+                      disabled={isLoading}
+                    />
+                  </div>
+
+                  {/* Mensaje de error */}
+                  {error && <div className="error-message">{error}</div>}
+
+                  {/* Botón para enviar el formulario */}
+                  <div className="actions">
+                    <button 
+                      type="submit" 
+                      className="submit-btn" 
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Creating...' : 'Create Memory'}
+                    </button>
+                  </div>
+                </form>
               </div>
-              
-              {/* Configuración actual de permisos de subida */}
-              <div className="selected-settings" onClick={() => setIsUploadModalOpen(true)}>
-                {uploadVisibility === 'private' && (
-                  <div className="privacy-option active">
-                    <div className="privacy-icon">🔒</div>
-                    <div className="privacy-details">
-                      <h4>Private</h4>
-                      <p>Only you can upload</p>
-                    </div>
+
+              {/* Columna de configuración */}
+              <div className="files-column">
+                {/* Sección de visibilidad del recuerdo */}
+                <div className="file-section-container">
+                  <div className="section-header">
+                    <h4>Memory Visibility</h4>
                   </div>
-                )}
-                
-                {uploadVisibility === 'public' && (
-                  <div className="privacy-option active">
-                    <div className="privacy-icon">🌍</div>
-                    <div className="privacy-details">
-                      <h4>Public</h4>
-                      <p>Everyone can upload</p>
-                    </div>
+                  
+                  {/* Configuración actual de visibilidad */}
+                  <div className="selected-settings" onClick={() => setIsVisibilityModalOpen(true)}>
+                    {visibility === 'private' && (
+                      <div className="privacy-option active">
+                        <div className="privacy-icon">🔒</div>
+                        <div className="privacy-details">
+                          <h4>Private</h4>
+                          <p>Only visible to you</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {visibility === 'public' && (
+                      <div className="privacy-option active">
+                        <div className="privacy-icon">🌍</div>
+                        <div className="privacy-details">
+                          <h4>Public</h4>
+                          <p>Visible to everyone</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {visibility === 'invitation' && (
+                      <div className="privacy-option active">
+                        <div className="privacy-icon">📩</div>
+                        <div className="privacy-details">
+                          <h4>By Invitation</h4>
+                          <p>{invitedEmails.length} invited users</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-                
-                {uploadVisibility === 'invitation' && (
-                  <div className="privacy-option active">
-                    <div className="privacy-icon">📩</div>
-                    <div className="privacy-details">
-                      <h4>By Invitation</h4>
-                      <p>{uploadInvitedEmails.length} users can upload</p>
-                    </div>
+                </div>
+
+                {/* Sección de permisos de subida */}
+                <div className="file-section-container">
+                  <div className="section-header">
+                    <h4>Upload Permissions</h4>
                   </div>
-                )}
+                  
+                  {/* Configuración actual de permisos de subida */}
+                  <div className="selected-settings" onClick={() => setIsUploadModalOpen(true)}>
+                    {uploadVisibility === 'private' && (
+                      <div className="privacy-option active">
+                        <div className="privacy-icon">🔒</div>
+                        <div className="privacy-details">
+                          <h4>Private</h4>
+                          <p>Only you can upload</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {uploadVisibility === 'public' && (
+                      <div className="privacy-option active">
+                        <div className="privacy-icon">🌍</div>
+                        <div className="privacy-details">
+                          <h4>Public</h4>
+                          <p>Everyone can upload</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {uploadVisibility === 'invitation' && (
+                      <div className="privacy-option active">
+                        <div className="privacy-icon">📩</div>
+                        <div className="privacy-details">
+                          <h4>By Invitation</h4>
+                          <p>{uploadInvitedEmails.length} users can upload</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Modales */}
+          <VisibilityModal
+            isOpen={isVisibilityModalOpen}
+            onClose={() => setIsVisibilityModalOpen(false)}
+            initialVisibility={visibility}
+            initialInvitedEmails={invitedEmails}
+            onSave={handleSaveVisibility}
+          />
+
+          <UploadPermissionsModal
+            isOpen={isUploadModalOpen}
+            onClose={() => setIsUploadModalOpen(false)}
+            initialUploadVisibility={uploadVisibility}
+            initialUploadInvitedEmails={uploadInvitedEmails}
+            onSave={handleSaveUpload}
+          />
+        </>
+      ) : (
+        <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+        }}
+      >
+        <div className="file-uploader" style={{ textAlign: 'center' }}>
+          <p>{alertMessage}</p>
+          {/* Botón que muestra el enlace y dispara la función handleRedirect */}
+          <button onClick={handleRedirect}>
+            create a new user account
+          </button>
+          <MemoryLogo size={200} />
         </div>
       </div>
-
-      {/* Modales (solo se renderizan cuando están abiertos) */}
-      <VisibilityModal
-        isOpen={isVisibilityModalOpen}
-        onClose={() => setIsVisibilityModalOpen(false)}
-        initialVisibility={visibility}
-        initialInvitedEmails={invitedEmails}
-        onSave={handleSaveVisibility}
-      />
-
-      <UploadPermissionsModal
-        isOpen={isUploadModalOpen}
-        onClose={() => setIsUploadModalOpen(false)}
-        initialUploadVisibility={uploadVisibility}
-        initialUploadInvitedEmails={uploadInvitedEmails}
-        onSave={handleSaveUpload}
-      />
+      )}
     </div>
   );
 };

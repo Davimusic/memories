@@ -17,14 +17,14 @@
 .color5 { color: #bbb018; }
 
 :root {
-  --backgroundColor1: #3b3636;
+  --backgroundColor1: #7c7c7c;
   --backgroundColor2: hwb(0 18% 82%);
   --backgroundColor3: #113558;
   --backgroundColor4: #2cb9e4;
   --backgroundColor5: #ffffff;
   --color1: #2c3e50;
   --color2: #3498db;
-  --color3: #1d6188;
+  --color3: #ffffff;
   --color4: #2b95c8;
   --color5: #2bc6c8;
 }
@@ -35,6 +35,10 @@
 .backgroundColor3 { background-color: var(--backgroundColor3); }
 .backgroundColor4 { background-color: var(--backgroundColor4); }
 .backgroundColor5 { background-color: var(--backgroundColor5); }
+
+.alertColor{
+  color: red;
+}
 
 /* Font Sizes for Titles */
 .title-xl { font-size: 2.5rem; }
