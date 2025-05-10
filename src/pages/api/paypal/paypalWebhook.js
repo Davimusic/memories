@@ -1,5 +1,5 @@
 //este recibe las notificaciones de paypal, los que tiene que ver con los pagos recurrentes
-import updateDatabase from './fromWebHookUpdateDatabase'
+
 
 
 export const config = {
@@ -90,6 +90,20 @@ export const config = {
   // Función simulada para actualizar la base de datos
   async function updateDatabase(subscriptionId, userId, status) {
     console.log(`Actualizando DB: Suscripción ${subscriptionId}, Usuario ${userId}, Estado ${status}`);
-    // Aquí iría la lógica real para actualizar tu base de datos
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Método no permitido' });
+      }
+    
+      // Recibir la información del webhook o de cualquier otro endpoint
+      const payload = req.body;
+    
+      // Imprime la información en la consola
+      console.log("updateDatabase - Información recibida:", payload);
+    
+      // Retorna la misma información en la respuesta JSON
+      return res.status(200).json({
+        message: "Información recibida y registrada en consola",
+        data: payload,
+      });
   }
   
