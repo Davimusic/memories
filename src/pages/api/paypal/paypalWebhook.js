@@ -1,8 +1,6 @@
-// Este recibe las notificaciones de PayPal, relacionadas con los pagos recurrentes
-
 export const config = {
     api: {
-      bodyParser: true, // Se asegura de que el cuerpo se parsea como JSON
+      bodyParser: true,
     },
   };
   
@@ -15,8 +13,9 @@ export const config = {
     console.log('Evento recibido de PayPal:', event);
   
     try {
-      const subscriptionId = event.resource?.id; // Identificador único de la suscripción
-      const userId = event.resource?.subscriber?.payer_id; // Relacionar con el usuario si es necesario
+      const subscriptionId = event.resource?.id;
+      // Corregido: PayPal no usa "subscriber.payer_id" en suscripciones, el user ID deberías mapearlo al crear la suscripción
+      const userId = event.resource?.custom_id || 'undefined'; // Usa custom_id que deberías enviar al crear la suscripción
       const eventType = event.event_type;
   
       switch (eventType) {
@@ -35,8 +34,6 @@ export const config = {
           await updateDatabase(subscriptionId, userId, 'PAID');
           break;
   
-        // ...otros casos similares
-  
         case 'BILLING.SUBSCRIPTION.UPDATED':
           console.log(`Suscripción actualizada: ${subscriptionId}`);
           await updateDatabase(subscriptionId, userId, 'UPDATED');
@@ -53,10 +50,20 @@ export const config = {
     }
   }
   
-  // Función simulada para actualizar la base de datos
+  // Función corregida (sin referencia a 'req')
   async function updateDatabase(subscriptionId, userId, status) {
     console.log(`Actualizando DB: Suscripción ${subscriptionId}, Usuario ${userId}, Estado ${status}`);
-    // Aquí deberías realizar la actualización real de la base de datos.
-    // Puede ser una llamada a un ORM, un query directo, etc.
-  }
-  
+    
+    // Ejemplo de actualización real con Prisma (ajusta según tu ORM/DB):
+    /*
+    try {
+      await prisma.subscription.update({
+        where: { paypalId: subscriptionId },
+        data: { status: status },
+      });
+    } catch (error) {
+      console.error('Error actualizando DB:', error);
+      throw error; // Propaga el error para manejarlo en el handler
+    }
+    */
+}
