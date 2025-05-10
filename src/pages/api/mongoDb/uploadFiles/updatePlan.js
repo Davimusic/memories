@@ -8,10 +8,10 @@ export default async function handler(req, res) {
     });
   }
 
-  const { email, planName, paymentType, amountPaid, availableGB } = req.body;
+  const { email, planName, paymentType, amountPaid, availableGB, subscriptionId } = req.body;
 
   // Validaciones básicas
-  if (!email || !planName || !paymentType || !amountPaid || !availableGB) {
+  if (!email || !planName || !paymentType || !amountPaid || !availableGB || !subscriptionId) {
     return res.status(400).json({
       success: false,
       message: 'Faltan campos requeridos en la solicitud',
@@ -42,7 +42,9 @@ export default async function handler(req, res) {
             planName,
             paymentType,
             amountPaid: parseFloat(amountPaid),
-            availableGB: parseInt(availableGB)
+            availableGB: parseInt(availableGB),
+            subscriptionId,
+            activationDate: new Date().toISOString()
           },
           [`${userKey}.userInformation.lastLogin`]: new Date().toISOString()
         }

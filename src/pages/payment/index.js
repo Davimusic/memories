@@ -6,13 +6,6 @@ import React, { useState } from 'react';
 import Menu from "@/components/complex/menu";
 import MenuIcon from "@/components/complex/menuIcon";
 
-
-
-
-
-
-
-
 const PaymentPlans = () => {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
