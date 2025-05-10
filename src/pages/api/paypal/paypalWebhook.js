@@ -15,7 +15,7 @@ export const config = {
     try {
       const subscriptionId = event.resource?.id;
       // Corregido: PayPal no usa "subscriber.payer_id" en suscripciones, el user ID deberías mapearlo al crear la suscripción
-      const userId = event.resource?.custom_id || 'undefined'; // Usa custom_id que deberías enviar al crear la suscripción
+      const userId = event.resource?.name || 'undefined'; // Usa custom_id que deberías enviar al crear la suscripción
       const eventType = event.event_type;
   
       switch (eventType) {
