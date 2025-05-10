@@ -29,7 +29,7 @@ export default async function handler(req, res) {
 
       case 'BILLING.SUBSCRIPTION.CANCELLED':
         console.log(`[Suscripción CANCELADA] ID: ${subscriptionId}, Usuario: ${userId}`);
-        await updateDatabase(subscriptionId, userId, 'CANCELLED');
+        await handleSubscriptionCancellation(event)
         break;
 
       case 'BILLING.SUBSCRIPTION.EXPIRED':
@@ -133,5 +133,66 @@ async function recordPayment(subscriptionId, amount, status) {
       console.error('Error al registrar pago:', error);
       throw error;
     }
+  }
+}
+
+async function handleSubscriptionCancellation(event) {
+  try {
+    const client = await clientPromise;
+    const db = client.db('goodMemories');
+    const collection = db.collection('MemoriesCollection');
+
+    // Extraer subscriptionId según versión de API
+    const subscriptionId = event.resource.id;
+
+    // 1. Buscar el usuario por subscriptionId
+    const globalDoc = await collection.findOne({ _id: "globalMemories" });
+    
+    if (!globalDoc) {
+      console.error('Documento global no encontrado');
+      return;
+    }
+
+    // 2. Encontrar el userKey correspondiente
+    let userKey = null;
+    for (const [key, value] of Object.entries(globalDoc)) {
+      if (key === '_id' || key === 'lastUpdated') continue;
+      
+      if (value?.userInformation?.plan?.subscriptionId === subscriptionId) {
+        userKey = key;
+        break;
+      }
+    }
+
+    if (!userKey) {
+      console.error('No se encontró usuario con subscriptionId:', subscriptionId);
+      return;
+    }
+
+    // 3. Actualizar estado a desactivated
+    const updateResult = await collection.updateOne(
+      { 
+        _id: "globalMemories",
+        [`${userKey}.userInformation.plan.subscriptionId`]: subscriptionId 
+      },
+      {
+        $set: {
+          [`${userKey}.userInformation.plan.statusPlan`]: 'deactivated',
+          [`${userKey}.userInformation.plan.cancellationDate`]: new Date().toISOString()
+        }
+      }
+    );
+
+    if (updateResult.modifiedCount === 0) {
+      console.error('No se pudo actualizar estado de suscripción para:', subscriptionId);
+    } else {
+      console.log('Suscripción cancelada exitosamente para:', userKey);
+      // Opcional: Enviar email de notificación
+      // await sendCancellationEmail(userKey);
+    }
+
+  } catch (error) {
+    console.error('Error al procesar cancelación:', error);
+    throw error;
   }
 }
