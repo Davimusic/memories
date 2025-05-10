@@ -85,37 +85,35 @@ async function recordPayment(subscriptionId, amount, status) {
       const db = client.db('goodMemories');
       const collection = db.collection('MemoriesCollection');
 
-      // Primero buscamos el usuario que tiene esta subscriptionId
-      const userDoc = await collection.findOne({
-        "_id": "globalMemories",
-        [`${/.*/}.userInformation.plan.subscriptionId`]: subscriptionId
-      });
-
-      if (!userDoc) {
-        console.error('No se encontró usuario con subscriptionId:', subscriptionId);
+      // 1. Obtener el documento completo
+      const globalDoc = await collection.findOne({ _id: "globalMemories" });
+      
+      if (!globalDoc) {
+        console.error('Documento global no encontrado');
         return;
       }
 
-      // Encontramos el userKey (email sanitizado) que contiene esta subscriptionId
+      // 2. Buscar el userKey correspondiente al subscriptionId
       let userKey = null;
-      for (const [key, value] of Object.entries(userDoc)) {
-        if (key !== '_id' && key !== 'lastUpdated' && 
-            value?.userInformation?.plan?.subscriptionId === subscriptionId) {
+      for (const [key, value] of Object.entries(globalDoc)) {
+        if (key === '_id' || key === 'lastUpdated') continue;
+        
+        if (value?.userInformation?.plan?.subscriptionId === subscriptionId) {
           userKey = key;
           break;
         }
       }
 
       if (!userKey) {
-        console.error('No se encontró userKey para subscriptionId:', subscriptionId);
+        console.error('No se encontró usuario con subscriptionId:', subscriptionId);
         return;
       }
 
-      // Actualizamos lastDatePayment y statusPlan
+      // 3. Actualizar los campos necesarios
       const updateResult = await collection.updateOne(
         { 
-          "_id": "globalMemories",
-          [`${userKey}.userInformation.plan.subscriptionId`]: subscriptionId
+          _id: "globalMemories",
+          [`${userKey}.userInformation.plan.subscriptionId`]: subscriptionId 
         },
         {
           $set: {
