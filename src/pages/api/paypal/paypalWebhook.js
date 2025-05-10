@@ -1,3 +1,5 @@
+import clientPromise from '../connectToDatabase'
+
 export const config = {
   api: {
     bodyParser: true,
