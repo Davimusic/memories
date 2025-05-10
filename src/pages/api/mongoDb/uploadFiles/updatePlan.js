@@ -44,7 +44,9 @@ export default async function handler(req, res) {
             amountPaid: parseFloat(amountPaid),
             availableGB: parseInt(availableGB),
             subscriptionId,
-            activationDate: new Date().toISOString()
+            activationDate: new Date().toISOString(),
+            lastDatePayment: new Date().toISOString(),
+            statusPlan: 'activated'
           },
           [`${userKey}.userInformation.lastLogin`]: new Date().toISOString()
         }

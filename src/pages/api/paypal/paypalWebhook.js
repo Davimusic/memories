@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     switch (eventType) {
       // --- Eventos de suscripción ---
       case 'BILLING.SUBSCRIPTION.ACTIVATED':
-        console.log(`[Suscripción ACTIVADA] ID: ${subscriptionId}, Usuario: ${userId}, nombre: ${event.resource.shipping_address.name.full_name}`);
+        console.log(`[Suscripción ACTIVADA] ID: ${subscriptionId}, Usuario: ${userId}`);
         await updateDatabase(subscriptionId, userId, 'ACTIVE');
         break;
 
@@ -38,12 +38,12 @@ export default async function handler(req, res) {
       // --- Eventos de pagos recurrentes ---
       case 'PAYMENT.SALE.COMPLETED':
         console.log(`[PAGO RECURRENTE EXITOSO] ID: ${subscriptionId}, Usuario: ${userId}`);
-        await recordPayment(subscriptionId, userId, event.resource.amount, 'COMPLETED');
+        await recordPayment(subscriptionId, event.resource.amount, 'COMPLETED');
         break;
 
       case 'BILLING.SUBSCRIPTION.PAYMENT.FAILED':
         console.log(`[PAGO RECURRENTE FALLIDO] ID: ${subscriptionId}, Usuario: ${userId}`);
-        await recordPayment(subscriptionId, userId, event.resource.amount, 'FAILED');
+        await recordPayment(subscriptionId, event.resource.amount, 'FAILED');
         break;
 
       // --- Eventos opcionales para debugging ---
@@ -65,7 +65,7 @@ export default async function handler(req, res) {
 
 // Función para actualizar estado de suscripción
 async function updateDatabase(subscriptionId, userId, status) {
-  console.log(`Actualizando suscripción: ${subscriptionId} -> ${status}`);
+  //console.log(`Actualizando suscripción: ${subscriptionId} -> ${status}`);
   // Ejemplo con Prisma:
   // await prisma.subscription.update({
   //   where: { paypalSubscriptionId: subscriptionId },
@@ -74,16 +74,64 @@ async function updateDatabase(subscriptionId, userId, status) {
 }
 
 // Función para registrar pagos (completados/fallidos)
-async function recordPayment(subscriptionId, userId, amount, status) {
+async function recordPayment(subscriptionId, amount, status) {
   console.log(`Registrando pago: ${subscriptionId} - ${amount} -> ${status}`);
-  // Ejemplo:
-  // await prisma.payment.create({
-  //   data: {
-  //     subscriptionId: subscriptionId,
-  //     userId: userId,
-  //     amount: amount,
-  //     status: status,
-  //     date: new Date()
-  //   }
-  // });
+  
+  if (status === 'COMPLETED') {
+    try {
+      const client = await clientPromise;
+      const db = client.db('goodMemories');
+      const collection = db.collection('MemoriesCollection');
+
+      // Primero buscamos el usuario que tiene esta subscriptionId
+      const userDoc = await collection.findOne({
+        "_id": "globalMemories",
+        [`${/.*/}.userInformation.plan.subscriptionId`]: subscriptionId
+      });
+
+      if (!userDoc) {
+        console.error('No se encontró usuario con subscriptionId:', subscriptionId);
+        return;
+      }
+
+      // Encontramos el userKey (email sanitizado) que contiene esta subscriptionId
+      let userKey = null;
+      for (const [key, value] of Object.entries(userDoc)) {
+        if (key !== '_id' && key !== 'lastUpdated' && 
+            value?.userInformation?.plan?.subscriptionId === subscriptionId) {
+          userKey = key;
+          break;
+        }
+      }
+
+      if (!userKey) {
+        console.error('No se encontró userKey para subscriptionId:', subscriptionId);
+        return;
+      }
+
+      // Actualizamos lastDatePayment y statusPlan
+      const updateResult = await collection.updateOne(
+        { 
+          "_id": "globalMemories",
+          [`${userKey}.userInformation.plan.subscriptionId`]: subscriptionId
+        },
+        {
+          $set: {
+            [`${userKey}.userInformation.plan.lastDatePayment`]: new Date().toISOString(),
+            [`${userKey}.userInformation.plan.statusPlan`]: 'activated'
+          }
+        }
+      );
+
+      if (updateResult.modifiedCount === 0) {
+        console.error('No se pudo actualizar el usuario con subscriptionId:', subscriptionId);
+      } else {
+        console.log('Pago registrado exitosamente para:', userKey);
+      }
+
+    } catch (error) {
+      console.error('Error al registrar pago:', error);
+      throw error;
+    }
+  }
 }
