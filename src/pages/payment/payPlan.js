@@ -117,7 +117,8 @@ export default function PaypalSubscriptionPlanner() {
 
       setSubscriptionSuccess(true);
       localStorage.removeItem('selectedPlanDetails');
-      setTimeout(() => router.push('/createNewMemory'), 5000);
+      router.push('/createNewMemory')
+      //setTimeout(() => router.push('/createNewMemory'), 5000);
     } catch (err) {
       setSubscriptionError(err.message);
     } finally {

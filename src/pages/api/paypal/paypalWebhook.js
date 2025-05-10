@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     switch (eventType) {
       // --- Eventos de suscripción ---
       case 'BILLING.SUBSCRIPTION.ACTIVATED':
-        console.log(`[Suscripción ACTIVADA] ID: ${subscriptionId}, Usuario: ${userId}`);
+        console.log(`[Suscripción ACTIVADA] ID: ${subscriptionId}, Usuario: ${userId}, nombre: ${event.resource.shipping_address.name.full_name}`);
         await updateDatabase(subscriptionId, userId, 'ACTIVE');
         break;
 
