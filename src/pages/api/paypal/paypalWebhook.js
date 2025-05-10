@@ -24,7 +24,7 @@ export const config = {
           await updateDatabase(subscriptionId, userId, 'CREATED');
           break;
   
-        case 'BILLING.SUBSCRIPTION.ACTIVATED':
+        case 'BILLING.PLAN.ACTIVATED':
           console.log(`Suscripción activada: ${subscriptionId}`);
           await updateDatabase(subscriptionId, userId, 'ACTIVE');
           break;

@@ -1,5 +1,3 @@
-// app/api/campaigns/route.js
-
 import SibApiV3Sdk from 'sib-api-v3-sdk';
 
 export async function POST(req) {
