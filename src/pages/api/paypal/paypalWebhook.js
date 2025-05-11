@@ -45,7 +45,7 @@ export default async function handler(req, res) {
 
       case 'BILLING.SUBSCRIPTION.PAYMENT.FAILED':
         console.log(`[PAGO RECURRENTE FALLIDO] ID: ${subscriptionId}, Usuario: ${userId}`);
-        await recordPayment(subscriptionId, event.resource.amount, 'FAILED');
+        //await recordPayment(subscriptionId, event.resource.amount, 'FAILED');
         break;
 
       // --- Eventos opcionales para debugging ---
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
 // Función para actualizar estado de suscripción
 async function updateDatabase(subscriptionId, userId, status) {
   //console.log(`Actualizando suscripción: ${subscriptionId} -> ${status}`);
-  // Ejemplo con Prisma:
+  // Ejemplo con Prisma:...
   // await prisma.subscription.update({
   //   where: { paypalSubscriptionId: subscriptionId },
   //   data: { status: status, userId: userId },
@@ -136,6 +136,7 @@ async function recordPayment(subscriptionId, amount, status) {
   }
 }
 
+//cancela suscripcion el usuario
 async function handleSubscriptionCancellation(event) {
   try {
     const client = await clientPromise;

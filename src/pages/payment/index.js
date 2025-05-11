@@ -1,19 +1,77 @@
 import '../../estilos/general/general.css';
-import '../../estilos/general/api/payments/index.css'
-import '../../app/globals.css'
+import '../../estilos/general/api/payments/index.css';
+import '../../app/globals.css';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Menu from "@/components/complex/menu";
 import MenuIcon from "@/components/complex/menuIcon";
+import Modal from '@/components/complex/modal';
 
 const PaymentPlans = () => {
-  const router = useRouter();
+  // Estados para el menú móvil
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // Estados para el procesamiento de pagos
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState(null);
+  
+  // Estados para la selección de planes
   const [selectedPlan, setSelectedPlan] = useState("free");
   const [paymentFrequency, setPaymentFrequency] = useState("monthly");
   const [customExtraGB, setCustomExtraGB] = useState(0);
+  
+  // Estados para el plan del usuario y errores
+  const [plan, setPlan] = useState(null);
+  const [error, setError] = useState(null);
+  
+  // Estado para controlar la visibilidad del modal
+  const [showPlanModal, setShowPlanModal] = useState(false);
+
+  const router = useRouter();
+
+  // Efecto para depuración: muestra en consola cambios en plan y error
+  useEffect(() => {
+    console.log("Plan actualizado:", plan);
+    console.log("Error actualizado:", error);
+  }, [plan, error]);
+
+  // Efecto principal: obtiene el plan del usuario al montar el componente
+  useEffect(() => {
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
+      console.error("El correo del usuario no está disponible");
+      setError("El correo del usuario no está disponible");
+      return;
+    }
+    
+    async function fetchPlan() {
+      try {
+        const response = await fetch('/api/mongoDb/queries/checkUserPlanExistence', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userEmail })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error en la petición: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.success && data.exists) {
+          setPlan(data.plan);
+          setSelectedPlan(data.plan.planName)
+          setShowPlanModal(true); // Mostrar modal cuando existe un plan
+        } else {
+          setError(data.message || 'Usuario no encontrado o sin plan.');
+        }
+      } catch (err) {
+        setError(err.message);
+      }
+    }
+
+    fetchPlan();
+  }, []);
 
   // Precios base de los planes
   const planPrices = {
@@ -42,7 +100,7 @@ const PaymentPlans = () => {
   const handleOpenMenu = () => setIsMenuOpen(true);
   const handleCloseMenu = () => setIsMenuOpen(false);
 
-  // Obtener detalles del plan (ahora recibe el plan como parámetro)
+  // Obtener detalles del plan
   const getPlanDetails = (plan) => {
     const details = {
       selectedPlan: plan,
@@ -75,11 +133,11 @@ const PaymentPlans = () => {
     return details;
   };
 
-  // Procesamiento del pago (ahora recibe el plan como parámetro)
+  // Procesamiento del pago
   const handlePayment = async (plan) => {
     setIsProcessing(true);
     setPaymentError(null);
-    setSelectedPlan(plan); // Actualizar estado para la UI
+    setSelectedPlan(plan);
     
     try {
       const planDetails = getPlanDetails(plan);
@@ -94,12 +152,56 @@ const PaymentPlans = () => {
 
   return (
     <div className="payment-page">
+      {/* Componente de menú lateral */}
       <Menu
         isOpen={isMenuOpen}
         onClose={handleCloseMenu}
         className="backgroundColor1"
       />
 
+      {/* Modal de plan existente */}
+      {plan && plan.planName !== 'free' && (
+        <Modal 
+          isOpen={showPlanModal} 
+          onClose={() => setShowPlanModal(false)}
+          className="p-2"
+        >
+          <div className="plan-details-modal">
+            <h2>Your Current Plan</h2>
+            <div className="detail-item">
+              <span className="detail-label">Plan:</span>
+              <span className="detail-value">{plan.planName || 'Not specified'}</span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Price:</span>
+              <span className="detail-value">
+                ${plan.price || '0'}/{plan.paymentFrequency || 'monthly'}
+              </span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Storage:</span>
+              <span className="detail-value">{plan.availableGB || '0'}GB</span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Status:</span>
+              <span className="detail-value status-active">Active</span>
+            </div>
+            <p className="confirmation-message">
+              You currently have an active plan.
+            </p>
+            <button 
+              className="close-button"
+              onClick={() => setShowPlanModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </Modal>
+      )}
+
+
+
+      {/* Encabezado de la página */}
       <header className="payment-header">
         <div className="header-left">
           <MenuIcon 
@@ -140,9 +242,10 @@ const PaymentPlans = () => {
         </div>
       </header>
 
+      {/* Contenedor principal de los planes */}
       <div className="plans-container">
         <div className="plans-grid">
-          {/* Free Plan */}
+          {/* Plan Gratis */}
           <div
             className={`plan-card ${selectedPlan === "free" ? "selected" : ""}`}
             onClick={() => setSelectedPlan("free")}
@@ -165,7 +268,7 @@ const PaymentPlans = () => {
             </button>
           </div>
 
-          {/* Plan 2 (Starter) */}
+          {/* Plan Starter */}
           <div
             className={`plan-card ${selectedPlan === "plan2" ? "selected" : ""}`}
             onClick={() => setSelectedPlan("plan2")}
@@ -196,7 +299,7 @@ const PaymentPlans = () => {
             </button>
           </div>
 
-          {/* Plan 3 (Pro) */}
+          {/* Plan Pro */}
           <div
             className={`plan-card ${selectedPlan === "plan3" ? "selected" : ""}`}
             onClick={() => setSelectedPlan("plan3")}
@@ -225,7 +328,7 @@ const PaymentPlans = () => {
             </button>
           </div>
 
-          {/* Custom Plan */}
+          {/* Plan Personalizado */}
           <div
             className={`plan-card ${selectedPlan === "custom" ? "selected" : ""}`}
             onClick={() => setSelectedPlan("custom")}
@@ -282,331 +385,73 @@ const PaymentPlans = () => {
         )}
       </div>
 
+      {/* Estilos globales */}
       <style jsx global>{`
-        * {
-          box-sizing: border-box;
-          margin: 0;
-          padding: 0;
+        
+
+        
+
+        
+
+        /* Estilos específicos para el modal de detalle de plan */
+        .plan-details-modal {
+          padding: 20px;
+          max-width: 400px;
+          background: white;
         }
 
-        .payment-page {
-          --background: #ffffff;
-          --foreground: #020817;
-          --primary: #3b82f6;
-          --primary-foreground: #f8fafc;
-          --muted: #f1f5f9;
-          --muted-foreground: #64748b;
-          --destructive: #ef4444;
-          --border: #e2e8f0;
-          --ring: #93c5fd;
-          --radius: 0.5rem;
-
-          background-color: var(--background);
+        .plan-details-modal h2 {
+          margin-bottom: 1.5rem;
+          font-size: 1.5rem;
           color: var(--foreground);
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-          height: 100vh;
-          width: 100vw;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
+          text-align: center;
         }
 
-        .payment-header {
-          position: sticky;
-          top: 0;
-          width: 100%;
-          background: var(--background);
-          z-index: 10;
-          padding: 1rem;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .header-left {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-        }
-
-        .mobile-menu-icon {
-          display: block;
-          cursor: pointer;
-        }
-
-        .page-title {
-          font-size: 1.5rem;
-          font-weight: 700;
-          line-height: 2rem;
-        }
-
-        .header-right {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .frequency-toggle {
-          display: flex;
-          background-color: var(--muted);
-          border-radius: 9999px;
-          padding: 0.25rem;
-        }
-
-        .toggle-option {
-          padding: 0.5rem 1rem;
-          border-radius: 9999px;
-          font-weight: 500;
-          transition: all 0.2s;
-          border: none;
-          background: none;
-          cursor: pointer;
-          font-size: 0.875rem;
-        }
-
-        .toggle-option.active {
-          background-color: var(--primary);
-          color: var(--primary-foreground);
-        }
-
-        .discount-badge {
-          font-size: 0.75rem;
-        }
-
-        .price-display {
-          display: flex;
-          align-items: baseline;
-          gap: 0.25rem;
-        }
-
-        .price-amount {
-          font-size: 1.25rem;
-          font-weight: 700;
-        }
-
-        .price-period {
-          font-size: 0.875rem;
-          color: var(--muted-foreground);
-        }
-
-        .plans-container {
-          flex: 1;
-          overflow-y: auto;
-          padding: 1rem;
-          width: 100%;
-        }
-
-        .plans-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 1.5rem;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .plan-card {
-          display: flex;
-          flex-direction: column;
-          gap: 1.25rem;
-          padding: 1.25rem;
-          border: 1px solid var(--border);
-          border-radius: var(--radius);
-          transition: all 0.2s;
-          cursor: pointer;
-          height: 100%;
-        }
-
-        .plan-card:hover {
-          border-color: var(--primary);
-          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
-        }
-
-        .plan-card.selected {
-          border-color: var(--primary);
-          box-shadow: 0 0 0 2px var(--ring);
-        }
-
-        .plan-card-header {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-          padding-bottom: 1rem;
-          border-bottom: 1px solid var(--border);
-        }
-
-        .plan-name-wrapper {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .plan-name {
-          font-size: 1.125rem;
-          font-weight: 700;
-        }
-
-        .popular-badge {
-          font-size: 0.75rem;
-          font-weight: 500;
-          padding: 0.25rem 0.5rem;
-          background-color: var(--primary);
-          color: var(--primary-foreground);
-          border-radius: 9999px;
-        }
-
-        .plan-description {
-          color: var(--muted-foreground);
-          font-size: 0.875rem;
-        }
-
-        .plan-card-price {
-          font-size: 1.5rem;
-          font-weight: 700;
-        }
-
-        .plan-features-list {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-          font-size: 0.875rem;
-          flex-grow: 1;
-        }
-
-        .plan-features-list li {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .plan-features-list li::before {
-          content: '✓';
-          color: var(--primary);
-          font-weight: bold;
-        }
-
-        .plan-button {
-          padding: 0.75rem 1rem;
-          border-radius: var(--radius);
-          font-weight: 500;
-          transition: all 0.2s;
-          cursor: pointer;
-          border: 1px solid transparent;
-          width: 100%;
-        }
-
-        .plan-button.primary {
-          background-color: var(--primary);
-          color: var(--primary-foreground);
-        }
-
-        .plan-button.primary:hover {
-          background-color: #2563eb;
-        }
-
-        .plan-button.primary:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-
-        .plan-button.outline {
-          background-color: transparent;
-          border-color: var(--border);
-        }
-
-        .plan-button.outline:hover {
-          background-color: var(--muted);
-        }
-
-        .custom-plan-options {
-          margin-top: 1rem;
-          padding-top: 1rem;
-          border-top: 1px solid var(--border);
-        }
-
-        .storage-slider-header {
+        .detail-item {
           display: flex;
           justify-content: space-between;
-          font-size: 0.875rem;
-          margin-bottom: 0.5rem;
+          margin: 15px 0;
+          padding: 12px;
+          background-color: var(--muted);
+          border-radius: var(--radius);
+          font-size: 0.95rem;
         }
 
-        .storage-amount {
+        .detail-label {
+          font-weight: 600;
+          color: var(--foreground);
+        }
+
+        .detail-value {
+          color: var(--muted-foreground);
+        }
+
+        .status-active {
+          color: #38a169;
           font-weight: 600;
         }
 
-        .storage-slider {
+        .close-button {
+          margin-top: 20px;
           width: 100%;
-          height: 0.5rem;
-          -webkit-appearance: none;
-          appearance: none;
-          background-color: var(--muted);
-          border-radius: 9999px;
-          margin-bottom: 0.5rem;
-        }
-
-        .storage-slider::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 1.25rem;
-          height: 1.25rem;
+          padding: 12px;
           background-color: var(--primary);
-          border-radius: 50%;
-          cursor: pointer;
-        }
-
-        .storage-labels {
-          display: flex;
-          justify-content: space-between;
-          font-size: 0.75rem;
-          color: var(--muted-foreground);
-        }
-
-        .payment-error {
-          margin: 1rem auto;
-          padding: 1rem;
-          background-color: rgba(239, 68, 68, 0.1);
-          color: var(--destructive);
+          color: var(--primary-foreground);
+          border: none;
           border-radius: var(--radius);
-          font-size: 0.875rem;
-          max-width: 1200px;
+          cursor: pointer;
+          transition: background-color 0.3s;
+          font-weight: 500;
         }
 
-        @media (min-width: 768px) {
-          .payment-header {
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 2rem;
-          }
-
-          .header-right {
-            flex-direction: row;
-            align-items: center;
-            gap: 2rem;
-          }
-
-          .toggle-option {
-            padding: 0.5rem 1.5rem;
-            font-size: 1rem;
-          }
-
-          .page-title {
-            font-size: 1.875rem;
-          }
-
-          .price-amount {
-            font-size: 1.5rem;
-          }
-
-          .plans-container {
-            padding: 1rem 2rem;
-          }
+        .close-button:hover {
+          background-color: #2563eb;
         }
 
-        @media (min-width: 1024px) {
-          .plans-grid {
-            grid-template-columns: repeat(4, 1fr);
+        @media (max-width: 480px) {
+          .plan-details-modal {
+            padding: 15px;
+            width: 90vw;
           }
         }
       `}</style>

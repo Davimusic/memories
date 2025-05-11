@@ -39,6 +39,8 @@ export default function PaypalSubscriptionPlanner() {
     const loadLocalStorageData = () => {
       try {
         const storedPlan = localStorage.getItem('selectedPlanDetails');
+        console.log(storedPlan);
+        
         if (!storedPlan) {
           router.push('/payment');
           return;
@@ -116,8 +118,8 @@ export default function PaypalSubscriptionPlanner() {
       }
 
       setSubscriptionSuccess(true);
-      localStorage.removeItem('selectedPlanDetails');
       router.push('/createNewMemory')
+      localStorage.removeItem('selectedPlanDetails');
       //setTimeout(() => router.push('/createNewMemory'), 5000);
     } catch (err) {
       setSubscriptionError(err.message);
