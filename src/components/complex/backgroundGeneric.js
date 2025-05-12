@@ -3,18 +3,6 @@ import ImageSlider from './imageSlider';
 import '../../estilos/general/imageSlider.css';
 import '../../app/globals.css'
 
-
-
-
-
-
-
-
-
-
-
-
-
 const BackgroundGeneric = ({
   isLoading,
   children,
@@ -24,11 +12,11 @@ const BackgroundGeneric = ({
 }) => {
   // Definimos nuestros degradados directamente en un array
   const backgroundGradients = [
-    "linear-gradient(135deg, #3b3636, hwb(0 18% 82%))",
-    "linear-gradient(135deg, hwb(0 18% 82%), hwb(0 15% 90%))",
-    "linear-gradient(135deg, #113558, #1a4565)",
-    "linear-gradient(135deg, #2cb9e4, #4dd7f0)",
-    "linear-gradient(135deg, #ffffff, #f2f2f2)"
+    "linear-gradient(135deg, var(--backgroundColor1), var(--backgroundColor2))",
+    "linear-gradient(135deg, var(--backgroundColor2), var(--gradient-color1))",
+    "linear-gradient(135deg, var(--backgroundColor3), var(--gradient-color2))",
+    "linear-gradient(135deg, var(--backgroundColor4), var(--gradient-color3))",
+    "linear-gradient(135deg, var(--backgroundColor5), var(--gradient-color4))"
   ];
 
   // ÍNDICE DEL DEGRADADO ACTUAL
@@ -59,8 +47,8 @@ const BackgroundGeneric = ({
         setTimeout(() => {
           setCurrentIndex((prevIndex) => (prevIndex + 1) % backgroundGradients.length);
           setFade(false);
-        }, 2500); // Debe coincidir con la duración de la transición CSS
-      }, 5000);
+        }, 5000); // Debe coincidir con la duración de la transición CSS
+      }, 10000);
 
       return () => clearInterval(interval);
     }

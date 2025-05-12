@@ -17,16 +17,21 @@
 .color5 { color: #bbb018; }
 
 :root {
-  --backgroundColor1: #7c7c7c;
-  --backgroundColor2: hwb(0 18% 82%);
-  --backgroundColor3: #113558;
-  --backgroundColor4: #2cb9e4;
+  --backgroundColor1: #00b3ff;
+  --backgroundColor2: #25c6ff;
+  --backgroundColor3: #a0dbff;
+  --backgroundColor4: #d9f2ff;
   --backgroundColor5: #ffffff;
   --color1: #2c3e50;
   --color2: #3498db;
   --color3: #ffffff;
   --color4: #2b95c8;
   --color5: #2bc6c8;
+   /* Colores adicionales para los degradados */
+  --gradient-color1: hwb(0 15% 90%);
+  --gradient-color2: #1a4565;
+  --gradient-color3: #4dd7f0;
+  --gradient-color4: #f2f2f2;
 }
 
 

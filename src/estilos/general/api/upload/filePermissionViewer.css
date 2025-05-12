@@ -24,6 +24,7 @@
     background-color: var(--backgroundColor5);
   }
   
+
   
   .uploader-content {
     display: grid;
@@ -112,7 +113,7 @@
   .add {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
-    background-color: var(--color3);
+    background-color: var(--backgroundColor3);
     color: white;
     border: none;
     border-radius: 0.3rem;
@@ -205,7 +206,7 @@
       }
     
     .file-section-container{
-        background-color: #27ae60;
+        background-color: #ffffff00;
     }
     
     

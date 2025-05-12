@@ -510,7 +510,8 @@ const CreateNewMemory = () => {
       setUploadInvitedEmails([]);
       
       // Mostrar mensaje de éxito
-      alert('Memory created successfully!');
+      console.log('Memory created successfully!');
+      router.push('/memories');
 
     } catch (error) {
       console.error('Error creating memory:', error);
@@ -704,13 +705,12 @@ const CreateNewMemory = () => {
           height: '100vh',
         }}
       >
-        <div className="file-uploader" style={{ textAlign: 'center' }}>
-          <p>{alertMessage}</p>
-          {/* Botón que muestra el enlace y dispara la función handleRedirect */}
-          <button onClick={handleRedirect}>
+        <div className=" loading">
+          <p className='color1'>{alertMessage}</p>
+          <MemoryLogo size={200} />
+          <button className='submitButton' onClick={handleRedirect}>
             create a new user account
           </button>
-          <MemoryLogo size={200} />
         </div>
       </div>
       )}

@@ -87,7 +87,7 @@
 }
 
 .appleButton {
-  background: linear-gradient(to bottom right, #0070f3, #0051a8);
+  background: linear-gradient(to bottom right, var(--backgroundColor1), var(--backgroundColor2));
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -151,7 +151,6 @@
   padding: 16px 25px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   font-weight: 600;
-  color: #2d3436;
   position: sticky;
   top: 0;
 }
@@ -161,7 +160,6 @@
   padding: 16px 25px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
-  cursor: pointer;
   align-items: center;
   background: #ffffff;
   min-height: 60px;
@@ -179,7 +177,6 @@
 }
 
 .headerCell {
-  color: #0070f3;
   font-weight: 600;
 }
 
@@ -263,12 +260,21 @@
   z-index: 9999; /* Asegura que esté por encima de otros elementos */
 }
 
+.mobileLabel{
+  display: none;
+}
+
 /* ------------------------- */
 /* ESTILOS PARA MÓVIL (≤768px) */
 /* ------------------------- */
 @media (max-width: 768px) {
   .container {
     padding: 15px;
+  }
+
+  .mobileLabel{
+    display: flex;
+    padding-right: 10px;
   }
 
   .mainContainer {

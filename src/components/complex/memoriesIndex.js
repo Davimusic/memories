@@ -7,6 +7,8 @@ import MemoryLogo from './memoryLogo';
 import Menu from './menu';
 import MenuIcon from './menuIcon';
 import BackgroundGeneric from './backgroundGeneric';
+import ShowHide from './showHide';
+import UploadIcon from './icons/uploadIcon';
 
 
 
@@ -28,15 +30,11 @@ const MemoriesIndex = () => {
   const [error, setError] = useState(null);
   const [sortType, setSortType] = useState("alphabetical");
   const [filteredMemories, setFilteredMemories] = useState([]);
-
-  // Nuevo estado para controlar la apertura del menú
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  
+  const [userID, setUserID] = useState('');
 
   useEffect(() => {
     const storedEmail = localStorage.getItem("userEmail");
-    //localStorage.removeItem('userEmail');
     console.log(storedEmail);
     
     if (!storedEmail) {
@@ -54,8 +52,6 @@ const MemoriesIndex = () => {
     })
       .then(async (response) => {
         if (!response.ok) {
-          // Si la respuesta es 404, significa que no se encontraron recuerdos, por lo tanto,
-          // devolvemos un objeto exitoso con un listado vacío
           if (response.status === 404) {
             return { success: true, memories: {} };
           }
@@ -68,20 +64,19 @@ const MemoriesIndex = () => {
       .then((data) => {
         if (data.success) {
           console.log(data);
+          setUserID(data.userInfoId)
           const { userInformation, ...actualMemories } = data.memories;
           setMemoriesState(actualMemories);
-          //setMemoriesState(data.memories);
+          console.log(actualMemories);
         } else {
           throw new Error("Error fetching memories");
         }
       })
       .catch((err) => {
-        // Opcional: podrías manejar otros errores de forma distinta
         setError(err.message);
       })
       .finally(() => setLoading(false));
   }, []);
-  
 
   useEffect(() => {
     const entries = Object.entries(memoriesState);
@@ -91,14 +86,14 @@ const MemoriesIndex = () => {
       sortedEntries = entries.sort((a, b) => a[0].localeCompare(b[0]));
     } else if (sortType === "creationDate") {
       sortedEntries = entries.sort((a, b) => {
-        const dateA = new Date(a[1]?.metadata?.fecha_creacion || 0);
-        const dateB = new Date(b[1]?.metadata?.fecha_creacion || 0);
+        const dateA = new Date(a[1]?.metadata?.createdAt || 0);
+        const dateB = new Date(b[1]?.metadata?.createdAt || 0);
         return dateA - dateB;
       });
     } else if (sortType === "lastModified") {
       sortedEntries = entries.sort((a, b) => {
-        const dateA = new Date(a[1]?.metadata?.ultima_modificacion || 0);
-        const dateB = new Date(b[1]?.metadata?.ultima_modificacion || 0);
+        const dateA = new Date(a[1]?.metadata?.lastUpdated || 0);
+        const dateB = new Date(b[1]?.metadata?.lastUpdated || 0);
         return dateB - dateA;
       });
     }
@@ -109,7 +104,7 @@ const MemoriesIndex = () => {
     if (!userEmail) {
       alert("You must log in first");
     } else {
-      router.push('/uploadfiles');
+      router.push('/createNewMemory');
     }
   };
 
@@ -140,101 +135,114 @@ const MemoriesIndex = () => {
           </div>
         </BackgroundGeneric>
       </div>
-    )
+    );
   }
 
   return (
     <>
-      {/* Marco para tablet/desktop */}
-      
-      
       <div className={`${styles.container} ${styles.fadeIn} fullscreen-floating color1 mainFont`}>
-      <div className={`backgroundColor5 ${styles.frame}`} >
-        <Menu 
-          isOpen={isMenuOpen} 
-          onClose={() => setIsMenuOpen(false)} 
-          className="backgroundColor1 mainFont"
-        />
-    
-        <div className={styles.controlsContainer}>
-          <div className={styles.leftControls}>
-            <MenuIcon size={30} onClick={() => setIsMenuOpen(true)} />
-            {filteredMemories.length > 0 && (
-              <div className={styles.filterContainer}>
-                <label htmlFor="sort">Sort by:</label>
-                <select className={styles.appleSelect} value={sortType} onChange={handleSortChange}>
-                  <option value="alphabetical">Name</option>
-                  <option value="creationDate">Creation Date</option>
-                  <option value="lastModified">Last Modified</option>
-                </select>
-              </div>
-            )}
-          </div>
-          <div
-            className={`mainFont ${styles.appleButton} ${filteredMemories.length === 0 ? styles.highlightButton : ''}`}
-            onClick={handleCreateMemory}
-          >
-            New Memory
-          </div>
-        </div>
-    
-        {filteredMemories.length === 0 ? (
-          <div className={styles.emptyState}>
-            <MemoryLogo size={300} />
-            <p className={`${styles.emptyText} color1`}>No memories found. Click "New Memory" to create one.</p>
-          </div>
-        ) : (
-          <div className={styles.appleTableContainer}>
-            <div className={`${styles.tableHeader} backgroundColor1 title-sm`}>
-              <div className={styles.headerCell} style={{ flex: 3 }}>Name</div>
-              <div className={styles.headerCell} style={{ flex: 2 }}>Description</div>
-              <div className={styles.headerCell} style={{ flex: 2 }}>Types</div>
-              <div className={styles.headerCell} style={{ flex: 1 }}>Created</div>
-              <div className={styles.headerCell} style={{ flex: 1 }}>Modified</div>
+        <div className={`backgroundColor5 ${styles.frame}`}>
+          <Menu 
+            isOpen={isMenuOpen} 
+            onClose={() => setIsMenuOpen(false)} 
+            className="backgroundColor1 mainFont"
+          />
+      
+          <div className={styles.controlsContainer}>
+            <div className={styles.leftControls}>
+              <MenuIcon size={30} onClick={() => setIsMenuOpen(true)} />
+              {filteredMemories.length > 0 && (
+                <div className={styles.filterContainer}>
+                  <label htmlFor="sort">Sort by:</label>
+                  <select className={styles.appleSelect} value={sortType} onChange={handleSortChange}>
+                    <option value="alphabetical">Name</option>
+                    <option value="creationDate">Creation Date</option>
+                    <option value="lastModified">Last Modified</option>
+                  </select>
+                </div>
+              )}
             </div>
-    
-            {filteredMemories.map(([memoryTitle, details], index) => (
-              <div
-                key={index}
-                className={styles.tableRow}
-                style={{
-                  backgroundColor: index % 2 === 0 ? '#00000042' : 'none'
-                }}
-                onClick={() => router.push(`/memories/${encodeURIComponent(memoryTitle)}`)}
-              >
-                <div className={`${styles.tableCell} ${styles.cellWithScroll}`} style={{ flex: 3 }}>
-                  <span className={styles.titleText}>{memoryTitle}</span>
-                </div>
-                <div className={`${styles.tableCell} ${styles.cellWithScroll}`} style={{ flex: 2 }}>
-                  <div className={styles.mobileScrollContent}>
-                    {details.metadata?.descripcion || "—"}
-                  </div>
-                </div>
-                <div className={styles.tableCell} style={{ flex: 2 }}>
-                  <div className={styles.typeBadges}>
-                    {Object.entries(details)
-                      .filter(([key, value]) => Array.isArray(value) && value.length > 0)
-                      .map(([key, value]) => (
-                        <span key={key} className={styles.typeBadge}>
-                          {key.toUpperCase()} ({value.length})
-                        </span>
-                      ))}
-                  </div>
-                </div>
-                <div className={styles.tableCell} style={{ flex: 1 }}>
-                  {details.metadata?.fecha_creacion 
-                    ? new Date(details.metadata.fecha_creacion).toLocaleDateString() 
-                    : "—"}
-                </div>
-                <div className={styles.tableCell} style={{ flex: 1 }}>
-                  {details.metadata?.ultima_modificacion 
-                    ? new Date(details.metadata.ultima_modificacion).toLocaleDateString() 
-                    : "—"}
-                </div>
-              </div>
-            ))}
+            <div
+              className={`mainFont ${styles.appleButton} ${filteredMemories.length === 0 ? styles.highlightButton : ''}`}
+              onClick={handleCreateMemory}
+            >
+              New Memory
+            </div>
           </div>
-        )}
+      
+          {filteredMemories.length === 0 ? (
+            <div className={styles.emptyState}>
+              <MemoryLogo size={300} />
+              <p className={`title-md color2`}>No memories found. Click "New Memory" to create a new one.</p>
+            </div>
+          ) : (
+            <div className={styles.appleTableContainer}>
+              <div className={`${styles.tableHeader} backgroundColor1 title-sm color1`}>
+                <div className={styles.headerCell} style={{ flex: 1 }}>Actions</div>
+                <div className={styles.headerCell} style={{ flex: 3 }}>Name</div>
+                <div className={styles.headerCell} style={{ flex: 2 }}>Description</div>
+                <div className={styles.headerCell} style={{ flex: 2 }}>Types</div>
+                <div className={styles.headerCell} style={{ flex: 1 }}>Created</div>
+                <div className={styles.headerCell} style={{ flex: 1 }}>Modified</div>
+              </div>
+      
+              {filteredMemories.map(([memoryTitle, details], index) => (
+                <div
+                  key={index}
+                  className={styles.tableRow}
+                  style={{
+                    backgroundColor: index % 2 === 0 ? '#00000042' : 'none'
+                  }}
+                >
+                  <div className={styles.tableCell} style={{ flex: 1, display: 'flex', gap: '10px' }}>
+                    <ShowHide
+                      size={24}
+                      onClick={() => router.push(`/memories/${userID}/${encodeURIComponent(memoryTitle)}`)}
+                    />
+                    <UploadIcon
+                      size={24}
+                      onClick={() => router.push(`/uploadFiles/${userID}/${encodeURIComponent(memoryTitle)}`)}
+                    />
+                  </div>
+                  <div className={`${styles.tableCell} ${styles.cellWithScroll}`} style={{ flex: 3 }}>
+                    <span className={styles.titleText}>{details.metadata?.title}</span>
+                  </div>
+                  <div className={`${styles.tableCell} ${styles.cellWithScroll}`} style={{ flex: 2 }}>
+                    <div className={styles.mobileScrollContent}>
+                      {details.metadata?.description || "—"}
+                    </div>
+                  </div>
+                  <div className={styles.tableCell} style={{ flex: 2 }}>
+                    <div className={styles.typeBadges}>
+                      {Object.entries(details.media)
+                        .filter(([_, mediaArray]) => mediaArray.length > 0)
+                        .map(([mediaType, mediaArray]) => (
+                          <span key={mediaType} className={styles.typeBadge}>
+                            {mediaType.toUpperCase()} ({mediaArray.length})
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                  <div className={styles.tableCell} style={{ flex: 1 }}>
+                    {details.metadata?.createdAt 
+                      ? <div style={{display: 'flex'}}>
+                          <span className={styles.mobileLabel}>Created: </span> 
+                          {new Date(details.metadata.createdAt).toLocaleDateString()}
+                        </div>
+                      : "—"}
+                  </div>
+                  <div className={styles.tableCell} style={{ flex: 1 }}>
+                  {details.metadata?.lastUpdated 
+                    ? <div style={{display: 'flex'}}>
+                        <span className={styles.mobileLabel}>Modified: </span> 
+                        {new Date(details.metadata.lastUpdated).toLocaleDateString()}
+                      </div>
+                    : "—"}
+                </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

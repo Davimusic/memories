@@ -117,10 +117,20 @@ export default function PaypalSubscriptionPlanner() {
         throw new Error(data.error || 'Failed to update subscription');
       }
 
+      // Actualizar sessionStorage aquí
+      const planToStore = {
+        amountPaid: planDetails.totalToPay,
+        availableGB: planDetails.storageGB,
+        paymentType: planDetails.paymentType,
+        planName: planDetails.planName
+      };
+      
+      sessionStorage.setItem('userPlanStatus', JSON.stringify(planToStore));
+      
       setSubscriptionSuccess(true);
       router.push('/createNewMemory')
       localStorage.removeItem('selectedPlanDetails');
-      //setTimeout(() => router.push('/createNewMemory'), 5000);
+      
     } catch (err) {
       setSubscriptionError(err.message);
     } finally {

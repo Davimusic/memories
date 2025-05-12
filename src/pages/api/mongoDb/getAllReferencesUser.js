@@ -18,15 +18,17 @@ export default async function handler(req, res) {
       });
     }
 
-    // Transforma el userId según necesidades
+    // Transforma el userId según necesidades 
+    // Ejemplo: "davipiano@gmail.com" -> "davipianogmail_com"
     const transformUserId = id => id.replace(/[@.]/g, '_');
     const transformedUserId = transformUserId(userId);
 
     // Obten el cliente de MongoDB a partir de la promesa
     const client = await clientPromise;
     const db = client.db('goodMemories');
-
     const collection = db.collection('MemoriesCollection');
+
+    // Busca el documento global
     const doc = await collection.findOne({ _id: 'globalMemories' });
     if (!doc) {
       return res.status(404).json({
@@ -35,6 +37,7 @@ export default async function handler(req, res) {
       });
     }
 
+    // Extrae la memoria del usuario utilizando el userId transformado
     const userMemories = doc[transformedUserId];
     if (!userMemories) {
       return res.status(404).json({
@@ -44,8 +47,12 @@ export default async function handler(req, res) {
       });
     }
 
+    // Extrae el id del objeto userInformation
+    const userInfoId = userMemories.userInformation?.id;
+
     return res.status(200).json({
       success: true,
+      userInfoId, // id extraído del objeto userInformation
       memories: userMemories
     });
   } catch (error) {
@@ -57,4 +64,3 @@ export default async function handler(req, res) {
     });
   }
 }
-

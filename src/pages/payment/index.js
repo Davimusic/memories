@@ -175,7 +175,7 @@ const PaymentPlans = () => {
             <div className="detail-item">
               <span className="detail-label">Price:</span>
               <span className="detail-value">
-                ${plan.price || '0'}/{plan.paymentFrequency || 'monthly'}
+                ${plan.amountPaid || '0'}/{plan.paymentType || 'monthly'}
               </span>
             </div>
             <div className="detail-item">

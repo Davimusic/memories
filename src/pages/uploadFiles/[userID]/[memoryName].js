@@ -265,7 +265,7 @@ const FilePermissionViewer = () => {
       console.log("Archivos subidos:", uploadData);
       
       setFiles({ photos: [], videos: [], audios: [] });
-      setUploadDetails('¡Archivos subidos exitosamente!');
+      setUploadDetails('¡Files uploaded successfully!');
       setIsModalOpen(true);
     } catch (error) {
       console.error('Error en uploadFiles:', error);
@@ -302,14 +302,14 @@ const FilePermissionViewer = () => {
           <div className="menu-icon-container">
             <MenuIcon onClick={() => setIsMenuOpen(true)} style={{ zIndex: 10 }} />
           </div>
-          {roll === 'User not allowed' ? <h2 style={{color: 'red'}} className="title">{roll}</h2> : <h2 className="title">Subir archivos a: {permissionInfo?.metadata?.title || memoryName}</h2>}
+          {roll === 'User not allowed' ? <h2 style={{color: 'red'}} className="title">{roll}</h2> : <h2 className="title">Upload files to: {permissionInfo?.metadata?.title || memoryName}</h2>}
         </div>
 
         <div className="uploader-content">
           <div className="files-column">
             <div className="file-section-container">
               <div className="section-header">
-                {roll === 'User not allowed' ? <h3 style={{color: 'red'}}>If you believe this is a mistake, please contact the account owner.</h3> : <h3>Detalles del Recuerdo</h3>}
+                {roll === 'User not allowed' ? <h3 style={{color: 'red'}}>If you believe this is a mistake, please contact the account owner.</h3> : <h3>Memory Details</h3>}
               </div>
 
               <div className="permission-details">
@@ -342,7 +342,7 @@ const FilePermissionViewer = () => {
                           onClick={() => photoInputRef.current.click()}
                           disabled={isUploading}
                         >
-                          Agregar
+                          add
                         </button>
                       </div>
                     </div>
@@ -367,7 +367,7 @@ const FilePermissionViewer = () => {
                           onClick={() => videoInputRef.current.click()}
                           disabled={isUploading}
                         >
-                          Agregar
+                          add
                         </button>
                       </div>
                     </div>
@@ -392,7 +392,7 @@ const FilePermissionViewer = () => {
                           onClick={() => audioInputRef.current.click()}
                           disabled={isUploading}
                         >
-                          Agregar
+                          add
                         </button>
                       </div>
                     </div>
@@ -412,7 +412,7 @@ const FilePermissionViewer = () => {
                   disabled={isUploading || !files.photos.length && !files.videos.length && !files.audios.length}
                   className={`submitButton ${isUploading ? 'uploading' : ''}`}
                 >
-                  {isUploading ? 'Subiendo...' : 'Subir Archivos'}
+                  {isUploading ? 'Uploading files...' : 'Upload Files'}
                 </button>
               </form>
 
@@ -442,7 +442,7 @@ const FilePermissionViewer = () => {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div className="modal-content">
           <h3>{uploadDetails}</h3>
-          <button onClick={() => setIsModalOpen(false)}>Cerrar</button>
+          <button className='add' onClick={() => setIsModalOpen(false)}>Close</button>
         </div>
       </Modal>
     </div>

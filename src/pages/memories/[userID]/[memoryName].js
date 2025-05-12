@@ -390,7 +390,7 @@ const MemoryDetail = () => {
   
 
   return (
-    <div className={styles.fullscreenContainer}>
+    <div  className={`${styles.fullscreenContainer} backgroundColor1`}>
       <div className={styles.backgroundWrapper}>
         <Menu 
           isOpen={isMainMenuOpen} 
@@ -431,8 +431,8 @@ const MemoryDetail = () => {
                     rows={5}
                   />
                   <div className={styles.datesContainer}>
-                    <div>Created: {new Date(metadata.fecha_creacion).toLocaleDateString()}</div>
-                    <div>Modified: {new Date(metadata.ultima_modificacion).toLocaleDateString()}</div>
+                    <div>Created: {new Date(metadata.createdAt).toLocaleDateString()}</div>
+                    <div>Last modified: {new Date(metadata.lastUpdated).toLocaleDateString()}</div>
                   </div>
                 </div>
               )}

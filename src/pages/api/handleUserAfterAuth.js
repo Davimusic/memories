@@ -101,8 +101,8 @@ export default async function handleUserAfterAuth(req, res) {
       success: true,
       message:
         action === 'update'
-          ? 'Usuario actualizado exitosamente.'
-          : 'Usuario creado exitosamente.',
+          ? 'User successfully updated.'
+          : 'User created successfully.',
       user: userData,
     });
   } catch (error) {

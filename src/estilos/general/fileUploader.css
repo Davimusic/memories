@@ -177,6 +177,10 @@
   display: none;
 }
 
+.add{
+  background-color: #27ae60;
+}
+
 /* File Counters */
 .file-counter {
   display: flex;
