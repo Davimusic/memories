@@ -9,6 +9,7 @@ import MenuIcon from './menuIcon';
 import BackgroundGeneric from './backgroundGeneric';
 import ShowHide from './showHide';
 import UploadIcon from './icons/uploadIcon';
+import EditToggleIcon from './EditToggleIcon ';
 
 
 
@@ -202,6 +203,10 @@ const MemoriesIndex = () => {
                     <UploadIcon
                       size={24}
                       onClick={() => router.push(`/uploadFiles/${userID}/${encodeURIComponent(memoryTitle)}`)}
+                    />
+                    <EditToggleIcon
+                    size={24}
+                    onClick={() => router.push(`/editMemories/${userID}/${encodeURIComponent(memoryTitle)}`)}
                     />
                   </div>
                   <div className={`${styles.tableCell} ${styles.cellWithScroll}`} style={{ flex: 3 }}>

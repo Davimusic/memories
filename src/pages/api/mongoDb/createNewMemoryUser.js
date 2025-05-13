@@ -16,7 +16,9 @@ export default async function handler(req, res) {
       visibility, 
       invitedEmails,
       fileUploadVisibility,
-      fileUploadInvitedEmails 
+      fileUploadInvitedEmails,
+      editVisibility,
+      editInvitedEmails
     } = req.body;
 
     if (!userId || !memoryTitle) {
@@ -65,6 +67,10 @@ export default async function handler(req, res) {
         upload: {
           visibility: fileUploadVisibility || 'private',
           invitedEmails: fileUploadInvitedEmails || []
+        },
+        edit: {
+          visibility: editVisibility || 'private',
+          invitedEmails: editInvitedEmails || []
         }
       },
       media: {

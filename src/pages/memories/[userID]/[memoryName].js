@@ -11,6 +11,7 @@ import SpinnerIcon from '@/components/complex/spinnerIcon';
 import Video from '../../../components/simple/video';
 import AudioPlayer from '@/components/complex/audioPlayer';
 import ImageSlider from '../../../components/complex/imageSlider';
+import LoadingMemories from '@/components/complex/loading';
 import Modal from '@/components/complex/modal';
 
 
@@ -63,7 +64,7 @@ const MemoryDetail = () => {
   }, []); 
 
 
-//access validation
+  //access validation
   useEffect(() => {
     if (!memoryData) return;
   
@@ -213,6 +214,8 @@ const MemoryDetail = () => {
           });
 
           setMemoryData(formattedData);
+          console.log(formattedData.metadata.title);
+          
           setLoading(false);
         }
       } catch (err) {
@@ -356,14 +359,7 @@ const MemoryDetail = () => {
 
   if (loading) {
     return (
-      <div className='fullscreen-floating'>
-        <BackgroundGeneric showImageSlider={false}>
-          <div className={`${styles.loading}`}>
-            <MemoryLogo size={300} />
-            <p className={'color2 title-lg'}>Loading memories...</p>
-          </div>
-        </BackgroundGeneric>
-      </div>
+      <LoadingMemories/>
     );
   }
 
@@ -407,7 +403,7 @@ const MemoryDetail = () => {
               </div>
               <textarea
                 className={`${styles.memoryTitle} title-xl color2`}
-                value={memoryName || "No title available"}
+                value={memoryData.metadata.title || "No title available"}
                 readOnly
                 rows={2}
               />

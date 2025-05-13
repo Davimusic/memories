@@ -137,7 +137,7 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
   // Función para manejar el logout
   const handleLogout = async () => {
     try {
-      await signOut(); // Ajusta según tu método de signOut
+      await signOut(auth); // Ajusta según tu método de signOut
       localStorage.removeItem('userName');
       localStorage.removeItem('userImage');
       localStorage.removeItem('userEmail');
@@ -189,7 +189,7 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
           visibility: isOpen ? 'visible' : 'hidden',
           opacity: isOpen ? 1 : 0,
         }}
-        className={`${className} color1 backgroundColor5`}
+        className={`${className} color5 backgroundColor1`}
         onClick={onClose}
       >
         <div onClick={handleMenuClick}>
@@ -217,20 +217,18 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
 
           {/* Items de navegación */}
           <ul style={{ listStyle: 'none', padding: 0 }}>
-            {['Memories', 'New memory', 'update Plane', 'Favorites', 'Settings'].map((item, index) => (
+            {['Memories', 'update Plane'].map((item, index) => (//'Favorites', 'Settings'
               <li key={index} style={{ marginBottom: '15px' }}>
                 <a
                   href={
                     item === 'Memories'
                       ? '/memories'
-                      : item === 'New memory'
-                      ? '/createNewMemory'
                       : item === 'update Plane'
                       ? '/payment'
                       : '/#'
                   }
                   style={{ textDecoration: 'none' }}
-                  className="title-sm color1"
+                  className="title-sm color5"
                 >
                   {item}
                 </a>

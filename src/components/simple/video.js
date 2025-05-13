@@ -59,6 +59,7 @@ const Video = ({
   const [isLoading, setIsLoading] = useState(true);
 
   const updateBlurredBackground = useCallback(() => {
+  try {
     if (!videoRef.current || videoRef.current.readyState < 2) return;
     
     const canvas = document.createElement('canvas');
@@ -75,7 +76,11 @@ const Video = ({
     ctx.drawImage(canvas, 0, 0, width, height);
     
     setBlurredBackground(canvas.toDataURL());
-  }, []);
+  } catch (error) {
+    console.error('Error generating blurred background:', error);
+    setBlurredBackground(null);
+  }
+}, []);
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -333,6 +338,7 @@ const Video = ({
         <video
           ref={videoRef}
           src={srcs[currentIndex]}
+          crossOrigin="anonymous"  
           style={{
             width: '100%',
             height: '100%',
