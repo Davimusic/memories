@@ -36,7 +36,7 @@ const MemoryCleaner = () => {
 
   const transformEmail = useCallback((email) => email.replace(/[@.]/g, '_'), []);
 
-  const transformMediaWithUrl = useCallback((mongoMedia, backBlazeFiles) => {
+  /*const transformMediaWithUrl = useCallback((mongoMedia, backBlazeFiles) => {
     return mongoMedia.map(item => {
       const fileName = item.storage_path.split('/').pop();
       const bbFile = backBlazeFiles.find(f => f.fileName.endsWith(fileName));
@@ -50,7 +50,54 @@ const MemoryCleaner = () => {
             : 'audio'
       };
     });
-  }, []);
+  }, []);*/
+
+  const transformMediaWithUrl = useCallback((mongoMedia, backBlazeFiles) => {
+  const bunnyHostname = "https://goodmemories.b-cdn.net";
+  return mongoMedia.map(item => {
+    const fileName = item.storage_path.split('/').pop();
+    const bbFile = backBlazeFiles.find(f => f.fileName.endsWith(fileName));
+    
+    // URL original de Backblaze
+    let fileUrl = bbFile?.url || "#";
+    
+    if (fileUrl !== "#" && fileUrl.includes("https://f001.backblazeb2.com/file/memoriesAppDavimusic")) {
+      // Reemplaza la parte de Backblaze por el hostname de Bunny.net
+      fileUrl = fileUrl.replace("https://f001.backblazeb2.com/file/memoriesAppDavimusic", bunnyHostname);
+    }
+    
+    // Si se trata de un video, inserta el segmento para baja calidad (240p)
+    if (item.storage_path.includes("videos")) {
+      // Esto asume que la transformación se activa insertando "/240" inmediatamente después del hostname.
+      fileUrl = fileUrl.replace(bunnyHostname, `${bunnyHostname}/240`);
+    }
+
+    console.log({
+      ...item,
+      url: fileUrl,
+      type: item.storage_path.includes("photos")
+        ? "photo"
+        : item.storage_path.includes("videos")
+          ? "video"
+          : "audio"
+    });
+    
+    
+    return {
+      ...item,
+      url: fileUrl,
+      type: item.storage_path.includes("photos")
+        ? "photo"
+        : item.storage_path.includes("videos")
+          ? "video"
+          : "audio"
+    };
+  });
+}, []);
+
+
+
+
 
   const pluralize = useCallback((type) => {
     if (type === 'photo') return 'photos';
