@@ -52,8 +52,9 @@ const MemoryCleaner = () => {
     });
   }, []);*/
 
-  const transformMediaWithUrl = useCallback((mongoMedia, backBlazeFiles) => {
+const transformMediaWithUrl = useCallback((mongoMedia, backBlazeFiles) => {
   const bunnyHostname = "https://goodmemories.b-cdn.net";
+  
   return mongoMedia.map(item => {
     const fileName = item.storage_path.split('/').pop();
     const bbFile = backBlazeFiles.find(f => f.fileName.endsWith(fileName));
@@ -61,17 +62,21 @@ const MemoryCleaner = () => {
     // URL original de Backblaze
     let fileUrl = bbFile?.url || "#";
     
-    if (fileUrl !== "#" && fileUrl.includes("https://f001.backblazeb2.com/file/memoriesAppDavimusic")) {
-      // Reemplaza la parte de Backblaze por el hostname de Bunny.net
-      fileUrl = fileUrl.replace("https://f001.backblazeb2.com/file/memoriesAppDavimusic", bunnyHostname);
+    // Usamos una regex para capturar el path que sigue a "/file/memoriesAppDavimusic"
+    const regex = /https:\/\/f\d{3}\.backblazeb2\.com\/file\/memoriesAppDavimusic(\/.+)/;
+    if (fileUrl !== "#" && regex.test(fileUrl)) {
+      const match = fileUrl.match(regex);
+      if (match && match[1]) {
+        // Reconstruimos la URL: concatenamos el hostname de Bunny.net con el path extraído
+        fileUrl = bunnyHostname + match[1];
+      }
     }
     
     // Si se trata de un video, inserta el segmento para baja calidad (240p)
-    if (item.storage_path.includes("videos")) {
-      // Esto asume que la transformación se activa insertando "/240" inmediatamente después del hostname.
+    if (item.storage_path.includes("videos") && fileUrl.includes(bunnyHostname)) {
       fileUrl = fileUrl.replace(bunnyHostname, `${bunnyHostname}/240`);
     }
-
+    
     console.log({
       ...item,
       url: fileUrl,
@@ -81,7 +86,6 @@ const MemoryCleaner = () => {
           ? "video"
           : "audio"
     });
-    
     
     return {
       ...item,
@@ -94,6 +98,9 @@ const MemoryCleaner = () => {
     };
   });
 }, []);
+
+
+
 
 
 
