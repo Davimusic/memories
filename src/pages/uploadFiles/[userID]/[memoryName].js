@@ -187,7 +187,7 @@ const FilePermissionViewer = () => {
     }
   };
 
-  const uploadFiles = async () => {
+const uploadFiles = async () => {
     setIsUploading(true);
     setUploadError(null);
 
