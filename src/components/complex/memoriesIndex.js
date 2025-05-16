@@ -103,7 +103,11 @@ const MemoriesIndex = () => {
 
   const handleCreateMemory = () => {
     if (!userEmail) {
-      alert("You must log in first");
+      const path = window.location.pathname;
+      localStorage.setItem('redirectPath', path);
+      localStorage.setItem('reason', 'createNewUser');
+      router.push('/login');
+      return;
     } else {
       router.push('/createNewMemory');
     }

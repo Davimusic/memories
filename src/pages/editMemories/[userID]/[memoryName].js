@@ -9,6 +9,12 @@ import '../../../app/globals.css';
 import '../../../estilos/general/api/edit/editMemories.css'
 import '../../../estilos/general/general.css'
 
+
+
+
+
+
+
 const MemoryCleaner = () => {
   const router = useRouter();
   const { userID, memoryName } = router.query;
@@ -61,6 +67,7 @@ const transformMediaWithUrl = useCallback((mongoMedia, backBlazeFiles) => {
     
     // URL original de Backblaze
     let fileUrl = bbFile?.url || "#";
+    let backBlazeUrl
     
     // Usamos una regex para capturar el path que sigue a "/file/memoriesAppDavimusic"
     const regex = /https:\/\/f\d{3}\.backblazeb2\.com\/file\/memoriesAppDavimusic(\/.+)/;
@@ -74,10 +81,12 @@ const transformMediaWithUrl = useCallback((mongoMedia, backBlazeFiles) => {
     
     // Si se trata de un video, inserta el segmento para baja calidad (240p)
     if (item.storage_path.includes("videos") && fileUrl.includes(bunnyHostname)) {
+      backBlazeUrl = item.storage_path
       fileUrl = fileUrl.replace(bunnyHostname, `${bunnyHostname}/240`);
     }
     
     console.log({
+      backBlazeUrl: bbFile?.url,
       ...item,
       url: fileUrl,
       type: item.storage_path.includes("photos")

@@ -193,8 +193,8 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
         onClick={onClose}
       >
         <div onClick={handleMenuClick}>
-          <p className="title-sm" style={{ margin: 0 }}>{userMyLikes}</p>
-          <p className="title-md" style={{ marginBottom: '20px' }}>Menu</p>
+          <p className="title-md" style={{ margin: 0 }}>{userMyLikes}</p>
+          <p className="title-xl" style={{ marginBottom: '20px' }}>Menu</p>
 
           {/* Muestra la información del usuario */}
           {userName && (
@@ -218,7 +218,7 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
           {/* Items de navegación */}
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {['Memories', 'update Plane'].map((item, index) => (//'Favorites', 'Settings'
-              <li key={index} style={{ marginBottom: '15px' }}>
+              <li className='effectHover' key={index} style={{ marginBottom: '15px', width: '100%', borderRadius: '0.7em', paddingLeft: '10px' }}>
                 <a
                   href={
                     item === 'Memories'
@@ -228,14 +228,14 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
                       : '/#'
                   }
                   style={{ textDecoration: 'none' }}
-                  className="title-sm color5"
+                  className="title-md color5"
                 >
                   {item}
                 </a>
               </li>
             ))}
             <li style={{ marginBottom: '15px' }}>
-              <p onClick={handleLogout} className="title-sm" style={{ cursor: 'pointer' }}>
+              <p onClick={handleLogout} className="title-md effectHover" style={{ cursor: 'pointer', borderRadius: '10px', width: '100%', paddingLeft: '10px' }}>
                 Log out
               </p>
             </li>

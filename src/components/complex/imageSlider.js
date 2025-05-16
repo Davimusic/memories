@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Modal from "./modal";
 import NextBeforeIcon from "./nextBeforeIcon";
 import TogglePlayPause from "./TogglePlayPause";
@@ -9,7 +9,7 @@ import SpinnerIcon from "./spinnerIcon";
 import PropTypes from 'prop-types';
 import "../../estilos/general/imageSlider.css";
 import "../../estilos/general/general.css";
-import { log } from "tone/build/esm/core/util/Debug";
+
 
 
 
@@ -57,6 +57,26 @@ const ImageSlider = ({
   
   const controlsTimeout = useRef(null);
   const loadedImages = useRef(new Set());
+
+
+  const formatImageUrl = (url) => {
+    if (!url) return url;
+    
+    // Si ya tiene parámetros, agregamos format=webp al final
+    if (url.includes('?')) {
+      // Verificamos si ya tiene format=webp
+      if (!url.includes('format=webp')) {
+        return `${url}&format=webp`;
+      }
+      return url;
+    }
+    // Si no tiene parámetros, agregamos ?format=webp
+    return `${url}?format=webp`;
+  };
+
+  const formattedImages = useMemo(() => {
+    return images.map(img => formatImageUrl(img));
+  }, [images]);
 
   const getNextIndex = () => {
     if (images.length === 0) return 0;
@@ -265,13 +285,13 @@ const ImageSlider = ({
         <div className="image-wrapper">
           <img
             key={`bg-${currentIndex}-${chosenEffect}`}
-            src={images[currentIndex]}
+            src={formattedImages[currentIndex]}
             alt={`Background image ${currentIndex}`}
             className={`background-image ${bgEffectClass}`}
           />
           <img
             key={`${currentIndex}-${chosenEffect}`}
-            src={images[currentIndex]}
+            src={formattedImages[currentIndex]}
             alt={`Image ${currentIndex}`}
             className={`slideImage ${effectClass}`}
           />

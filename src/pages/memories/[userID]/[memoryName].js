@@ -15,6 +15,69 @@ import LoadingMemories from '@/components/complex/loading';
 import Modal from '@/components/complex/modal';
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const MemoryDetail = () => {
   const router = useRouter();
   const { userID, memoryName } = router.query; 
@@ -53,18 +116,71 @@ const MemoryDetail = () => {
 
   // Cache de medios
   const mediaCache = useRef(new Map());
-  let backBlazeRefs = useRef(null);
   const [isMainMenuOpen, setIsMainMenuOpen] = useState(false);
 
-
-
-
+  // Obtener datos de la memoria
   useEffect(() => {
-    console.log(memoryData);
-  }, []); 
+    const fetchMemoryData = async () => {  
+      if (!userID || !memoryName) return;
 
+      try {
+        const mongoResponse = await fetch("/api/mongoDb/postMemoryReferenceUser", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userID: userID, memoryTitle: memoryName }),
+        });
 
-  //access validation
+        if (!mongoResponse.ok) throw new Error("Error fetching data from MongoDB");
+        
+        const mongoData = await mongoResponse.json();
+        if (!mongoData.success) throw new Error("Failed to load memory data");
+
+        // Estructurar los datos directamente desde MongoDB
+        const formattedData = {
+          ...mongoData.memory,
+          metadata: mongoData.memory.metadata,
+          access: mongoData.memory.access,
+          media: {
+            photos: mongoData.memory.media.photos || [],
+            videos: mongoData.memory.media.videos || [],
+            audios: mongoData.memory.media.audios || [],
+            documents: mongoData.memory.media.documents || []
+          }
+        };
+
+        // Precargar medios usando las URLs directas
+        Object.entries(formattedData.media).forEach(([mediaType, items]) => {
+          items.forEach(item => {
+            const url = item.url;
+            if (!mediaCache.current.has(url)) {
+              let media;
+              if (mediaType === 'photos') {
+                media = new Image();
+                media.onload = () => mediaCache.current.set(url, true);
+                media.onerror = () => mediaCache.current.set(url, false);
+              } else if (mediaType === 'videos') {
+                media = document.createElement('video');
+                media.preload = 'metadata';
+                media.onloadeddata = () => mediaCache.current.set(url, true);
+                media.onerror = () => mediaCache.current.set(url, false);
+              }
+              if (media) media.src = url;
+            }
+          });
+        });
+
+        setMemoryData(formattedData);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchMemoryData();
+  }, [userID, memoryName]);
+
+  // Validación de acceso
   useEffect(() => {
     if (!memoryData) return;
   
@@ -99,7 +215,7 @@ const MemoryDetail = () => {
       // Transformar IDs para comparación
       const transformEmail = (email) => email.replace(/[@.]/g, '_');
       const currentUserTransformed = transformEmail(userEmail);
-      const ownerTransformed = memoryData.metadata.createdBy;
+      const ownerTransformed = memoryData.metadata.created_by;
   
       // Caso 2: Visibilidad Privada
       if (visibility === 'private') {
@@ -125,121 +241,26 @@ const MemoryDetail = () => {
         setRoll('User not allowed')
         console.log("Usuario no invitado");
         setMemoryData(null)
-        //router.push('/unauthorized');
       }
     };
   
     checkViewPermissions();
   }, [memoryData, router]);
 
-
-
-
-  useEffect(() => {
-    const fetchMemoryData = async () => {  
-      if (!userID || !memoryName) return;
-
-      try {
-        /*const storedEmail = localStorage.getItem("userEmail");
-        if (!storedEmail) {
-          throw new Error("User email not found in localStorage");
-        }
-        setUserEmail(storedEmail);
-
-        // Transformar email para coincidir con rutas de Backblaze
-        const correoFormatted = storedEmail.replace(/[@.]/g, '_');*/
-
-        const [mongoResponse, blackBlazeResponse] = await Promise.all([
-          fetch("/api/mongoDb/postMemoryReferenceUser", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userID: userID, memoryTitle: memoryName }),
-          }),
-          fetch(`/api/blackBlaze/getMemoryReferenceUser?correo=${userID}&memoryTitle=${memoryName}`)
-        ]);
-
-        if (!mongoResponse.ok || !blackBlazeResponse.ok) {
-          throw new Error("Error fetching data from services");
-        }
-
-        const [mongoData, blackBlazeData] = await Promise.all([
-          mongoResponse.json(),
-          blackBlazeResponse.json()
-        ]);
-
-        if (mongoData.success && blackBlazeData.success) {
-          const specificMemory = mongoData.memory;
-          const backBlazeMedia = blackBlazeData.memories[memoryName] || { fotos: [], videos: [], audios: [] };
-
-          // Función para combinar datos de MongoDB y Backblaze
-          const transformMediaWithUrl = (mongoMedia, backBlazeFiles) => {
-            return mongoMedia.map(item => {
-              const bbFile = backBlazeFiles.find(f => f.fileName === item.storage_path);
-              return {
-                ...item,
-                url: bbFile?.url || '#', // Usar URL de Backblaze
-              };
-            });
-          };
-
-          const formattedData = {
-            ...specificMemory,
-            backBlazeRefs: {
-              photos: transformMediaWithUrl(specificMemory.media.photos, backBlazeMedia.fotos),
-              videos: transformMediaWithUrl(specificMemory.media.videos, backBlazeMedia.videos),
-              audios: transformMediaWithUrl(specificMemory.media.audios, backBlazeMedia.audios),
-              documents: transformMediaWithUrl(specificMemory.media.documents, [])
-            }
-          };
-
-          // Precargar medios para cache
-          Object.entries(formattedData.backBlazeRefs).forEach(([folderName, files]) => {
-            files.forEach(file => {
-              if (!mediaCache.current.has(file.url)) {
-                let media;
-                if (folderName === 'photos') {
-                  media = new Image();
-                  media.onload = () => mediaCache.current.set(file.url, true);
-                  media.onerror = () => mediaCache.current.set(file.url, false);
-                } else if (folderName === 'videos') {
-                  media = document.createElement('video');
-                  media.preload = 'metadata';
-                  media.onloadeddata = () => mediaCache.current.set(file.url, true);
-                  media.onerror = () => mediaCache.current.set(file.url, false);
-                  media.load();
-                }
-                if (media) media.src = file.url;
-              }
-            });
-          });
-
-          setMemoryData(formattedData);
-          console.log(formattedData.metadata.title);
-          
-          setLoading(false);
-        }
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
-
-    fetchMemoryData();
-  }, [userID, memoryName]);
-
-
-
   const handleFolderClick = async (folderName) => {
     setFolderLoadingStates(prev => ({ ...prev, [folderName]: true }));
     setPreviewFolder(folderName);
 
-    // Pequeño retardo para feedback visual
     await new Promise(resolve => setTimeout(resolve, 200));
 
     if (!folderContents[folderName]) {
-      const filesWithCacheStatus = memoryData.backBlazeRefs[folderName].map(file => ({
-        ...file,
-        cached: mediaCache.current.has(file.url)
+      console.log(memoryData);
+      
+      const filesWithCacheStatus = memoryData.media[folderName].map(item => ({
+        url: item.url,
+        fileName: item.url.split('/').pop(),
+        cached: mediaCache.current.has(item.url),
+        metadata: item.metadata
       }));
 
       setFolderContents(prev => ({
@@ -270,10 +291,10 @@ const MemoryDetail = () => {
     
     const mediaContent = files.map(file => ({
       src: file.url,
-      //type: mediaTypeMap[folderName],
-      type: mediaTypeMap[folderName], // Usar el mapeo actualizado
+      type: mediaTypeMap[folderName],
       fileName: file.fileName,
-      cached: file.cached
+      cached: file.cached,
+      metadata: file.metadata
     }));
 
     setMediaState(prev => ({
@@ -331,7 +352,6 @@ const MemoryDetail = () => {
                 playsInline 
                 preload="metadata"
                 onLoadedData={(e) => {
-                  // Forzar actualización de caché si es necesario
                   if (!mediaCache.current.has(file.url)) {
                     mediaCache.current.set(file.url, true);
                   }
@@ -346,7 +366,6 @@ const MemoryDetail = () => {
         ) : folderName === "audios" ? (
           <div className={styles.audioPreview}>
             <div className={styles.audioIcon}>🎵</div>
-            {/*<span>{file.fileName.split('_').pop()}</span>*/}
           </div>
         ) : (
           <div className={styles.filePreview}>
@@ -358,9 +377,7 @@ const MemoryDetail = () => {
   };
 
   if (loading) {
-    return (
-      <LoadingMemories/>
-    );
+    return <LoadingMemories/>;
   }
 
   if (error) {
@@ -376,17 +393,16 @@ const MemoryDetail = () => {
     );
   }
 
-  backBlazeRefs = memoryData?.backBlazeRefs || {};
-  const foldersWithContent = Object.keys(backBlazeRefs).filter(
-    (folderName) => Array.isArray(backBlazeRefs[folderName]) && backBlazeRefs[folderName].length > 0
-  );
+  const foldersWithContent = memoryData 
+    ? Object.keys(memoryData.media).filter(
+        folderName => memoryData.media[folderName].length > 0
+      )
+    : [];
 
   const { metadata } = memoryData || {};
 
-  
-
   return (
-    <div  className={`${styles.fullscreenContainer} backgroundColor1`}>
+    <div className={`${styles.fullscreenContainer} backgroundColor1`}>
       <div className={styles.backgroundWrapper}>
         <Menu 
           isOpen={isMainMenuOpen} 
@@ -403,7 +419,7 @@ const MemoryDetail = () => {
               </div>
               <textarea
                 className={`${styles.memoryTitle} title-xl color2`}
-                value={memoryData.metadata.title || "No title available"}
+                value={memoryData?.metadata?.title || "No title available"}
                 readOnly
                 rows={2}
               />
@@ -414,28 +430,28 @@ const MemoryDetail = () => {
           <div className={styles.contentWrapper}>
             {/* Columna izquierda - Información */}
             <div className={styles.infoColumn}>
-                  <span  className={`${roll != 'User not allowed' ? 'color2' : 'alertColor'}`} >Roll:</span>
-                  <span  className={`${roll != 'User not allowed' ? 'color2' : 'alertColor'}`} >{roll}</span>
-                  {roll === 'User not allowed' ? <h3 style={{color: 'red'}}>If you believe this is a mistake, please contact the account owner.</h3> : null}
+              <span className={`${roll != 'User not allowed' ? 'color2' : 'alertColor'}`}>Roll:</span>
+              <span className={`${roll != 'User not allowed' ? 'color2' : 'alertColor'}`}>{roll}</span>
+              {roll === 'User not allowed' && <h3 style={{color: 'red'}}>If you believe this is a mistake, please contact the account owner.</h3>}
+              
               {metadata && (
                 <div className={styles.metadataContainer}>
-                  
                   <textarea
                     className={`${styles.memoryDescription} color1`}
-                    value={metadata.descripcion || "No description available"}
+                    value={metadata.description || "No description available"}
                     readOnly
                     rows={5}
                   />
                   <div className={styles.datesContainer}>
-                    <div>Created: {new Date(metadata.createdAt).toLocaleDateString()}</div>
-                    <div>Last modified: {new Date(metadata.lastUpdated).toLocaleDateString()}</div>
+                    <div>Created: {new Date(metadata.created_at).toLocaleDateString()}</div>
+                    <div>Last modified: {new Date(metadata.last_updated).toLocaleDateString()}</div>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Columna derecha - Archivos */}
-            {memoryData != null ? (
+            {memoryData && (
               <div className={styles.filesColumn}>
                 <div className={styles.foldersHeader}>
                   <h2 className={'color1'}>Folders</h2>
@@ -453,7 +469,7 @@ const MemoryDetail = () => {
                           <div className={styles.folderInfo}>
                             <h3>{folderName}</h3>
                             <span className={styles.folderCount}>
-                              {backBlazeRefs[folderName]?.length} {backBlazeRefs[folderName]?.length === 1 ? 'item' : 'items'}
+                              {memoryData.media[folderName].length} {memoryData.media[folderName].length === 1 ? 'item' : 'items'}
                             </span>
                             {folderLoadingStates[folderName] && <SpinnerIcon size={16} />}
                           </div>
@@ -466,8 +482,7 @@ const MemoryDetail = () => {
                   <p className={styles.noFoldersMessage}>No folders available for this memory.</p>
                 )}
               </div>
-            ) : null}
-
+            )}
           </div>
 
           {/* Modal de previsualización de carpeta */}

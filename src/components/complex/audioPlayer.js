@@ -1,13 +1,21 @@
 'use client';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
+import '../../estilos/general/general.css'
 import '../../estilos/general/audioPlayer.css'
-import SpinnerIcon from './spinnerIcon';
-import DownloadIcon from '@/components/complex/downloadIcon';
-import TogglePlayPause from '@/components/complex/TogglePlayPause';
-import ShuffleButton from '@/components/complex/ShuffleButton';
-import RepeatButton from '@/components/complex/RepeatButton';
-import NextBeforeIcon from '@/components/complex/nextBeforeIcon';
-import ToggleMute from '@/components/complex/ToggleMute';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export default function AudioPlayer({ audioFiles = [], currentIndex = 0 }) {
     console.log(audioFiles);
@@ -333,13 +341,7 @@ export default function AudioPlayer({ audioFiles = [], currentIndex = 0 }) {
     <div className="audio-player-container">
       <div className="audio-player">
         <div className="player-container">
-          {isLoading ? (
-            <div className="loading-message">
-              <div className="spinner">
-                <SpinnerIcon size={30}/>
-              </div>
-            </div>
-          ) : (
+          
             <div className="player-main-content">
               {/* Sección de lista de reproducción */}
               <h3 className="playlist-title" style={{display: 'flex', justifyContent: 'center', textAlign: "center" }}>
@@ -524,7 +526,7 @@ export default function AudioPlayer({ audioFiles = [], currentIndex = 0 }) {
                 </div>
               </div>
             </div>
-          )}
+          
         </div>
       </div>
     </div>
