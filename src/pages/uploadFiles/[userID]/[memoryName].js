@@ -18,7 +18,7 @@ import '../../../estilos/general/general.css'
 
 
 
-const FilePermissionViewer = () => {
+/*const FilePermissionViewer = () => {
   const router = useRouter();
   const { userID, memoryName } = router.query;
   
@@ -313,6 +313,11 @@ const uploadFiles = async () => {
       setIsUploading(false);
     }
   };
+
+
+
+
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -625,5 +630,160 @@ const uploadFiles = async () => {
   );
 };
 
-export default FilePermissionViewer;
+export default FilePermissionViewer;*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const DirectBunnyUploader = () => {
+  // Configuración
+  const BUNNY_ACCESS_KEY = "7026ecef-f874-4c3c-8968e8362281-949a-4e5b";
+  const STORAGE_ZONE = "goodmemories";
+  const BUNNY_REGION = "ny";
+  const BASE_PATH = "e55c81892694f42318e9b3b5131051559650dcba7d0fe0651c2aa472ea6a6c0c/primer_test_bunny";
+
+  // Estados
+  const [file, setFile] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState("");
+  const [publicUrl, setPublicUrl] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+
+  // Validación de tipos de archivo
+  const validateFileType = (file, type) => {
+    const extension = file.name.split('.').pop().toLowerCase();
+    
+    switch(type) {
+      case 'audio':
+        return file.type === 'audio/mpeg' && extension === 'mp3';
+      case 'video':
+        return file.type === 'video/mp4' && extension === 'mp4';
+      case 'image':
+        return file.type.startsWith('image/');
+      default:
+        return false;
+    }
+  };
+
+  // Función de subida
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (!file || !selectedType) return;
+
+    setUploadStatus("Validando archivo...");
+
+    // Validar tipo de archivo
+    if (!validateFileType(file, selectedType)) {
+      setUploadStatus(`❌ Formato inválido para ${selectedType}`);
+      return;
+    }
+
+    setUploadStatus("Subiendo...");
+    
+    try {
+      // Generar nombre de archivo seguro
+      const timestamp = Date.now();
+      const safeName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
+      const uploadPath = `${BASE_PATH}/${selectedType}/${safeName}`;
+
+      // Configurar URL de subida
+      const uploadUrl = `https://${BUNNY_REGION}.storage.bunnycdn.com/${STORAGE_ZONE}/${uploadPath}`;
+
+      // Subir archivo
+      const response = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {
+          "AccessKey": BUNNY_ACCESS_KEY,
+          "Content-Type": file.type
+        },
+        body: file
+      });
+
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+      
+      // Generar URL pública
+      const cdnUrl = `https://goodmemoriesapp.b-cdn.net/${uploadPath}`;
+      setPublicUrl(cdnUrl);
+      setUploadStatus("✅ Subido exitosamente");
+    } catch (error) {
+      console.error("Error:", error);
+      setUploadStatus(`❌ Error: ${error.message}`);
+    }
+  };
+
+  return (
+    <div className="p-4 max-w-md mx-auto">
+      <h1 className="text-xl mb-4">Subir Archivo a Bunny.net</h1>
+      <form onSubmit={handleUpload}>
+        <div className="mb-4">
+          <select 
+            value={selectedType} 
+            onChange={(e) => setSelectedType(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
+          >
+            <option value="">Seleccionar tipo de archivo</option>
+            <option value="audio">Audio (MP3)</option>
+            <option value="video">Video (MP4)</option>
+            <option value="image">Imagen</option>
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <input 
+            type="file" 
+            onChange={(e) => setFile(e.target.files[0])}
+            accept={
+              selectedType === 'audio' ? '.mp3' : 
+              selectedType === 'video' ? '.mp4' : 
+              selectedType === 'image' ? 'image/*' : ''
+            }
+            className="w-full"
+            required
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+        >
+          Subir Archivo
+        </button>
+      </form>
+
+      <div className="mt-4">
+        <p className="font-medium">Estado: {uploadStatus}</p>
+        {publicUrl && (
+          <div className="mt-2 break-words">
+            <p className="text-sm">Enlace público:</p>
+            <a 
+              href={publicUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 text-sm"
+            >
+              {publicUrl}
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default DirectBunnyUploader;
+
+
+
+
 
