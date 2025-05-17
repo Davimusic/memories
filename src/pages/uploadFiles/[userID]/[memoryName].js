@@ -646,6 +646,7 @@ export default FilePermissionViewer;*/
 
 
 
+
 const DirectBunnyUploader = () => {
   // Configuración
   const BUNNY_ACCESS_KEY = "7026ecef-f874-4c3c-8968e8362281-949a-4e5b";
@@ -654,10 +655,9 @@ const DirectBunnyUploader = () => {
   const BASE_PATH = "e55c81892694f42318e9b3b5131051559650dcba7d0fe0651c2aa472ea6a6c0c/primer_test_bunny";
 
   // Estados
-  const [file, setFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState("");
-  const [publicUrl, setPublicUrl] = useState("");
+  const [files, setFiles] = useState([]);
   const [selectedType, setSelectedType] = useState("");
+  const [uploadStatus, setUploadStatus] = useState("");
 
   // Validación de tipos de archivo
   const validateFileType = (file, type) => {
@@ -675,55 +675,75 @@ const DirectBunnyUploader = () => {
     }
   };
 
-  // Función de subida
+  // Función de subida múltiple
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!file || !selectedType) return;
+    if (!files.length || !selectedType) return;
 
-    setUploadStatus("Validando archivo...");
+    setUploadStatus("Iniciando subida múltiple...");
 
-    // Validar tipo de archivo
-    if (!validateFileType(file, selectedType)) {
-      setUploadStatus(`❌ Formato inválido para ${selectedType}`);
-      return;
-    }
-
-    setUploadStatus("Subiendo...");
-    
     try {
-      // Generar nombre de archivo seguro
-      const timestamp = Date.now();
-      const safeName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
-      const uploadPath = `${BASE_PATH}/${selectedType}/${safeName}`;
+      const uploadPromises = files.map(async (file) => {
+        // Validar archivo
+        if (!validateFileType(file, selectedType)) {
+          return {
+            ...file,
+            status: 'error',
+            error: `Formato inválido para ${selectedType}`
+          };
+        }
 
-      // Configurar URL de subida
-      const uploadUrl = `https://${BUNNY_REGION}.storage.bunnycdn.com/${STORAGE_ZONE}/${uploadPath}`;
+        // Generar ruta
+        const timestamp = Date.now();
+        const safeName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
+        const uploadPath = `${BASE_PATH}/${selectedType}/${safeName}`;
+        const uploadUrl = `https://${BUNNY_REGION}.storage.bunnycdn.com/${STORAGE_ZONE}/${uploadPath}`;
 
-      // Subir archivo
-      const response = await fetch(uploadUrl, {
-        method: "PUT",
-        headers: {
-          "AccessKey": BUNNY_ACCESS_KEY,
-          "Content-Type": file.type
-        },
-        body: file
+        // Subir archivo
+        const response = await fetch(uploadUrl, {
+          method: "PUT",
+          headers: {
+            "AccessKey": BUNNY_ACCESS_KEY,
+            "Content-Type": file.type
+          },
+          body: file
+        });
+
+        if (!response.ok) throw new Error(`Error ${response.status}`);
+
+        return {
+          ...file,
+          status: 'completed',
+          url: `https://goodmemoriesapp.b-cdn.net/${uploadPath}`
+        };
       });
 
-      if (!response.ok) throw new Error(`Error ${response.status}`);
+      // Ejecutar todas las subidas en paralelo
+      const results = await Promise.allSettled(uploadPromises);
       
-      // Generar URL pública
-      const cdnUrl = `https://goodmemoriesapp.b-cdn.net/${uploadPath}`;
-      setPublicUrl(cdnUrl);
-      setUploadStatus("✅ Subido exitosamente");
+      // Actualizar estado con resultados
+      const updatedFiles = results.map((result, index) => {
+        if (result.status === 'fulfilled') {
+          return result.value;
+        }
+        return {
+          ...files[index],
+          status: 'error',
+          error: result.reason.message
+        };
+      });
+
+      setFiles(updatedFiles);
+      setUploadStatus("Subida completa");
     } catch (error) {
-      console.error("Error:", error);
-      setUploadStatus(`❌ Error: ${error.message}`);
+      console.error("Error general:", error);
+      setUploadStatus("❌ Error en la subida múltiple");
     }
   };
 
   return (
     <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-xl mb-4">Subir Archivo a Bunny.net</h1>
+      <h1 className="text-xl mb-4">Subida Múltiple a Bunny.net</h1>
       <form onSubmit={handleUpload}>
         <div className="mb-4">
           <select 
@@ -742,7 +762,8 @@ const DirectBunnyUploader = () => {
         <div className="mb-4">
           <input 
             type="file" 
-            onChange={(e) => setFile(e.target.files[0])}
+            multiple
+            onChange={(e) => setFiles([...e.target.files])}
             accept={
               selectedType === 'audio' ? '.mp3' : 
               selectedType === 'video' ? '.mp4' : 
@@ -757,25 +778,38 @@ const DirectBunnyUploader = () => {
           type="submit" 
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
         >
-          Subir Archivo
+          Subir Archivos ({files.length})
         </button>
       </form>
 
       <div className="mt-4">
         <p className="font-medium">Estado: {uploadStatus}</p>
-        {publicUrl && (
-          <div className="mt-2 break-words">
-            <p className="text-sm">Enlace público:</p>
-            <a 
-              href={publicUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 text-sm"
-            >
-              {publicUrl}
-            </a>
-          </div>
-        )}
+        
+        <div className="mt-4 space-y-3">
+          {files.map((file, index) => (
+            <div key={index} className="p-2 border rounded">
+              <p className="text-sm font-medium truncate">{file.name}</p>
+              <div className="text-sm">
+                {file.status === 'completed' && (
+                  <div className="text-green-600">
+                    ✅ Subido - <a 
+                      href={file.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      Ver archivo
+                    </a>
+                  </div>
+                )}
+                {file.status === 'error' && (
+                  <div className="text-red-600">❌ Error: {file.error}</div>
+                )}
+                {!file.status && "🕒 Pendiente de subida"}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
