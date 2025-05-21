@@ -85,7 +85,6 @@ export default async function handler(req, res) {
     const requiredEnvVars = [
       'NEXT_PUBLIC_BUNNY_REGION',
       'NEXT_PUBLIC_BUNNY_STORAGE_ZONE',
-      'NEXT_PUBLIC_BASE_PATH',
       'NEXT_PUBLIC_BUNNY_ACCESS_KEY',
     ];
 
