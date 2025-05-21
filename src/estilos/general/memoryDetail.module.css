@@ -366,9 +366,7 @@
     .infoColumn {
       max-width: none;
       border-right: none;
-      
-      height: 35%;
-      min-height: 250px;
+      max-height: 20%;
       padding: 15px;
     }
   

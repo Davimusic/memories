@@ -977,9 +977,6 @@ export default DirectBunnyUploader;*/
 
 
 
-
-
-
 const validateFileType = (file) => {
     const extension = file.name.split('.').pop().toLowerCase();
     let fileType = ALLOWED_MIME_TYPES[file.type];
@@ -1001,7 +998,8 @@ const validateFileType = (file) => {
     return { isValid: false, fileType: null };
   };
 
-  const openDB = () =>
+// IndexedDB utility (you can use a library like 'idb' or write your own)
+const openDB = () =>
   new Promise((resolve, reject) => {
     const request = indexedDB.open('uploads', 1);
     request.onupgradeneeded = () => {
@@ -1062,6 +1060,7 @@ const formatFileSize = (bytes) => {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
+  
 
 const DirectBunnyUploader = () => {
   const router = useRouter();
@@ -1080,20 +1079,43 @@ const DirectBunnyUploader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [invalidFilesError, setInvalidFilesError] = useState(null);
+  const [isServiceWorkerReady, setIsServiceWorkerReady] = useState(false);
 
-  // Refs for file inputs
   const audioInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const imageInputRef = useRef(null);
 
   useEffect(() => {
-    // Register Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/service-worker.js')
-        .then(() => console.log('Service Worker registered'))
-        .catch((err) => console.error('Service Worker registration failed:', err));
-    }
+    const registerServiceWorker = async () => {
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const registration of registrations) {
+            await registration.unregister();
+          }
+
+          const registration = await navigator.serviceWorker.register('/service-worker.js');
+          console.log('Service Worker registered');
+
+          if (registration.active) {
+            setIsServiceWorkerReady(true);
+          } else {
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'activated') {
+                  setIsServiceWorkerReady(true);
+                }
+              });
+            });
+          }
+        } catch (err) {
+          console.error('Service Worker registration failed:', err);
+        }
+      }
+    };
+
+    registerServiceWorker();
 
     const email = localStorage.getItem('userEmail');
     if (email) {
@@ -1130,11 +1152,8 @@ const DirectBunnyUploader = () => {
               .includes(file.name.split('.').pop().toLowerCase())
           );
           setExistingFiles(filteredFiles);
-        } else {
-          setUploadStatus('Error al cargar los archivos');
         }
       } catch (err) {
-        setUploadStatus('Error al cargar los archivos');
         console.error('Error al obtener archivos:', err);
       } finally {
         setIsLoading(false);
@@ -1205,7 +1224,7 @@ const DirectBunnyUploader = () => {
       return;
     }
 
-    setUploadStatus('Preparando subida en segundo plano...');
+    setUploadStatus('Preparando subida...');
     setIsLoading(true);
 
     try {
@@ -1215,21 +1234,48 @@ const DirectBunnyUploader = () => {
         folderName,
         currentUser: userEmail,
       };
-      const taskKeys = await storeUploadTasks(files.map(f => f.file), uploadInfo);
-      console.log(taskKeys);
-      
+
       if (navigator.serviceWorker.controller) {
+        const taskKeys = await storeUploadTasks(files.map(f => f.file), uploadInfo);
         navigator.serviceWorker.controller.postMessage({
           type: 'START_UPLOADS',
           keys: taskKeys,
         });
         setUploadStatus('Subida iniciada en segundo plano');
-        setFiles([]);
-        setTotalSize('0 Bytes');
-        setIsModalOpen(true);
       } else {
-        setUploadStatus('Error: No hay Service Worker activo');
+        setUploadStatus('Service Worker no activo, subiendo directamente...');
+        for (const file of files) {
+          const authResponse = await fetch(
+            `/api/bunny/secureUpload?memoryName=${encodeURIComponent(memoryName)}&userID=${userID}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'file-type': file.file.type },
+              body: JSON.stringify({
+                currentUser: userEmail,
+                type: folderName,
+                fileType: file.type,
+                fileName: file.file.name,
+              }),
+            }
+          );
+
+          if (!authResponse.ok) throw new Error('Failed to get upload URL');
+          const { uploadUrl, headers } = await authResponse.json();
+
+          const uploadResponse = await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: { ...headers, 'Content-Type': file.file.type },
+            body: file.file,
+          });
+
+          if (!uploadResponse.ok) throw new Error('Upload failed');
+        }
+        setUploadStatus('Subida completada directamente');
       }
+
+      setFiles([]);
+      setTotalSize('0 Bytes');
+      setIsModalOpen(true);
     } catch (error) {
       setUploadStatus(`Error al preparar la subida: ${error.message}`);
       console.error('Error:', error);
@@ -1238,7 +1284,6 @@ const DirectBunnyUploader = () => {
     }
   };
 
-  // Functions to trigger file inputs
   const triggerAudioInput = () => audioInputRef.current.click();
   const triggerVideoInput = () => videoInputRef.current.click();
   const triggerImageInput = () => imageInputRef.current.click();
@@ -1273,7 +1318,6 @@ const DirectBunnyUploader = () => {
               src={file.preview} 
               alt="Preview" 
               className="media-preview"
-              style={{ objectFit: 'contain', maxHeight: '200px' }}
             />
           )}
           {file.type === 'video' && (
@@ -1282,16 +1326,15 @@ const DirectBunnyUploader = () => {
                 controls
                 src={file.preview}
                 className="media-preview"
-                style={{ maxWidth: '100%', maxHeight: '200px' }}
               />
             </div>
           )}
           {file.type === 'audio' && (
-            <div className="audio-wrapper" style={{ width: '100%' }}>
+            <div className="audio-wrapper audio-preview-container">
               <audio
                 controls
                 src={file.preview}
-                style={{ width: '100%', height: '40px' }}
+                className="audio-preview"
               />
               <div className="audio-meta">
                 {file.file.name} ({(file.file.size / 1024 / 1024).toFixed(2)} MB)
@@ -1306,6 +1349,7 @@ const DirectBunnyUploader = () => {
               e.stopPropagation();
               removeFile(index);
             }}
+            aria-label="Remove file"
           >
             ×
           </button>
@@ -1347,6 +1391,7 @@ const DirectBunnyUploader = () => {
               <button 
                 className="closeXButton"
                 onClick={() => setIsPreviewModalOpen(false)}
+                aria-label="Close preview modal"
               >
                 ×
               </button>
@@ -1369,11 +1414,9 @@ const DirectBunnyUploader = () => {
       )}
 
       <div className="file-uploader">
-        <div style={{ display: 'flex' }}>
-          <div className="menu-icon-container">
-            <MenuIcon onClick={() => setIsMenuOpen(true)} style={{ zIndex: 10 }} />
-          </div>
-          <h2 className="title">Subir archivos a: {memoryName}</h2>
+        <div className="header-container" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <MenuIcon onClick={() => setIsMenuOpen(true)} style={{ zIndex: 10 }} />
+          <h2 className="title"> {memoryName}</h2>
         </div>
 
         <div className="uploader-content">
@@ -1387,10 +1430,7 @@ const DirectBunnyUploader = () => {
                   <span className="permission-label">Usuario:</span>
                   <span className="permission-value">{userEmail}</span>
                 </div>
-                <div className="permission-item">
-                  <span className="permission-label">Carpeta:</span>
-                  <span className="permission-value">{folderName}</span>
-                </div>
+                
                 <div className="permission-item">
                   <span className="permission-label">Tamaño Total:</span>
                   <span className="permission-value">{totalSize}</span>
@@ -1411,7 +1451,7 @@ const DirectBunnyUploader = () => {
                       <div className="counter-and-preview">
                         {files.filter(f => f.type === 'image').length > 0 && (
                           <>
-                            <span style={{paddingRight: '10px'}} className="file-count-badge">
+                            <span className="file-count-badge">
                               {files.filter(f => f.type === 'image').length}
                             </span>
                             <ShowHide 
@@ -1430,6 +1470,7 @@ const DirectBunnyUploader = () => {
                         type="button"
                         onClick={triggerImageInput}
                         disabled={isLoading}
+                        aria-label="Add image files"
                       >
                         Añadir
                       </button>
@@ -1441,7 +1482,9 @@ const DirectBunnyUploader = () => {
                     onChange={(e) => handleFileChange(e, 'image')}
                     accept="image/jpeg,image/png,image/gif"
                     ref={imageInputRef}
+                    id="image-input"
                     hidden
+                    aria-label="Select image files"
                   />
                 </div>
 
@@ -1452,7 +1495,7 @@ const DirectBunnyUploader = () => {
                       <div className="counter-and-preview">
                         {files.filter(f => f.type === 'video').length > 0 && (
                           <>
-                            <span style={{paddingRight: '10px'}} className="file-count-badge">
+                            <span className="file-count-badge">
                               {files.filter(f => f.type === 'video').length}
                             </span>
                             <ShowHide 
@@ -1471,6 +1514,7 @@ const DirectBunnyUploader = () => {
                         type="button"
                         onClick={triggerVideoInput}
                         disabled={isLoading}
+                        aria-label="Add video files"
                       >
                         Añadir
                       </button>
@@ -1482,7 +1526,9 @@ const DirectBunnyUploader = () => {
                     onChange={(e) => handleFileChange(e, 'video')}
                     accept="video/mp4"
                     ref={videoInputRef}
+                    id="video-input"
                     hidden
+                    aria-label="Select video files"
                   />
                 </div>
 
@@ -1493,7 +1539,7 @@ const DirectBunnyUploader = () => {
                       <div className="counter-and-preview">
                         {files.filter(f => f.type === 'audio').length > 0 && (
                           <>
-                            <span style={{paddingRight: '10px'}} className="file-count-badge">
+                            <span className="file-count-badge">
                               {files.filter(f => f.type === 'audio').length}
                             </span>
                             <ShowHide 
@@ -1512,6 +1558,7 @@ const DirectBunnyUploader = () => {
                         type="button"
                         onClick={triggerAudioInput}
                         disabled={isLoading}
+                        aria-label="Add audio files"
                       >
                         Añadir
                       </button>
@@ -1523,15 +1570,18 @@ const DirectBunnyUploader = () => {
                     onChange={(e) => handleFileChange(e, 'audio')}
                     accept="audio/mp3"
                     ref={audioInputRef}
+                    id="audio-input"
                     hidden
+                    aria-label="Select audio files"
                   />
                 </div>
               </div>
 
               <button 
                 type="submit" 
-                disabled={isLoading || !files.length}
+                disabled={isLoading || !files.length || !isServiceWorkerReady}
                 className={`submitButton ${isLoading ? 'uploading' : ''}`}
+                aria-label="Upload selected files"
               >
                 {isLoading ? 'Preparando...' : `Subir ${files.length} Archivo(s)`}
               </button>
@@ -1540,13 +1590,10 @@ const DirectBunnyUploader = () => {
         </div>
 
         <div className="file-section-container mt-6">
-          <div className="section-header">
-            <h3>Archivos Existentes</h3>
-          </div>
           {isLoading ? (
             <p>Cargando archivos...</p>
           ) : existingFiles.length === 0 ? (
-            <p>No hay archivos disponibles</p>
+            <p></p>
           ) : (
             <div className="preview-grid">
               {existingFiles.map((file, index) => {
@@ -1563,15 +1610,14 @@ const DirectBunnyUploader = () => {
                           src={file.url}
                           alt={file.name}
                           className="media-preview"
-                          style={{ objectFit: 'contain', maxHeight: '200px' }}
                         />
                       )}
                       {isAudio && (
-                        <div className="audio-wrapper" style={{ width: '100%' }}>
+                        <div className="audio-wrapper audio-preview-container">
                           <audio
                             controls
                             src={file.url}
-                            style={{ width: '100%', height: '40px' }}
+                            className="audio-preview"
                           />
                           <div className="audio-meta">
                             {file.name}
@@ -1584,7 +1630,6 @@ const DirectBunnyUploader = () => {
                             controls
                             src={file.url}
                             className="media-preview"
-                            style={{ maxWidth: '100%', maxHeight: '200px' }}
                           />
                         </div>
                       )}

@@ -1,5 +1,181 @@
 import clientPromise from '../connectToDatabase';
 
+export default async function handler(req, res) {
+  try {
+    if (req.method !== 'POST') {
+      return res.status(405).json({ success: false, message: 'Método no permitido' });
+    }
+
+    const { memoryData, ownerEmail } = req.body;
+
+    // Validación de campos requeridos
+    const requiredFields = ['memoryData', 'ownerEmail'];
+    const missingFields = requiredFields.filter(field => !req.body[field]);
+    
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Faltan campos requeridos: ${missingFields.join(', ')}`
+      });
+    }
+
+    // Sanitize ownerEmail to match database key format (e.g., testwebmemories_gmail_com)
+    const sanitizedEmail = ownerEmail.replace(/[@.]/g, '_');
+    const memoryTitle = Object.keys(memoryData)[0];
+    if (!memoryTitle) {
+      return res.status(400).json({
+        success: false,
+        message: 'Formato de memoryData inválido: debe contener un título de recuerdo'
+      });
+    }
+
+    const memoryContent = memoryData[memoryTitle];
+    if (!memoryContent || !memoryContent.activity || !memoryContent.activity.edits || !memoryContent.media) {
+      return res.status(400).json({
+        success: false,
+        message: 'Formato de memoryData inválido: estructura de datos incompleta'
+      });
+    }
+
+    const now = new Date();
+    const client = await clientPromise;
+    const db = client.db('goodMemories');
+    const collection = db.collection('MemoriesCollection');
+
+    // Validar existencia del usuario
+    const userCheck = await collection.findOne(
+      { 
+        _id: 'globalMemories',
+        [sanitizedEmail]: { $exists: true }
+      },
+      { projection: { _id: 0, [sanitizedEmail]: 1 } }
+    );
+
+    if (!userCheck || !userCheck[sanitizedEmail]) {
+      return res.status(404).json({
+        success: false,
+        message: `El usuario con email ${ownerEmail} no existe en la base de datos`
+      });
+    }
+
+    // Validar existencia del recuerdo
+    const memoryCheck = await collection.findOne(
+      { 
+        _id: 'globalMemories',
+        [`${sanitizedEmail}.${memoryTitle}`]: { $exists: true }
+      },
+      { projection: { _id: 0, [`${sanitizedEmail}.${memoryTitle}`]: 1 } }
+    );
+
+    if (!memoryCheck || !memoryCheck[sanitizedEmail] || !memoryCheck[sanitizedEmail][memoryTitle]) {
+      return res.status(404).json({
+        success: false,
+        message: `El recuerdo '${memoryTitle}' no existe para el usuario ${ownerEmail}`
+      });
+    }
+
+    // Construir operación de actualización
+    const updateOperation = {
+      $set: {
+        [`${sanitizedEmail}.${memoryTitle}.metadata`]: memoryContent.metadata || null,
+        [`${sanitizedEmail}.${memoryTitle}.activity.last_accessed`]: now.toISOString(),
+        lastUpdated: now.toISOString()
+      },
+      $push: {
+        [`${sanitizedEmail}.${memoryTitle}.activity.edits`]: memoryContent.activity.edits[0]
+      }
+    };
+
+    // Añadir medios (photos, videos, audios)
+    ['photos', 'videos', 'audios'].forEach(type => {
+      if (memoryContent.media[type]?.length > 0) {
+        updateOperation.$push[`${sanitizedEmail}.${memoryTitle}.media.${type}`] = {
+          $each: memoryContent.media[type].map(file => ({
+            url: file.url,
+            metadata: {
+              ...file.metadata,
+              ownerEmail,
+              upload_date: now.toISOString()
+            }
+          }))
+        };
+      }
+    });
+
+    // Ejecutar actualización
+    const result = await collection.updateOne(
+      { _id: 'globalMemories' },
+      updateOperation
+    );
+
+    // Verificar resultado
+    if (result.modifiedCount === 0) {
+      return res.status(500).json({
+        success: false,
+        message: 'No se realizaron cambios en la base de datos'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Datos actualizados correctamente',
+      details: {
+        matched: result.matchedCount,
+        modified: result.modifiedCount
+      }
+    });
+
+  } catch (error) {
+    console.error('Error en el endpoint MongoDB:', {
+      message: error.message,
+      stack: error.stack,
+      requestBody: req.body
+    });
+    
+    return res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Contacte al soporte técnico'
+    });
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*import clientPromise from '../connectToDatabase';
+
 
 export default async function handler(req, res) {
   try {
@@ -108,7 +284,7 @@ export default async function handler(req, res) {
       error: process.env.NODE_ENV === 'development' ? error.message : 'Contacte al soporte técnico'
     });
   }
-}
+}*/
 
 
 

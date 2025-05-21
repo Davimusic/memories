@@ -283,8 +283,18 @@ overflow-y: auto;
     margin: 0;
   }
 
+  .files-column{
+    height: 30vh;
+  }
+
+  .permission-details{
+    max-height: 30vh;
+    overflow-y: auto;
+  }
+
+
   .form-column {
-    height: 40vh;
+    height: 60vh;
   }
   
   .file-section-container {
