@@ -16,8 +16,6 @@ import '../../../estilos/general/general.css'
 
 
 
-
-
 /*const FilePermissionViewer = () => {
   const router = useRouter();
   const { userID, memoryName } = router.query;
@@ -647,165 +645,184 @@ export default FilePermissionViewer;*/
 
 
 
-const DirectBunnyUploader = () => {
-  // Configuración
-  const BUNNY_ACCESS_KEY = "7026ecef-f874-4c3c-8968e8362281-949a-4e5b";
-  const STORAGE_ZONE = "goodmemories";
-  const BUNNY_REGION = "ny";
-  const BASE_PATH = "e55c81892694f42318e9b3b5131051559650dcba7d0fe0651c2aa472ea6a6c0c/primer_test_bunny";
 
-  // Estados
+const DirectBunnyUploader = () => {
+  const router = useRouter();
+  const { userID, memoryName } = router.query;
+
+  // Estados del componente
+  const [userEmail, setUserEmail] = useState(null);
   const [files, setFiles] = useState([]);
   const [selectedType, setSelectedType] = useState("");
   const [uploadStatus, setUploadStatus] = useState("");
+  const [uploadResults, setUploadResults] = useState([]);
+  const [folderName, setFolderName] = useState("");
 
-  // Validación de tipos de archivo
-  const validateFileType = (file, type) => {
-    const extension = file.name.split('.').pop().toLowerCase();
-    
-    switch(type) {
-      case 'audio':
-        return file.type === 'audio/mpeg' && extension === 'mp3';
-      case 'video':
-        return file.type === 'video/mp4' && extension === 'mp4';
-      case 'image':
-        return file.type.startsWith('image/');
-      default:
-        return false;
+  useEffect(() => {
+    const email = localStorage.getItem('userEmail');
+    if (email) {
+      setUserEmail(email.replace(/[@.]/g, '_')); // Sanitizar email
+    } else {
+      const path = window.location.pathname;
+      localStorage.setItem('redirectPath', path);
+      localStorage.setItem('reason', 'userEmailValidationOnly');
+      router.push('/login');
+      return;
     }
+    const path = window.location.pathname;
+    const parts = path.split("/");
+    if (parts.length > 2) {
+      setFolderName(parts[1]); // Extraer folderName desde la URL
+    }
+  }, [router]);
+
+  useEffect(() => {
+    console.log(userID, memoryName, userEmail, folderName, selectedType);
+  }, [userID, memoryName, userEmail, folderName, selectedType]);
+
+  const validateFileType = (file, type) => {
+    const validExtensions = {
+      audio: ['mp3', 'wav'],
+      video: ['mp4', 'mov'],
+      image: ['jpg', 'jpeg', 'png', 'gif'],
+    };
+    const extension = file.name.split('.').pop().toLowerCase();
+    return validExtensions[type]?.includes(extension);
   };
 
-  // Función de subida múltiple
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!files.length || !selectedType) return;
 
-    setUploadStatus("Iniciando subida múltiple...");
+    // Validar parámetros
+    if (!files.length || !selectedType || !memoryName || !userEmail || !folderName) {
+      setUploadStatus("Faltan parámetros: archivo, tipo, memoria, email o carpeta");
+      return;
+    }
+
+    // Validar tipo de archivo
+    const invalidFiles = files.filter((file) => !validateFileType(file, selectedType));
+    if (invalidFiles.length > 0) {
+      setUploadStatus(`Archivos inválidos: ${invalidFiles.map((f) => f.name).join(', ')}`);
+      return;
+    }
+
+    setUploadStatus("Iniciando subida...");
 
     try {
+      // Subir cada archivo individualmente
       const uploadPromises = files.map(async (file) => {
-        // Validar archivo
-        if (!validateFileType(file, selectedType)) {
-          return {
-            ...file,
-            status: 'error',
-            error: `Formato inválido para ${selectedType}`
-          };
+        // 1. Obtener URL autorizada para este archivo específico
+        const authResponse = await fetch(
+          `/api/bunny/secureUpload?memoryName=${encodeURIComponent(memoryName)}&userID=${userID}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'file-type': file.type,
+            },
+            body: JSON.stringify({
+              currentUser: userEmail,
+              type: folderName,
+              fileType: selectedType,
+              fileName: file.name, // Incluir el nombre del archivo
+            }),
+          }
+        );
+
+        if (!authResponse.ok) {
+          const errorData = await authResponse.json();
+          throw new Error(errorData.error || `Error de autenticación para ${file.name}`);
         }
 
-        // Generar ruta
-        const timestamp = Date.now();
-        const safeName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
-        const uploadPath = `${BASE_PATH}/${selectedType}/${safeName}`;
-        const uploadUrl = `https://${BUNNY_REGION}.storage.bunnycdn.com/${STORAGE_ZONE}/${uploadPath}`;
+        const { uploadUrl, headers, safeName } = await authResponse.json();
 
-        // Subir archivo
-        const response = await fetch(uploadUrl, {
-          method: "PUT",
+        // 2. Subir el archivo a BunnyCDN
+        const uploadResult = await fetch(uploadUrl, {
+          method: 'PUT',
           headers: {
-            "AccessKey": BUNNY_ACCESS_KEY,
-            "Content-Type": file.type
+            ...headers,
+            'Content-Type': file.type,
           },
-          body: file
+          body: file,
         });
 
-        if (!response.ok) throw new Error(`Error ${response.status}`);
+        if (!uploadResult.ok) throw new Error(`Error subiendo ${file.name}`);
 
         return {
-          ...file,
-          status: 'completed',
-          url: `https://goodmemoriesapp.b-cdn.net/${uploadPath}`
+          name: file.name,
+          status: 'success',
+          url: `${process.env.NEXT_PUBLIC_BUNNY_CDN_URL}/${userID}/${memoryName}/${selectedType}/${safeName}`,
         };
       });
 
-      // Ejecutar todas las subidas en paralelo
       const results = await Promise.allSettled(uploadPromises);
-      
-      // Actualizar estado con resultados
-      const updatedFiles = results.map((result, index) => {
-        if (result.status === 'fulfilled') {
-          return result.value;
-        }
-        return {
-          ...files[index],
-          status: 'error',
-          error: result.reason.message
-        };
-      });
+      setUploadResults(
+        results.map((result, index) => ({
+          file: files[index].name,
+          status: result.status,
+          data: result.status === 'fulfilled' ? result.value : { message: result.reason.message },
+        }))
+      );
 
-      setFiles(updatedFiles);
-      setUploadStatus("Subida completa");
+      setUploadStatus("Subida completada");
     } catch (error) {
-      console.error("Error general:", error);
-      setUploadStatus("❌ Error en la subida múltiple");
+      setUploadStatus(`Error: ${error.message}`);
+      console.error('Error completo:', error);
     }
   };
 
   return (
     <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-xl mb-4">Subida Múltiple a Bunny.net</h1>
+      <h1 className="text-xl mb-4">Subida Segura a Bunny.net</h1>
       <form onSubmit={handleUpload}>
         <div className="mb-4">
-          <select 
-            value={selectedType} 
+          <label className="block mb-2">Tipo de contenido:</label>
+          <select
+            value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
             className="w-full p-2 border rounded"
             required
           >
-            <option value="">Seleccionar tipo de archivo</option>
-            <option value="audio">Audio (MP3)</option>
-            <option value="video">Video (MP4)</option>
+            <option value="">Selecciona tipo</option>
+            <option value="audio">Audio</option>
+            <option value="video">Video</option>
             <option value="image">Imagen</option>
           </select>
         </div>
-
         <div className="mb-4">
-          <input 
-            type="file" 
+          <label className="block mb-2">Archivos:</label>
+          <input
+            type="file"
             multiple
             onChange={(e) => setFiles([...e.target.files])}
-            accept={
-              selectedType === 'audio' ? '.mp3' : 
-              selectedType === 'video' ? '.mp4' : 
-              selectedType === 'image' ? 'image/*' : ''
-            }
-            className="w-full"
+            accept={selectedType ? `${selectedType}/*` : '*/*'}
+            className="w-full p-2 border rounded"
             required
           />
         </div>
-
-        <button 
-          type="submit" 
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full disabled:bg-gray-400"
+          disabled={!files.length || !selectedType}
         >
-          Subir Archivos ({files.length})
+          Subir {files.length} Archivo(s)
         </button>
       </form>
-
       <div className="mt-4">
-        <p className="font-medium">Estado: {uploadStatus}</p>
-        
-        <div className="mt-4 space-y-3">
-          {files.map((file, index) => (
-            <div key={index} className="p-2 border rounded">
-              <p className="text-sm font-medium truncate">{file.name}</p>
-              <div className="text-sm">
-                {file.status === 'completed' && (
+       -Pierre <p className="font-medium mb-2">Estado: {uploadStatus}</p>
+        <div className="space-y-3">
+          {uploadResults.map((result, index) => (
+            <div key={index} className="p-3 border rounded-lg">
+              <p className="font-medium truncate">{result.file}</p>
+              <div className="text-sm mt-1">
+                {result.status === 'fulfilled' ? (
                   <div className="text-green-600">
-                    ✅ Subido - <a 
-                      href={file.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="underline"
-                    >
-                      Ver archivo
-                    </a>
+                    ✅ Subido correctamente
+                    <div className="text-xs break-all">{result.data.url}</div>
                   </div>
+                ) : (
+                  <div className="text-red-600">❌ Error: {result.data.message}</div>
                 )}
-                {file.status === 'error' && (
-                  <div className="text-red-600">❌ Error: {file.error}</div>
-                )}
-                {!file.status && "🕒 Pendiente de subida"}
               </div>
             </div>
           ))}
@@ -816,8 +833,4 @@ const DirectBunnyUploader = () => {
 };
 
 export default DirectBunnyUploader;
-
-
-
-
 
