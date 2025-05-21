@@ -17,6 +17,12 @@ const FOLDER_ACTIONS = {
 
 const VALID_FILE_TYPES = ['audio', 'image', 'video'];
 
+const ALLOWED_EXTENSIONS = {
+  audio: ['mp3'],
+  image: ['jpg', 'jpeg', 'png', 'gif'],
+  video: ['mp4'],
+};
+
 export default async function handler(req, res) {
   try {
     // Validar método HTTP
@@ -59,8 +65,17 @@ export default async function handler(req, res) {
 
     // Sanitizar y validar fileName
     const safeFileName = path.basename(fileName).replace(/[^a-zA-Z0-9._-]/g, '_');
-    if (!safeFileName || safeFileName !== fileName) {
-      throw new Error('Nombre de archivo inválido o contiene caracteres no permitidos');
+    if (!safeFileName) {
+      throw new Error('Nombre de archivo inválido');
+    }
+    if (safeFileName !== fileName) {
+      console.log(`Nombre de archivo sanitizado de "${fileName}" a "${safeFileName}"`);
+    }
+
+    // Validar extensión del archivo
+    const ext = path.extname(safeFileName).toLowerCase().replace('.', '');
+    if (!ALLOWED_EXTENSIONS[fileType].includes(ext)) {
+      throw new Error(`Extensión de archivo no permitida para el tipo ${fileType}. Extensiones permitidas: ${ALLOWED_EXTENSIONS[fileType].join(', ')}`);
     }
 
     // Sanitizar usuario
@@ -93,7 +108,7 @@ export default async function handler(req, res) {
       throw new Error(`Variables de entorno faltantes: ${missingEnvVars.join(', ')}`);
     }
 
-    // Construir ruta con el nombre original del archivo
+    // Construir ruta con el nombre sanitizado
     const uploadPath = `${userID}/${memoryName}/${fileType}/${safeFileName}`;
     console.log('Ruta generada:', uploadPath);
 
@@ -130,14 +145,6 @@ export default async function handler(req, res) {
     });
   }
 }
-
-
-
-
-
-
-
-
 
 
 

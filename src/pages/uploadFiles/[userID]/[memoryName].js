@@ -637,31 +637,115 @@ export default FilePermissionViewer;*/
 
 
 
+/*const validateFileType = (file) => {
+    const extension = file.name.split('.').pop().toLowerCase();
+    let fileType = ALLOWED_MIME_TYPES[file.type];
 
+    if (!fileType) {
+      if (ALLOWED_EXTENSIONS.audio.includes(extension)) {
+        fileType = 'audio';
+      } else if (ALLOWED_EXTENSIONS.video.includes(extension)) {
+        fileType = 'video';
+      } else if (ALLOWED_EXTENSIONS.image.includes(extension)) {
+        fileType = 'image';
+      }
+    }
 
+    if (fileType && ALLOWED_EXTENSIONS[fileType].includes(extension)) {
+      return { isValid: true, fileType };
+    }
 
+    return { isValid: false, fileType: null };
+  };
 
+// IndexedDB utility (you can use a library like 'idb' or write your own)
+const openDB = () =>
+  new Promise((resolve, reject) => {
+    const request = indexedDB.open('uploads', 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      db.createObjectStore('uploadTasks');
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
 
+const storeUploadTasks = async (files, uploadInfo) => {
+  const db = await openDB();
+  const tx = db.transaction('uploadTasks', 'readwrite');
+  const store = tx.objectStore('uploadTasks');
+  const keys = [];
+  for (const file of files) {
+    const key = Date.now() + Math.random();
+    const task = {
+      file,
+      memoryName: uploadInfo.memoryName,
+      userID: uploadInfo.userID,
+      folderName: uploadInfo.folderName,
+      currentUser: uploadInfo.currentUser,
+      fileType: validateFileType(file).fileType,
+      fileName: file.name,
+    };
+    await new Promise((resolve) => {
+      const req = store.put(task, key);
+      req.onsuccess = () => resolve();
+    });
+    keys.push(key);
+  }
+  await new Promise((resolve) => {
+    tx.oncomplete = () => resolve();
+  });
+  db.close();
+  return keys;
+};
 
+const ALLOWED_EXTENSIONS = {
+  audio: ['mp3'],
+  video: ['mp4'],
+  image: ['jpg', 'jpeg', 'png', 'gif'],
+};
 
+const ALLOWED_MIME_TYPES = {
+  'audio/mp3': 'audio',
+  'video/mp4': 'video',
+  'image/jpeg': 'image',
+  'image/png': 'image',
+  'image/gif': 'image',
+};
 
+const formatFileSize = (bytes) => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
 
 const DirectBunnyUploader = () => {
   const router = useRouter();
   const { userID, memoryName } = router.query;
 
-  // Estados del componente
   const [userEmail, setUserEmail] = useState(null);
   const [files, setFiles] = useState([]);
-  const [selectedType, setSelectedType] = useState("");
-  const [uploadStatus, setUploadStatus] = useState("");
+  const [uploadStatus, setUploadStatus] = useState('');
   const [uploadResults, setUploadResults] = useState([]);
-  const [folderName, setFolderName] = useState("");
+  const [folderName, setFolderName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [existingFiles, setExistingFiles] = useState([]);
+  const [totalSize, setTotalSize] = useState('0 Bytes');
 
   useEffect(() => {
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch((err) => console.error('Service Worker registration failed:', err));
+    }
+
     const email = localStorage.getItem('userEmail');
     if (email) {
-      setUserEmail(email.replace(/[@.]/g, '_')); // Sanitizar email
+      setUserEmail(email.replace(/[@.]/g, '_'));
     } else {
       const path = window.location.pathname;
       localStorage.setItem('redirectPath', path);
@@ -670,146 +754,136 @@ const DirectBunnyUploader = () => {
       return;
     }
     const path = window.location.pathname;
-    const parts = path.split("/");
+    const parts = path.split('/');
     if (parts.length > 2) {
-      setFolderName(parts[1]); // Extraer folderName desde la URL
+      setFolderName(parts[1]);
     }
   }, [router]);
 
   useEffect(() => {
-    console.log(userID, memoryName, userEmail, folderName, selectedType);
-  }, [userID, memoryName, userEmail, folderName, selectedType]);
+    console.log({ userID, memoryName, userEmail, folderName });
+  }, [userID, memoryName, userEmail, folderName]);
 
-  const validateFileType = (file, type) => {
-    const validExtensions = {
-      audio: ['mp3', 'wav'],
-      video: ['mp4', 'mov'],
-      image: ['jpg', 'jpeg', 'png', 'gif'],
+  useEffect(() => {
+    const fetchFiles = async () => {
+      if (!userID || !memoryName || !folderName) return;
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/list-files?userID=${userID}&memoryName=${memoryName}`);
+        const data = await response.json();
+        if (data.success) {
+          const filteredFiles = data.files.filter((file) =>
+            Object.values(ALLOWED_EXTENSIONS)
+              .flat()
+              .includes(file.name.split('.').pop().toLowerCase())
+          );
+          setExistingFiles(filteredFiles);
+        } else {
+          setUploadStatus('Error al cargar los archivos');
+        }
+      } catch (err) {
+        setUploadStatus('Error al cargar los archivos');
+        console.error('Error al obtener archivos:', err);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    const extension = file.name.split('.').pop().toLowerCase();
-    return validExtensions[type]?.includes(extension);
-  };
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
+    fetchFiles();
+  }, [userID, memoryName, folderName]);
 
-    // Validar parámetros
-    if (!files.length || !selectedType || !memoryName || !userEmail || !folderName) {
-      setUploadStatus("Faltan parámetros: archivo, tipo, memoria, email o carpeta");
+  
+
+  const handleFileChange = (e) => {
+    const selectedFiles = [...e.target.files];
+    if (selectedFiles.length === 0) {
       return;
     }
 
-    // Validar tipo de archivo
-    const invalidFiles = files.filter((file) => !validateFileType(file, selectedType));
+    const invalidFiles = selectedFiles.filter((file) => !validateFileType(file).isValid);
     if (invalidFiles.length > 0) {
       setUploadStatus(`Archivos inválidos: ${invalidFiles.map((f) => f.name).join(', ')}`);
       return;
     }
 
-    setUploadStatus("Iniciando subida...");
+    setFiles((prevFiles) => {
+      const newFiles = [...prevFiles, ...selectedFiles];
+      const totalBytes = newFiles.reduce((sum, file) => sum + file.size, 0);
+      setTotalSize(formatFileSize(totalBytes));
+      return newFiles;
+    });
+    setUploadStatus('');
+  };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+
+    if (!files.length || !memoryName || !userEmail || !folderName) {
+      setUploadStatus('Faltan parámetros: archivo, memoria, email o carpeta');
+      return;
+    }
+
+    setUploadStatus('Preparando subida en segundo plano...');
+    setIsLoading(true);
 
     try {
-      // Subir cada archivo individualmente
-      const uploadPromises = files.map(async (file) => {
-        // 1. Obtener URL autorizada para este archivo específico
-        const authResponse = await fetch(
-          `/api/bunny/secureUpload?memoryName=${encodeURIComponent(memoryName)}&userID=${userID}`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'file-type': file.type,
-            },
-            body: JSON.stringify({
-              currentUser: userEmail,
-              type: folderName,
-              fileType: selectedType,
-              fileName: file.name, // Incluir el nombre del archivo
-            }),
-          }
-        );
-
-        if (!authResponse.ok) {
-          const errorData = await authResponse.json();
-          throw new Error(errorData.error || `Error de autenticación para ${file.name}`);
-        }
-
-        const { uploadUrl, headers, safeName } = await authResponse.json();
-
-        // 2. Subir el archivo a BunnyCDN
-        const uploadResult = await fetch(uploadUrl, {
-          method: 'PUT',
-          headers: {
-            ...headers,
-            'Content-Type': file.type,
-          },
-          body: file,
+      const uploadInfo = {
+        memoryName,
+        userID,
+        folderName,
+        currentUser: userEmail,
+      };
+      const taskKeys = await storeUploadTasks(files, uploadInfo);
+      console.log(taskKeys);
+      
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'START_UPLOADS',
+          keys: taskKeys,
         });
-
-        if (!uploadResult.ok) throw new Error(`Error subiendo ${file.name}`);
-
-        return {
-          name: file.name,
-          status: 'success',
-          url: `${process.env.NEXT_PUBLIC_BUNNY_CDN_URL}/${userID}/${memoryName}/${selectedType}/${safeName}`,
-        };
-      });
-
-      const results = await Promise.allSettled(uploadPromises);
-      setUploadResults(
-        results.map((result, index) => ({
-          file: files[index].name,
-          status: result.status,
-          data: result.status === 'fulfilled' ? result.value : { message: result.reason.message },
-        }))
-      );
-
-      setUploadStatus("Subida completada");
+        setUploadStatus('Subida iniciada en segundo plano');
+        setFiles([]);
+        setTotalSize('0 Bytes');
+      } else {
+        setUploadStatus('Error: No hay Service Worker activo');
+      }
     } catch (error) {
-      setUploadStatus(`Error: ${error.message}`);
-      console.error('Error completo:', error);
+      setUploadStatus(`Error al preparar la subida: ${error.message}`);
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="p-4 max-w-md mx-auto">
       <h1 className="text-xl mb-4">Subida Segura a Bunny.net</h1>
+
       <form onSubmit={handleUpload}>
         <div className="mb-4">
-          <label className="block mb-2">Tipo de contenido:</label>
-          <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          >
-            <option value="">Selecciona tipo</option>
-            <option value="audio">Audio</option>
-            <option value="video">Video</option>
-            <option value="image">Imagen</option>
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Archivos:</label>
+          <label className="block mb-2">Archivos (mp3, mp4, jpg, jpeg, png, gif):</label>
           <input
             type="file"
             multiple
-            onChange={(e) => setFiles([...e.target.files])}
-            accept={selectedType ? `${selectedType}/*` : '*/*'}
+            onChange={handleFileChange}
+            accept="audio/mp3,video/mp4,image/jpeg,image/png,image/gif"
             className="w-full p-2 border rounded"
-            required
           />
         </div>
+        {files.length > 0 && (
+          <p className="mb-2">Tamaño total: {totalSize}</p>
+        )}
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full disabled:bg-gray-400"
-          disabled={!files.length || !selectedType}
+          disabled={!files.length || isLoading}
         >
-          Subir {files.length} Archivo(s)
+          {isLoading ? 'Preparando...' : `Subir ${files.length} Archivo(s)`}
         </button>
       </form>
+
       <div className="mt-4">
-       -Pierre <p className="font-medium mb-2">Estado: {uploadStatus}</p>
+        <p className="font-medium mb-2">Estado: {uploadStatus}</p>
         <div className="space-y-3">
           {uploadResults.map((result, index) => (
             <div key={index} className="p-3 border rounded-lg">
@@ -828,9 +902,751 @@ const DirectBunnyUploader = () => {
           ))}
         </div>
       </div>
+
+      <div className="mt-6">
+        <h2 className="text-lg font-semibold mb-2">Archivos Existentes</h2>
+        {isLoading ? (
+          <p>Cargando archivos...</p>
+        ) : existingFiles.length === 0 ? (
+          <p>No hay archivos disponibles</p>
+        ) : (
+          <div className="space-y-3">
+            {existingFiles.map((file, index) => {
+              const ext = file.name.split('.').pop().toLowerCase();
+              const isImage = ALLOWED_EXTENSIONS.image.includes(ext);
+              const isAudio = ALLOWED_EXTENSIONS.audio.includes(ext);
+              const isVideo = ALLOWED_EXTENSIONS.video.includes(ext);
+
+              return (
+                <div key={index} className="p-3 border rounded-lg">
+                  <p className="font-medium truncate">{file.name}</p>
+                  {isImage && (
+                    <img
+                      src={file.url}
+                      alt={file.name}
+                      className="w-full h-40 object-cover mt-2"
+                    />
+                  )}
+                  {isAudio && (
+                    <audio controls className="w-full mt-2">
+                      <source src={file.url} type="audio/mp3" />
+                      Tu navegador no soporta audio.
+                    </audio>
+                  )}
+                  {isVideo && (
+                    <video controls className="w-full h-40 object-cover mt-2">
+                      <source src={file.url} type="video/mp4" />
+                      Tu navegador no soporta video.
+                    </video>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default DirectBunnyUploader;*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const validateFileType = (file) => {
+    const extension = file.name.split('.').pop().toLowerCase();
+    let fileType = ALLOWED_MIME_TYPES[file.type];
+
+    if (!fileType) {
+      if (ALLOWED_EXTENSIONS.audio.includes(extension)) {
+        fileType = 'audio';
+      } else if (ALLOWED_EXTENSIONS.video.includes(extension)) {
+        fileType = 'video';
+      } else if (ALLOWED_EXTENSIONS.image.includes(extension)) {
+        fileType = 'image';
+      }
+    }
+
+    if (fileType && ALLOWED_EXTENSIONS[fileType].includes(extension)) {
+      return { isValid: true, fileType };
+    }
+
+    return { isValid: false, fileType: null };
+  };
+
+  const openDB = () =>
+  new Promise((resolve, reject) => {
+    const request = indexedDB.open('uploads', 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      db.createObjectStore('uploadTasks');
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+
+const storeUploadTasks = async (files, uploadInfo) => {
+  const db = await openDB();
+  const tx = db.transaction('uploadTasks', 'readwrite');
+  const store = tx.objectStore('uploadTasks');
+  const keys = [];
+  for (const file of files) {
+    const key = Date.now() + Math.random();
+    const task = {
+      file,
+      memoryName: uploadInfo.memoryName,
+      userID: uploadInfo.userID,
+      folderName: uploadInfo.folderName,
+      currentUser: uploadInfo.currentUser,
+      fileType: validateFileType(file).fileType,
+      fileName: file.name,
+    };
+    await new Promise((resolve) => {
+      const req = store.put(task, key);
+      req.onsuccess = () => resolve();
+    });
+    keys.push(key);
+  }
+  await new Promise((resolve) => {
+    tx.oncomplete = () => resolve();
+  });
+  db.close();
+  return keys;
+};
+
+const ALLOWED_EXTENSIONS = {
+  audio: ['mp3'],
+  video: ['mp4'],
+  image: ['jpg', 'jpeg', 'png', 'gif'],
+};
+
+const ALLOWED_MIME_TYPES = {
+  'audio/mp3': 'audio',
+  'video/mp4': 'video',
+  'image/jpeg': 'image',
+  'image/png': 'image',
+  'image/gif': 'image',
+};
+
+const formatFileSize = (bytes) => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+const DirectBunnyUploader = () => {
+  const router = useRouter();
+  const { userID, memoryName } = router.query;
+
+  const [userEmail, setUserEmail] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [uploadStatus, setUploadStatus] = useState('');
+  const [uploadResults, setUploadResults] = useState([]);
+  const [folderName, setFolderName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [existingFiles, setExistingFiles] = useState([]);
+  const [totalSize, setTotalSize] = useState('0 Bytes');
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [activeFileType, setActiveFileType] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [invalidFilesError, setInvalidFilesError] = useState(null);
+
+  // Refs for file inputs
+  const audioInputRef = useRef(null);
+  const videoInputRef = useRef(null);
+  const imageInputRef = useRef(null);
+
+  useEffect(() => {
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch((err) => console.error('Service Worker registration failed:', err));
+    }
+
+    const email = localStorage.getItem('userEmail');
+    if (email) {
+      setUserEmail(email.replace(/[@.]/g, '_'));
+    } else {
+      const path = window.location.pathname;
+      localStorage.setItem('redirectPath', path);
+      localStorage.setItem('reason', 'userEmailValidationOnly');
+      router.push('/login');
+      return;
+    }
+    const path = window.location.pathname;
+    const parts = path.split('/');
+    if (parts.length > 2) {
+      setFolderName(parts[1]);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    console.log({ userID, memoryName, userEmail, folderName });
+  }, [userID, memoryName, userEmail, folderName]);
+
+  useEffect(() => {
+    const fetchFiles = async () => {
+      if (!userID || !memoryName || !folderName) return;
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/list-files?userID=${userID}&memoryName=${memoryName}`);
+        const data = await response.json();
+        if (data.success) {
+          const filteredFiles = data.files.filter((file) =>
+            Object.values(ALLOWED_EXTENSIONS)
+              .flat()
+              .includes(file.name.split('.').pop().toLowerCase())
+          );
+          setExistingFiles(filteredFiles);
+        } else {
+          setUploadStatus('Error al cargar los archivos');
+        }
+      } catch (err) {
+        setUploadStatus('Error al cargar los archivos');
+        console.error('Error al obtener archivos:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFiles();
+  }, [userID, memoryName, folderName]);
+
+  const handleFileChange = (e, fileType) => {
+    const selectedFiles = [...e.target.files];
+    if (selectedFiles.length === 0) {
+      return;
+    }
+
+    const invalidFiles = selectedFiles.filter((file) => !validateFileType(file).isValid);
+    if (invalidFiles.length > 0) {
+      const allowedFormats = {
+        image: 'JPEG, PNG, GIF',
+        video: 'MP4',
+        audio: 'MP3'
+      }[fileType];
+      setInvalidFilesError({
+        title: `Archivos ${fileType} inválidos detectados`,
+        message: `Los archivos seleccionados contienen formatos no soportados.`,
+        allowed: `Formatos permitidos: ${allowedFormats}`
+      });
+      return;
+    }
+
+    const filesWithPreview = selectedFiles.map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+      type: fileType,
+      id: `${file.name}_${file.lastModified}_${file.size}`
+    }));
+
+    setFiles((prevFiles) => {
+      const newFiles = [...prevFiles, ...filesWithPreview];
+      const totalBytes = newFiles.reduce((sum, file) => sum + file.file.size, 0);
+      setTotalSize(formatFileSize(totalBytes));
+      return newFiles;
+    });
+    setUploadStatus('');
+    e.target.value = '';
+  };
+
+  const removeFile = (index) => {
+    setFiles(prev => {
+      const updatedFiles = [...prev];
+      const [removedFile] = updatedFiles.splice(index, 1);
+      URL.revokeObjectURL(removedFile.preview);
+      const totalBytes = updatedFiles.reduce((sum, file) => sum + file.file.size, 0);
+      setTotalSize(formatFileSize(totalBytes));
+      return updatedFiles;
+    });
+
+    if (files.length === 1) {
+      setIsPreviewModalOpen(false);
+    }
+  };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+
+    if (!files.length || !memoryName || !userEmail || !folderName) {
+      setUploadStatus('Faltan parámetros: archivo, memoria, email o carpeta');
+      return;
+    }
+
+    setUploadStatus('Preparando subida en segundo plano...');
+    setIsLoading(true);
+
+    try {
+      const uploadInfo = {
+        memoryName,
+        userID,
+        folderName,
+        currentUser: userEmail,
+      };
+      const taskKeys = await storeUploadTasks(files.map(f => f.file), uploadInfo);
+      console.log(taskKeys);
+      
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'START_UPLOADS',
+          keys: taskKeys,
+        });
+        setUploadStatus('Subida iniciada en segundo plano');
+        setFiles([]);
+        setTotalSize('0 Bytes');
+        setIsModalOpen(true);
+      } else {
+        setUploadStatus('Error: No hay Service Worker activo');
+      }
+    } catch (error) {
+      setUploadStatus(`Error al preparar la subida: ${error.message}`);
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Functions to trigger file inputs
+  const triggerAudioInput = () => audioInputRef.current.click();
+  const triggerVideoInput = () => videoInputRef.current.click();
+  const triggerImageInput = () => imageInputRef.current.click();
+
+  const FileCounter = ({ type, count }) => {
+    const handleClick = () => {
+      if (count > 0) {
+        setActiveFileType(type);
+        setIsPreviewModalOpen(true);
+      }
+    };
+
+    return (
+      <div 
+        className={`file-counter color2 ${count > 0 ? 'has-files' : ''}`}
+        onClick={handleClick}
+      >
+        <span className="counter-badge color2">{count}</span>
+        <span className="counter-label color2">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+      </div>
+    );
+  };
+
+  const renderPreviewItem = (file, index) => {
+    const uniqueKey = `${file.file.name}_${file.file.lastModified}_${file.file.size}`;
+    
+    return (
+      <div key={uniqueKey} className="preview-item">
+        <div className="media-container">
+          {file.type === 'image' && (
+            <img 
+              src={file.preview} 
+              alt="Preview" 
+              className="media-preview"
+              style={{ objectFit: 'contain', maxHeight: '200px' }}
+            />
+          )}
+          {file.type === 'video' && (
+            <div className="video-wrapper">
+              <video 
+                controls
+                src={file.preview}
+                className="media-preview"
+                style={{ maxWidth: '100%', maxHeight: '200px' }}
+              />
+            </div>
+          )}
+          {file.type === 'audio' && (
+            <div className="audio-wrapper" style={{ width: '100%' }}>
+              <audio
+                controls
+                src={file.preview}
+                style={{ width: '100%', height: '40px' }}
+              />
+              <div className="audio-meta">
+                {file.file.name} ({(file.file.size / 1024 / 1024).toFixed(2)} MB)
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="file-meta">
+          <button 
+            className="closeXButton"
+            onClick={(e) => {
+              e.stopPropagation();
+              removeFile(index);
+            }}
+          >
+            ×
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="fullscreen-floating mainFont backgroundColor1 color2">
+      <Menu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} className='backgroundColor1' />
+
+      <Modal isOpen={!!invalidFilesError} onClose={() => setInvalidFilesError(null)}>
+        <div className="modal-content">
+          <h3>{invalidFilesError?.title}</h3>
+          <p>{invalidFilesError?.message}</p>
+          <p style={{color: '#4CAF50'}}>{invalidFilesError?.allowed}</p>
+          <button 
+            className='add' 
+            onClick={() => setInvalidFilesError(null)}
+          >
+            Cerrar
+          </button>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <div className="modal-content">
+          <h3>{uploadStatus}</h3>
+          <button className='add' onClick={() => setIsModalOpen(false)}>Cerrar</button>
+        </div>
+      </Modal>
+
+      {isPreviewModalOpen && (
+        <div className="preview-modal-overlay" onClick={() => setIsPreviewModalOpen(false)}>
+          <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className='color1'>{activeFileType?.toUpperCase()}</h3>
+              <button 
+                className="closeXButton"
+                onClick={() => setIsPreviewModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            {files.filter(f => f.type === activeFileType).length > 0 ? (
+              <div className='scroll-preview'>
+                <div className="preview-grid">
+                  {files.filter(f => f.type === activeFileType).map((file, index) => 
+                    renderPreviewItem(file, index)
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="empty-state">
+                <p>No hay archivos para mostrar</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="file-uploader">
+        <div style={{ display: 'flex' }}>
+          <div className="menu-icon-container">
+            <MenuIcon onClick={() => setIsMenuOpen(true)} style={{ zIndex: 10 }} />
+          </div>
+          <h2 className="title">Subir archivos a: {memoryName}</h2>
+        </div>
+
+        <div className="uploader-content">
+          <div className="files-column">
+            <div className="file-section-container">
+              <div className="section-header">
+                <h3>Detalles de la Memoria</h3>
+              </div>
+              <div className="permission-details">
+                <div className="permission-item">
+                  <span className="permission-label">Usuario:</span>
+                  <span className="permission-value">{userEmail}</span>
+                </div>
+                <div className="permission-item">
+                  <span className="permission-label">Carpeta:</span>
+                  <span className="permission-value">{folderName}</span>
+                </div>
+                <div className="permission-item">
+                  <span className="permission-label">Tamaño Total:</span>
+                  <span className="permission-value">{totalSize}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="form-column">
+            <form onSubmit={handleUpload} className="memory-form">
+              {uploadStatus && <div className="error-message">{uploadStatus}</div>}
+
+              <div className="file-sections">
+                <div className="file-section-container">
+                  <div className="section-header">
+                    <h3>Fotos</h3>
+                    <div className="section-controls">
+                      <div className="counter-and-preview">
+                        {files.filter(f => f.type === 'image').length > 0 && (
+                          <>
+                            <span style={{paddingRight: '10px'}} className="file-count-badge">
+                              {files.filter(f => f.type === 'image').length}
+                            </span>
+                            <ShowHide 
+                              onClick={() => {
+                                setActiveFileType('image');
+                                setIsPreviewModalOpen(true);
+                              }}
+                              isVisible={isPreviewModalOpen && activeFileType === 'image'}
+                              size={20}
+                            />
+                          </>
+                        )}
+                      </div>
+                      <button 
+                        className='add'
+                        type="button"
+                        onClick={triggerImageInput}
+                        disabled={isLoading}
+                      >
+                        Añadir
+                      </button>
+                    </div>
+                  </div>
+                  <input
+                    type="file"
+                    multiple
+                    onChange={(e) => handleFileChange(e, 'image')}
+                    accept="image/jpeg,image/png,image/gif"
+                    ref={imageInputRef}
+                    hidden
+                  />
+                </div>
+
+                <div className="file-section-container">
+                  <div className="section-header">
+                    <h3>Videos</h3>
+                    <div className="section-controls">
+                      <div className="counter-and-preview">
+                        {files.filter(f => f.type === 'video').length > 0 && (
+                          <>
+                            <span style={{paddingRight: '10px'}} className="file-count-badge">
+                              {files.filter(f => f.type === 'video').length}
+                            </span>
+                            <ShowHide 
+                              onClick={() => {
+                                setActiveFileType('video');
+                                setIsPreviewModalOpen(true);
+                              }}
+                              isVisible={isPreviewModalOpen && activeFileType === 'video'}
+                              size={20}
+                            />
+                          </>
+                        )}
+                      </div>
+                      <button 
+                        className='add'
+                        type="button"
+                        onClick={triggerVideoInput}
+                        disabled={isLoading}
+                      >
+                        Añadir
+                      </button>
+                    </div>
+                  </div>
+                  <input
+                    type="file"
+                    multiple
+                    onChange={(e) => handleFileChange(e, 'video')}
+                    accept="video/mp4"
+                    ref={videoInputRef}
+                    hidden
+                  />
+                </div>
+
+                <div className="file-section-container">
+                  <div className="section-header">
+                    <h3>Audios</h3>
+                    <div className="section-controls">
+                      <div className="counter-and-preview">
+                        {files.filter(f => f.type === 'audio').length > 0 && (
+                          <>
+                            <span style={{paddingRight: '10px'}} className="file-count-badge">
+                              {files.filter(f => f.type === 'audio').length}
+                            </span>
+                            <ShowHide 
+                              onClick={() => {
+                                setActiveFileType('audio');
+                                setIsPreviewModalOpen(true);
+                              }}
+                              isVisible={isPreviewModalOpen && activeFileType === 'audio'}
+                              size={20}
+                            />
+                          </>
+                        )}
+                      </div>
+                      <button 
+                        className='add'
+                        type="button"
+                        onClick={triggerAudioInput}
+                        disabled={isLoading}
+                      >
+                        Añadir
+                      </button>
+                    </div>
+                  </div>
+                  <input
+                    type="file"
+                    multiple
+                    onChange={(e) => handleFileChange(e, 'audio')}
+                    accept="audio/mp3"
+                    ref={audioInputRef}
+                    hidden
+                  />
+                </div>
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={isLoading || !files.length}
+                className={`submitButton ${isLoading ? 'uploading' : ''}`}
+              >
+                {isLoading ? 'Preparando...' : `Subir ${files.length} Archivo(s)`}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className="file-section-container mt-6">
+          <div className="section-header">
+            <h3>Archivos Existentes</h3>
+          </div>
+          {isLoading ? (
+            <p>Cargando archivos...</p>
+          ) : existingFiles.length === 0 ? (
+            <p>No hay archivos disponibles</p>
+          ) : (
+            <div className="preview-grid">
+              {existingFiles.map((file, index) => {
+                const ext = file.name.split('.').pop().toLowerCase();
+                const isImage = ALLOWED_EXTENSIONS.image.includes(ext);
+                const isAudio = ALLOWED_EXTENSIONS.audio.includes(ext);
+                const isVideo = ALLOWED_EXTENSIONS.video.includes(ext);
+
+                return (
+                  <div key={index} className="preview-item">
+                    <div className="media-container">
+                      {isImage && (
+                        <img
+                          src={file.url}
+                          alt={file.name}
+                          className="media-preview"
+                          style={{ objectFit: 'contain', maxHeight: '200px' }}
+                        />
+                      )}
+                      {isAudio && (
+                        <div className="audio-wrapper" style={{ width: '100%' }}>
+                          <audio
+                            controls
+                            src={file.url}
+                            style={{ width: '100%', height: '40px' }}
+                          />
+                          <div className="audio-meta">
+                            {file.name}
+                          </div>
+                        </div>
+                      )}
+                      {isVideo && (
+                        <div className="video-wrapper">
+                          <video
+                            controls
+                            src={file.url}
+                            className="media-preview"
+                            style={{ maxWidth: '100%', maxHeight: '200px' }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {uploadResults.length > 0 && (
+          <div className="file-section-container mt-6">
+            <div className="section-header">
+              <h3>Resultados de Subida</h3>
+            </div>
+            <div className="preview-grid">
+              {uploadResults.map((result, index) => (
+                <div key={index} className="preview-item">
+                  <div className="media-container">
+                    <p className="font-medium truncate">{result.file}</p>
+                    <div className="text-sm mt-1">
+                      {result.status === 'fulfilled' ? (
+                        <div className="text-green-600">
+                          ✅ Subido correctamente
+                          <div className="text-xs break-all">{result.data.url}</div>
+                        </div>
+                      ) : (
+                        <div className="text-red-600">❌ Error: {result.data.message}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
 export default DirectBunnyUploader;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

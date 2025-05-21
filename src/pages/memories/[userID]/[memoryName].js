@@ -183,6 +183,10 @@ const MemoryDetail = () => {
   // Validación de acceso
   useEffect(() => {
     if (!memoryData) return;
+
+    console.log("Acceso público permitido");
+        setRoll('Anyone can upload memories')
+        return //solo de prueba
   
     const checkViewPermissions = () => {
       const viewAccess = memoryData.access?.view;
@@ -215,7 +219,7 @@ const MemoryDetail = () => {
       // Transformar IDs para comparación
       const transformEmail = (email) => email.replace(/[@.]/g, '_');
       const currentUserTransformed = transformEmail(userEmail);
-      const ownerTransformed = memoryData.metadata.created_by;
+      const ownerTransformed = '';//memoryData.metadata.created_by;
   
       // Caso 2: Visibilidad Privada
       if (visibility === 'private') {
