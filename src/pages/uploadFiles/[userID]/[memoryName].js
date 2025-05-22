@@ -4,6 +4,8 @@ import MenuIcon from '@/components/complex/menuIcon';
 import Menu from '@/components/complex/menu';
 import Modal from "@/components/complex/modal";
 import ShowHide from '@/components/complex/showHide';
+import { auth } from '../../../../firebase';
+//import { onAuthStateChanged } from 'firebase/auth';
 
 import '../../../app/globals.css';
 import '../../../estilos/general/api/upload/filePermissionViewer.css'
@@ -1086,6 +1088,9 @@ const DirectBunnyUploader = () => {
   const imageInputRef = useRef(null);
 
   useEffect(() => {
+    console.log(auth.currentUser.reloadUserInfo.providerUserInfo[0]);//me da todo lo general que necesito
+    console.log(auth.currentUser.reloadUserInfo.providerUserInfo[0].email);
+    
     const registerServiceWorker = async () => {
       if ('serviceWorker' in navigator) {
         try {
@@ -1117,7 +1122,7 @@ const DirectBunnyUploader = () => {
 
     registerServiceWorker();
 
-    const email = localStorage.getItem('userEmail');
+    /*const email = localStorage.getItem('userEmail');
     if (email) {
       setUserEmail(email.replace(/[@.]/g, '_'));
     } else {
@@ -1126,7 +1131,7 @@ const DirectBunnyUploader = () => {
       localStorage.setItem('reason', 'userEmailValidationOnly');
       router.push('/login');
       return;
-    }
+    }*/
     const path = window.location.pathname;
     const parts = path.split('/');
     if (parts.length > 2) {
@@ -1138,7 +1143,7 @@ const DirectBunnyUploader = () => {
     console.log({ userID, memoryName, userEmail, folderName });
   }, [userID, memoryName, userEmail, folderName]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchFiles = async () => {
       if (!userID || !memoryName || !folderName) return;
       setIsLoading(true);
@@ -1161,7 +1166,7 @@ const DirectBunnyUploader = () => {
     };
 
     fetchFiles();
-  }, [userID, memoryName, folderName]);
+  }, [userID, memoryName, folderName]);*/
 
   const handleFileChange = (e, fileType) => {
     const selectedFiles = [...e.target.files];

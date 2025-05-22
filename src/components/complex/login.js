@@ -1,4 +1,372 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+} from 'firebase/auth';
+import { auth } from '../../../firebase';
+import ShowHide from './complex/../showHide';
+import Modal from './complex/../modal';
+import '../../estilos/general/login.css';
+import '../../estilos/general/general.css';
+import BackgroundGeneric from './backgroundGeneric';
+import { useRouter } from 'next/navigation';
+import { FaGoogle, FaEnvelope, FaLock } from 'react-icons/fa';
+
+const Login = () => {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [isSignIn, setIsSignIn] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+
+  const provider = new GoogleAuthProvider();
+  provider.addScope('email');
+  provider.addScope('profile');
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Obtener el token JWT
+        const token = await user.getIdToken();
+        localStorage.setItem('authToken', token); // Almacenar el token JWT
+        localStorage.setItem('userName', user.displayName || 'User');
+        localStorage.setItem('userImage', user.photoURL || '');
+        // No almacenar el correo en localStorage, usar user.email directamente cuando sea necesario
+
+        const reason = localStorage.getItem('reason');
+        const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+
+        try {
+          if (reason && reason !== 'userEmailValidationOnly') {
+            await handleUserAfterAuth(user.uid, reason === 'createNewUser' ? 'signIn' : 'login');
+          }
+        } catch (error) {
+          console.error('Error handling post-auth:', error);
+          setError('Failed to complete registration process');
+          return;
+        }
+
+        localStorage.removeItem('redirectPath');
+        localStorage.removeItem('reason');
+        router.push(redirectPath);
+      } else {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userImage');
+        localStorage.removeItem('userEmail'); // Asegurarse de eliminar cualquier correo almacenado
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleUserAfterAuth = async (uid, authType) => {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Enviar el token JWT
+        },
+        body: JSON.stringify({ uid, authType }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Error: ${errorData.details || 'Unknown error'}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setModalMessage(data.message);
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setError(`Error: ${error.message}`);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      let userCredential;
+      if (isSignIn) {
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
+      }
+
+      const user = userCredential.user;
+      const reason = localStorage.getItem('reason');
+
+      if (reason !== 'userEmailValidationOnly') {
+        await handleUserAfterAuth(user.uid, isSignIn ? 'signIn' : 'login');
+      }
+
+      const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+      localStorage.removeItem('redirectPath');
+      localStorage.removeItem('reason');
+      router.push(redirectPath);
+    } catch (error) {
+      console.error('Error:', error);
+      setError(getErrorMessage(error));
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const reason = localStorage.getItem('reason');
+
+      if (reason !== 'userEmailValidationOnly') {
+        await handleUserAfterAuth(user.uid, 'google');
+      }
+
+      const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+      localStorage.removeItem('redirectPath');
+      localStorage.removeItem('reason');
+      router.push(redirectPath);
+    } catch (error) {
+      console.error('Error al iniciar sesión con Google:', error);
+      setError(getErrorMessage(error));
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userImage');
+      localStorage.removeItem('userEmail');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError('Please enter your email address.');
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setModalMessage('A password reset email has been sent. Please check your inbox.');
+      setIsModalOpen(true);
+      setIsForgotPassword(false);
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      setError('Error sending reset email. Please try again.');
+    }
+  };
+
+  const getErrorMessage = (error) => {
+    switch (error.code) {
+      case 'auth/invalid-credential':
+        return 'Invalid email or password.';
+      case 'auth/email-already-in-use':
+        return 'Email already in use.';
+      case 'auth/weak-password':
+        return 'Password should be at least 6 characters.';
+      case 'auth/user-not-found':
+        return 'Email not found.';
+      case 'auth/wrong-password':
+        return 'Incorrect password.';
+      default:
+        return `An unexpected error occurred: ${error.message}`;
+    }
+  };
+
+  return (
+    <div className="fullscreen-floating">
+      <BackgroundGeneric isLoading={true}>
+        <div className="login-container">
+          <form onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit} className="login-form">
+            <h2 className="login-title">{isForgotPassword ? 'Forgot Password' : isSignIn ? 'Sign In' : 'Login'}</h2>
+            {error && <p className="error-message">{error}</p>}
+            <div className="input-group">
+              <label htmlFor="email" className="input-label">
+                <FaEnvelope className="input-icon" /> Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-field"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            {!isForgotPassword && (
+              <div className="input-group">
+                <label htmlFor="password" className="input-label">
+                  <FaLock className="input-icon" /> Password
+                </label>
+                <div className="password-input-container">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="input-field"
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <div className="show-hide-icon" onClick={() => setShowPassword(!showPassword)}>
+                    <ShowHide
+                      size={24}
+                      onClick={() => setShowPassword(!showPassword)}
+                      isVisible={showPassword}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            <button type="submit" className="submit-button">
+              {isForgotPassword ? 'Send Reset Email' : isSignIn ? 'Sign In' : 'Login'}
+            </button>
+            {!isForgotPassword && (
+              <button type="button" onClick={handleGoogleLogin} className="google-button">
+                <FaGoogle className="google-icon" /> Login with Google
+              </button>
+            )}
+            {!isForgotPassword && (
+              <p className="forgot-password-link" onClick={() => setIsSignIn((prev) => !prev)}>
+                {isSignIn ? 'Already have an account? Login' : 'Create an account'}
+              </p>
+            )}
+            {!isForgotPassword && (
+              <p className="forgot-password-link" onClick={() => setIsForgotPassword(true)}>
+                Forgot your password?
+              </p>
+            )}
+            {isForgotPassword && (
+              <p className="forgot-password-link" onClick={() => setIsForgotPassword(false)}>
+                Back to Login
+              </p>
+            )}
+          </form>
+
+          <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <p className="modal-content">{modalMessage}</p>
+            <button onClick={() => setIsModalOpen(false)} className="modal-button">
+              Close
+            </button>
+          </Modal>
+        </div>
+      </BackgroundGeneric>
+    </div>
+  );
+};
+
+export default Login;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*import React, { useState, useEffect, useRef } from 'react';
+
 import {
   signInWithPopup,
   signOut,
@@ -36,32 +404,7 @@ const Login = () => {
 
   const initialMount = useRef(true);
 
-  /*useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const userEmail = user.providerData[0]?.email || user.email || '';
-        
-        localStorage.setItem('userName', user.displayName || 'User');
-        localStorage.setItem('userImage', user.photoURL || '');
-        localStorage.setItem('userEmail', userEmail);
-
-        // Redirigir solo en el montaje inicial si el usuario ya está autenticado
-        if (initialMount.current) {
-          const redirectPath = localStorage.getItem('redirectPath') || '/memories';
-          localStorage.removeItem('redirectPath');
-          localStorage.removeItem('reason');
-          router.push(redirectPath);
-        }
-      } else {
-        localStorage.removeItem('userName');
-        localStorage.removeItem('userImage');
-        localStorage.removeItem('userEmail');
-      }
-      initialMount.current = false;
-    });
-    
-    return () => unsubscribe();
-  }, [router]);*/
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -329,4 +672,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Login;*/

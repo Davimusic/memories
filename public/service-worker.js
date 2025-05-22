@@ -187,12 +187,6 @@ async function processUploads(keys) {
   db.close();
 }
 
-
-
-
-
-
-
 async function checkPendingUploads() {
   const db = await openDB();
   const tx = db.transaction('uploadTasks', 'readonly');
