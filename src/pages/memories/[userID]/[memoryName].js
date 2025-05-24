@@ -12,6 +12,7 @@ import Video from '../../../components/simple/video';
 import AudioPlayer from '@/components/complex/audioPlayer';
 import ImageSlider from '../../../components/complex/imageSlider';
 import LoadingMemories from '@/components/complex/loading';
+import { auth } from '../../../../firebase';
 import Modal from '@/components/complex/modal';
 
 
@@ -133,11 +134,14 @@ const MemoryDetail = () => {
         if (!mongoResponse.ok) throw new Error("Error fetching data from MongoDB");
         
         const mongoData = await mongoResponse.json();
+        console.log(mongoData);
+        
         if (!mongoData.success) throw new Error("Failed to load memory data");
 
         // Estructurar los datos directamente desde MongoDB
         const formattedData = {
           ...mongoData.memory,
+          ownerEmail: mongoData.ownerEmail,
           metadata: mongoData.memory.metadata,
           access: mongoData.memory.access,
           media: {
@@ -180,76 +184,103 @@ const MemoryDetail = () => {
     fetchMemoryData();
   }, [userID, memoryName]);
 
+  useEffect(() => {
+    const userEmail = auth.currentUser?.reloadUserInfo?.providerUserInfo?.[0]?.email;
+    if(!userEmail) return
+    setUserEmail(userEmail)
+  }, []);
+
   // Validación de acceso
   useEffect(() => {
-    if (!memoryData) return;
+  if (!memoryData) return;
+  
+  // Obtén de forma segura el email del usuario
+  const userEmail = auth.currentUser?.reloadUserInfo?.providerUserInfo?.[0]?.email;
+  
 
-    console.log("Acceso público permitido");
-        setRoll('Anyone can upload memories')
-        return //solo de prueba
-  
-    const checkViewPermissions = () => {
-      const viewAccess = memoryData.access?.view;
-      if (!viewAccess) {
-        console.error("Estructura de acceso no válida");
-        setError("Configuración de acceso inválida");
+  console.log(userEmail);
+
+  const checkViewPermissions = () => {
+    const viewAccess = memoryData.access?.view;
+    console.log(viewAccess);
+    
+    
+    if (!viewAccess) {
+      console.error("Estructura de acceso no válida");
+      setError("Configuración de acceso inválida");
+      return;
+    }
+
+    const { visibility, invitedEmails = [] } = viewAccess;
+    const currentPath = window.location.pathname;
+
+    // Caso 1: Visibilidad Pública
+    if (visibility === 'public') {
+      console.log("Acceso público permitido");
+      setRoll('Anyone can upload memories');
+      return;
+    }
+
+    // Requerir autenticación para otros casos
+    if (!userEmail) {
+      console.log("Usuario no autenticado, redirigiendo...");
+      localStorage.setItem('redirectPath', currentPath);
+      localStorage.setItem('reason', 'userEmailValidationOnly');
+      router.push('/login');
+      return;
+    }
+
+    // Transformar IDs para comparación
+    const transformEmail = (email) => email.replace(/[@.]/g, '_');
+    const currentUserTransformed = transformEmail(userEmail);
+    console.log(currentUserTransformed);
+    
+    
+    const ownerTransformed = memoryData.ownerEmail
+    if(ownerTransformed === currentUserTransformed){
+      console.log("Acceso privado concedido (propietario)");
+      setRoll('You are the owner');
+      return;
+    }
+
+
+
+    // Caso 2: Visibilidad Privada
+    if (visibility === 'private') {
+      if (currentUserTransformed === ownerTransformed) {
+        console.log("Acceso privado concedido (propietario)");
+        setRoll('You are the owner');
         return;
       }
-  
-      const { visibility, invitedEmails = [] } = viewAccess;
-      const currentPath = window.location.pathname;
-  
-      // Caso 1: Visibilidad Pública
-      if (visibility === 'public') {
-        console.log("Acceso público permitido");
-        setRoll('Anyone can upload memories')
+      console.log("Acceso privado denegado");
+      setRoll('User not allowed');
+      setMemoryData(null);
+      return;
+    }
+
+    // Caso 3: Visibilidad por Invitación
+    if (visibility === 'invitation') {
+      const transformedInvites = invitedEmails.map(transformEmail);
+      console.log(transformedInvites);
+      
+      if (transformedInvites.includes(currentUserTransformed)) {
+        console.log("Acceso por invitación concedido");
+        setRoll('Invited to upload memories');
         return;
       }
-  
-      // Requerir autenticación para otros casos
-      const userEmail = localStorage.getItem('userEmail');
-      if (!userEmail) {
-        console.log("Usuario no autenticado, redirigiendo...");
-        localStorage.setItem('redirectPath', currentPath);
-        localStorage.setItem('reason', 'userEmailValidationOnly');
-        router.push('/login');
-        return;
-      }
-  
-      // Transformar IDs para comparación
-      const transformEmail = (email) => email.replace(/[@.]/g, '_');
-      const currentUserTransformed = transformEmail(userEmail);
-      const ownerTransformed = '';//memoryData.metadata.created_by;
-  
-      // Caso 2: Visibilidad Privada
-      if (visibility === 'private') {
-        if (currentUserTransformed === ownerTransformed) {
-          console.log("Acceso privado concedido (propietario)");
-          setRoll('You are the owner')
-          return;
-        }
-        console.log("Acceso privado denegado");
-        setRoll('User not allowed')
-        setMemoryData(null)
-        return;
-      }
-  
-      // Caso 3: Visibilidad por Invitación
-      if (visibility === 'invitation') {
-        const transformedInvites = invitedEmails.map(transformEmail);
-        if (transformedInvites.includes(currentUserTransformed)) {
-          console.log("Acceso por invitación concedido");
-          setRoll('Invited to upload memories')
-          return;
-        }
-        setRoll('User not allowed')
-        console.log("Usuario no invitado");
-        setMemoryData(null)
-      }
-    };
-  
-    checkViewPermissions();
-  }, [memoryData, router]);
+      console.log("Usuario no invitado");
+      setRoll('User not allowed');
+      setMemoryData(null);
+    }
+  };
+
+  checkViewPermissions();
+}, [
+  memoryData,
+  router,
+  userEmail
+]);
+
 
   const handleFolderClick = async (folderName) => {
     setFolderLoadingStates(prev => ({ ...prev, [folderName]: true }));

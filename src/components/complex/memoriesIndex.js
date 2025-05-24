@@ -10,6 +10,9 @@ import BackgroundGeneric from './backgroundGeneric';
 import ShowHide from './showHide';
 import UploadIcon from './icons/uploadIcon';
 import EditToggleIcon from './EditToggleIcon ';
+import { auth } from '../../../firebase';
+
+
 
 
 
@@ -34,22 +37,48 @@ const MemoriesIndex = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userID, setUserID] = useState('');
 
+
+  
+
+  // Primer useEffect: Escuchar cambios en el estado de autenticación
   useEffect(() => {
-    const storedEmail = localStorage.getItem("userEmail");
-    console.log(storedEmail);
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log(user);
+        
+        const email = user.email; // Obtener el correo directamente desde user.email
+        console.log('Correo del usuario:', email);
+        setUserEmail(email);
+      } else {
+        console.log('No hay usuario autenticado');
+        setUserEmail(null);
+        setLoading(false); // Detener la carga si no hay usuario
+      }
+    });
+
+    // Cleanup: Desuscribirse del listener cuando el componente se desmonta
+    return () => unsubscribe();
+  }, []);
+
+
+
+  useEffect(() => {
+    console.log(userEmail);
     
-    if (!storedEmail) {
+    if (userEmail === null) {
       setUserEmail(null);
       setLoading(false);
       return;
     }
-    setUserEmail(storedEmail);
+    
+    console.log(userEmail);
+    
   
     const apiUrl = "/api/mongoDb/getAllReferencesUser";
     fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: storedEmail }),
+      body: JSON.stringify({ userId: userEmail }),
     })
       .then(async (response) => {
         if (!response.ok) {
@@ -77,7 +106,7 @@ const MemoriesIndex = () => {
         setError(err.message);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [userEmail]);
 
   useEffect(() => {
     const entries = Object.entries(memoriesState);
@@ -102,7 +131,9 @@ const MemoriesIndex = () => {
   }, [memoriesState, sortType]);
 
   const handleCreateMemory = () => {
-    if (!userEmail) {
+    console.log(userEmail)
+    
+    if (userEmail === null) {
       const path = window.location.pathname;
       localStorage.setItem('redirectPath', path);
       localStorage.setItem('reason', 'createNewUser');

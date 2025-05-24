@@ -18,6 +18,8 @@ export default async function handler(req, res) {
       });
     }
 
+    
+
     // Transforma el userId según necesidades 
     // Ejemplo: "davipiano@gmail.com" -> "davipianogmail_com"
     const transformUserId = id => id.replace(/[@.]/g, '_');
@@ -55,6 +57,7 @@ export default async function handler(req, res) {
       userInfoId, // id extraído del objeto userInformation
       memories: userMemories
     });
+    
   } catch (error) {
     console.error('Error en getAllReferencesUser:', error);
     return res.status(500).json({

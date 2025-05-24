@@ -7,7 +7,7 @@ import '../estilos/general/general.css';
 import '../app/globals.css';
 import Modal from '@/components/complex/modal';
 import MemoryLogo from '@/components/complex/memoryLogo';
-import Link from 'next/link';
+import { auth } from '../../firebase';
 
 // Componente para el modal de visibilidad (extraído como componente independiente)
 const VisibilityModal = ({
@@ -508,7 +508,7 @@ const CreateNewMemory = () => {
   // Estados principales del formulario
   const [memoryTitle, setMemoryTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [userEmail, setUserEmail] = useState('');
+  const [userEmail, setUserEmail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -532,16 +532,41 @@ const CreateNewMemory = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+
+
+  // Primer useEffect: Escuchar cambios en el estado de autenticación
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          console.log(user);
+          
+          const email = user.email; // Obtener el correo directamente desde user.email
+          console.log('Correo del usuario:', email);
+          setUserEmail(email);
+        } else {
+          console.log('No hay usuario autenticado');
+          setUserEmail(null);
+          //setLoading(false); // Detener la carga si no hay usuario
+        }
+      });
+  
+      // Cleanup: Desuscribirse del listener cuando el componente se desmonta
+      return () => unsubscribe();
+    }, []);
+
   //verifica permisos
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const email = localStorage.getItem('userEmail');
+    if (userEmail === null) return;
+
+
+    //const email = localStorage.getItem('userEmail');
     
-    if (email) {
+    if (userEmail) {
       // Transformar el email para usarlo como ID (reemplazar @ y . por _)
       const transformUserId = (userId) => userId.replace(/[@.]/g, '_');
-      setUserEmail(transformUserId(email));
-      console.log(transformUserId(email));
+      setUserEmail(transformUserId(userEmail));
+      console.log(transformUserId(userEmail));
       
     } else {
       console.log('no hay correo en createNewMemory')

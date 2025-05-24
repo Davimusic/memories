@@ -1087,9 +1087,43 @@ const DirectBunnyUploader = () => {
   const videoInputRef = useRef(null);
   const imageInputRef = useRef(null);
 
+
+  /*const email = localStorage.getItem('userEmail');
+    if (email) {
+      setUserEmail(email.replace(/[@.]/g, '_'));
+    } else {
+      const path = window.location.pathname;
+      localStorage.setItem('redirectPath', path);
+      localStorage.setItem('reason', 'userEmailValidationOnly');
+      router.push('/login');
+      return;
+    }*/
+
   useEffect(() => {
-    console.log(auth.currentUser.reloadUserInfo.providerUserInfo[0]);//me da todo lo general que necesito
-    console.log(auth.currentUser.reloadUserInfo.providerUserInfo[0].email);
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+          if (user) {
+            console.log(user);
+            
+            const email = user.email; // Obtener el correo directamente desde user.email
+            console.log('Correo del usuario:', email);
+            setUserEmail(email);
+          } else {
+            console.log('No hay usuario autenticado');
+            setUserEmail(null);
+            const path = window.location.pathname;
+            localStorage.setItem('redirectPath', path);
+            localStorage.setItem('reason', 'userEmailValidationOnly');
+            router.push('/login');
+            return;
+            //setLoading(false); // Detener la carga si no hay usuario
+          }
+        });
+        // Cleanup: Desuscribirse del listener cuando el componente se desmonta
+        return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    
     
     const registerServiceWorker = async () => {
       if ('serviceWorker' in navigator) {
@@ -1122,16 +1156,7 @@ const DirectBunnyUploader = () => {
 
     registerServiceWorker();
 
-    /*const email = localStorage.getItem('userEmail');
-    if (email) {
-      setUserEmail(email.replace(/[@.]/g, '_'));
-    } else {
-      const path = window.location.pathname;
-      localStorage.setItem('redirectPath', path);
-      localStorage.setItem('reason', 'userEmailValidationOnly');
-      router.push('/login');
-      return;
-    }*/
+    
     const path = window.location.pathname;
     const parts = path.split('/');
     if (parts.length > 2) {
@@ -1225,6 +1250,11 @@ const DirectBunnyUploader = () => {
     e.preventDefault();
 
     if (!files.length || !memoryName || !userEmail || !folderName) {
+      console.log(files.length);
+      console.log(memoryName);
+      console.log(userEmail);
+      console.log(folderName);
+      
       setUploadStatus('Faltan parámetros: archivo, memoria, email o carpeta');
       return;
     }

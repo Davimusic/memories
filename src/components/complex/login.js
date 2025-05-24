@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   signInWithPopup,
   signOut,
@@ -17,6 +17,37 @@ import BackgroundGeneric from './backgroundGeneric';
 import { useRouter } from 'next/navigation';
 import { FaGoogle, FaEnvelope, FaLock } from 'react-icons/fa';
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const Login = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -27,6 +58,7 @@ const Login = () => {
   const [isSignIn, setIsSignIn] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const initialMount = useRef(true);
 
   const provider = new GoogleAuthProvider();
   provider.addScope('email');
@@ -35,50 +67,57 @@ const Login = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Obtener el token JWT
+        const userEmail = user.providerData[0]?.email || user.email || '';
         const token = await user.getIdToken();
-        localStorage.setItem('authToken', token); // Almacenar el token JWT
+        localStorage.setItem('authToken', token);
         localStorage.setItem('userName', user.displayName || 'User');
         localStorage.setItem('userImage', user.photoURL || '');
-        // No almacenar el correo en localStorage, usar user.email directamente cuando sea necesario
+        //localStorage.setItem('userEmail', userEmail);
 
-        const reason = localStorage.getItem('reason');
-        const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+        if (initialMount.current) {
+          const reason = localStorage.getItem('reason');
+          const redirectPath = localStorage.getItem('redirectPath') || '/memories';
 
-        try {
-          if (reason && reason !== 'userEmailValidationOnly') {
-            await handleUserAfterAuth(user.uid, reason === 'createNewUser' ? 'signIn' : 'login');
+          try {
+            if (reason === 'userEmailValidationOnly') {
+              await handleUserAfterAuth(user.uid, userEmail, 'login');
+            } else if (reason === 'createNewUser') {
+              await handleUserAfterAuth(user.uid, userEmail, 'signIn');
+            } else if (reason) {
+              await handleUserAfterAuth(user.uid, userEmail, 'login');
+            }
+          } catch (error) {
+            console.error('Error handling post-auth:', error);
+            setError('Failed to complete registration process');
+            return;
           }
-        } catch (error) {
-          console.error('Error handling post-auth:', error);
-          setError('Failed to complete registration process');
-          return;
-        }
 
-        localStorage.removeItem('redirectPath');
-        localStorage.removeItem('reason');
-        router.push(redirectPath);
+          localStorage.removeItem('redirectPath');
+          localStorage.removeItem('reason');
+          router.push(redirectPath);
+        }
       } else {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userName');
         localStorage.removeItem('userImage');
-        localStorage.removeItem('userEmail'); // Asegurarse de eliminar cualquier correo almacenado
+        localStorage.removeItem('userEmail');
       }
+      initialMount.current = false;
     });
 
     return () => unsubscribe();
   }, [router]);
 
-  const handleUserAfterAuth = async (uid, authType) => {
+  const handleUserAfterAuth = async (uid, email, authType) => {
     try {
       const token = await auth.currentUser.getIdToken();
       const response = await fetch('/api/auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Enviar el token JWT
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ uid, authType }),
+        body: JSON.stringify({ uid, email, authType }),
       });
 
       if (!response.ok) {
@@ -88,6 +127,7 @@ const Login = () => {
 
       const data = await response.json();
       if (data.success) {
+        localStorage.setItem('userMyLikes', data.myLikes || '');
         setModalMessage(data.message);
         setIsModalOpen(true);
       }
@@ -113,7 +153,7 @@ const Login = () => {
       const reason = localStorage.getItem('reason');
 
       if (reason !== 'userEmailValidationOnly') {
-        await handleUserAfterAuth(user.uid, isSignIn ? 'signIn' : 'login');
+        await handleUserAfterAuth(user.uid, user.email, isSignIn ? 'signIn' : 'login');
       }
 
       const redirectPath = localStorage.getItem('redirectPath') || '/memories';
@@ -130,10 +170,11 @@ const Login = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      const email = user.providerData[0]?.email || user.email;
       const reason = localStorage.getItem('reason');
 
       if (reason !== 'userEmailValidationOnly') {
-        await handleUserAfterAuth(user.uid, 'google');
+        await handleUserAfterAuth(user.uid, email, 'google');
       }
 
       const redirectPath = localStorage.getItem('redirectPath') || '/memories';
