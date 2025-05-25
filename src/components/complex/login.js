@@ -16,6 +16,7 @@ import '../../estilos/general/general.css';
 import BackgroundGeneric from './backgroundGeneric';
 import { useRouter } from 'next/navigation';
 import { FaGoogle, FaEnvelope, FaLock } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 
 
@@ -60,6 +61,7 @@ const Login = () => {
   const [modalMessage, setModalMessage] = useState('');
   const initialMount = useRef(true);
 
+  
   const provider = new GoogleAuthProvider();
   provider.addScope('email');
   provider.addScope('profile');
@@ -77,7 +79,8 @@ const Login = () => {
         if (initialMount.current) {
           const reason = localStorage.getItem('reason');
           const redirectPath = localStorage.getItem('redirectPath') || '/memories';
-
+          
+    
           try {
             if (reason === 'userEmailValidationOnly') {
               await handleUserAfterAuth(user.uid, userEmail, 'login');
@@ -151,6 +154,7 @@ const Login = () => {
 
       const user = userCredential.user;
       const reason = localStorage.getItem('reason');
+      
 
       if (reason !== 'userEmailValidationOnly') {
         await handleUserAfterAuth(user.uid, user.email, isSignIn ? 'signIn' : 'login');

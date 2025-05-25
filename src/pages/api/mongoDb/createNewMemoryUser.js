@@ -71,6 +71,10 @@ export default async function handler(req, res) {
         edit: {
           visibility: editVisibility || 'private',
           invitedEmails: editInvitedEmails || []
+        },
+        editPermissions: {
+          visibility: editVisibility || 'private',
+          invitedEmails: editInvitedEmails || []
         }
       },
       media: {

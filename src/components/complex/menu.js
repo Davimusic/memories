@@ -23,6 +23,7 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
   const [userImage, setUserImage] = useState('');
   const [userMyLikes, setUserMyLikes] = useState([]);
   const [planStatus, setPlanStatus] = useState('');
+  const [userEmail, setUserEmail] = useState(null);
   const router = useRouter();
 
   // State para almacenar colores actuales
@@ -33,6 +34,19 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
     backgroundColor4: '',
     backgroundColor5: '',
   });
+
+
+   useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+          if (user) {
+            const email = user.email || user.providerData?.[0]?.email;
+            setUserEmail(email);
+          } 
+        });
+        return () => unsubscribe();
+  }, []);
+
+   
 
   // Obtener datos de usuario desde localStorage
   useEffect(() => {
@@ -60,13 +74,14 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
   // Obtener el estado del plan del backend solo una vez por sesión
   useEffect(() => {
     // Verificar si existe el email del usuario almacenado en localStorage
-    const storedEmail = localStorage.getItem("userEmail");
+    /*const storedEmail = localStorage.getItem("userEmail");
     if (!storedEmail) {
       console.log('correo NO existe');
       return;
     } else {
       console.log('correo sí existe');
-    }
+    }*/
+   if(userEmail === null) return 
 
     // Obtener el contenido almacenado en sessionStorage
     const cachedPlanString = sessionStorage.getItem('userPlanStatus');
@@ -95,7 +110,7 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: storedEmail }),
+        body: JSON.stringify({ email: userEmail }),
       })
         .then((response) => {
           if (!response.ok) {
@@ -121,7 +136,7 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
           console.error('Error fetching plan status:', error);
         });
     }
-  }, []);
+  }, [userEmail]);
 
   // Función para actualizar un color (ejemplo en vivo)
   const updateColor = (colorClass, hexValue) => {

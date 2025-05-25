@@ -166,7 +166,7 @@
   }
 
 .submit-btn {
-    background: #2ecc71;
+    background: var(--backgroundColor2);
     color: white;
     border: none;
     padding: 12px 24px;
@@ -175,19 +175,20 @@
     font-weight: 600;
     cursor: pointer;
     width: 100%;
-    transition: background-color 0.2s;
     box-sizing: border-box;
     margin-top: 20px;
-  }
-  
-  .submit-btn:hover {
-    background: #27ae60;
-  }
-  
-  .submit-btn:disabled {
+}
+
+.submit-btn:hover {
+    background: var(--backgroundColor1);
+    transition: background-color 0.5s;
+}
+
+.submit-btn:disabled {
     background: #95a5a6;
     cursor: not-allowed;
-  }
+}
+
 
   .submitButton {
     background: #2ecc71;

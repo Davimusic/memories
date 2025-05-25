@@ -1,16 +1,28 @@
 import React from 'react';
-import '../../estilos/general/general.css'
-import '../../app/globals.css'
+import Head from 'next/head'; // Assuming Next.js for <Head> component
+import '../../estilos/general/general.css';
+import '../../app/globals.css';
 import BackgroundGeneric from './backgroundGeneric';
 import MemoryLogo from './memoryLogo';
-
 
 const LoadingMemories = () => {
   return (
     <div className="fullscreen-floating">
+      <Head>
+        <title>Loading Memories | Your App Name</title>
+        <meta name="description" content="Loading your cherished memories in our application. Please wait a moment while we prepare your personalized experience." />
+        <meta name="robots" content="noindex, nofollow" /> {/* Prevent indexing of loading pages */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet="UTF-8" />
+        <meta name="keywords" content="memories, loading, your app name" />
+        <meta name="author" content="Your App Name" />
+        <link rel="canonical" href="https://yourdomain.com/loading" /> {/* Adjust to your domain */}
+      </Head>
       <BackgroundGeneric showImageSlider={false}>
-        <div 
-          className="loading" 
+        <div
+          className="loading backgroundColor1"
+          role="status"
+          aria-live="polite"
           style={{
             position: 'fixed',
             top: 0,
@@ -23,11 +35,13 @@ const LoadingMemories = () => {
             justifyContent: 'center',
             fontSize: '1.2rem',
             gap: '20px',
-            zIndex: 9999
+            zIndex: 9999,
           }}
         >
-          <MemoryLogo size={300} />
-          <p className="color2 title-lg">Loading memories...</p>
+          <MemoryLogo size={300} aria-label="Memories Logo" />
+          <p className="color1 title-lg" aria-label="Loading memories">
+            Loading...
+          </p>
         </div>
       </BackgroundGeneric>
     </div>
@@ -35,4 +49,3 @@ const LoadingMemories = () => {
 };
 
 export default LoadingMemories;
-

@@ -8,6 +8,7 @@ import '../app/globals.css';
 import Modal from '@/components/complex/modal';
 import MemoryLogo from '@/components/complex/memoryLogo';
 import { auth } from '../../firebase';
+import LoadingMemories from '@/components/complex/loading';
 
 // Componente para el modal de visibilidad (extraído como componente independiente)
 const VisibilityModal = ({
@@ -509,6 +510,8 @@ const CreateNewMemory = () => {
   const [memoryTitle, setMemoryTitle] = useState('');
   const [description, setDescription] = useState('');
   const [userEmail, setUserEmail] = useState(null);
+  const [uid, setUid] = useState(null);
+  const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -536,23 +539,31 @@ const CreateNewMemory = () => {
 
   // Primer useEffect: Escuchar cambios en el estado de autenticación
     useEffect(() => {
-      const unsubscribe = auth.onAuthStateChanged((user) => {
-        if (user) {
-          console.log(user);
-          
-          const email = user.email; // Obtener el correo directamente desde user.email
-          console.log('Correo del usuario:', email);
-          setUserEmail(email);
-        } else {
-          console.log('No hay usuario autenticado');
-          setUserEmail(null);
-          //setLoading(false); // Detener la carga si no hay usuario
-        }
-      });
-  
-      // Cleanup: Desuscribirse del listener cuando el componente se desmonta
-      return () => unsubscribe();
-    }, []);
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+          if (user) {
+            setUid(user.uid);
+            try {
+              const idToken = await user.getIdToken();
+              setToken(idToken);
+            } catch (error) {
+              console.error('Error getting token:', error);
+              setError('Failed to authenticate user');
+            }
+            const email = user.email || user.providerData?.[0]?.email;
+            setUserEmail(email);
+          } else {
+            const path = window.location.pathname;
+            notifyFailes('Please log in before continuing...')
+            localStorage.setItem('redirectPath', path);
+            localStorage.setItem('reason', 'userEmailValidationOnly');
+            setTimeout(() => {
+              router.push('/login');
+            }, 2000); 
+          }
+        });
+    
+        return () => unsubscribe();
+  }, [router]);
 
   //verifica permisos
   useEffect(() => {
@@ -941,22 +952,7 @@ const CreateNewMemory = () => {
           />
         </>
       ) : (
-        <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-        }}
-      >
-        <div className=" loading">
-          <p className='color1'>{alertMessage}</p>
-          <MemoryLogo size={200} />
-          <button className='submitButton' onClick={handleRedirect}>
-            create a new user account
-          </button>
-        </div>
-      </div>
+        <LoadingMemories/>
       )}
     </div>
   );

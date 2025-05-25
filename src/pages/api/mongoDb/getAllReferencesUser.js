@@ -1,5 +1,8 @@
 // Importación correcta, sin destructurar (ni llaves)
 import clientPromise from '../connectToDatabase';
+import { verifyLoginUser } from '../firebase/verifyLoginUser';
+
+
 
 export default async function handler(req, res) {
   try {
@@ -10,11 +13,19 @@ export default async function handler(req, res) {
       });
     }
 
-    const { userId } = req.body;
+    const { userId, uid, token } = req.body;
     if (!userId) {
       return res.status(400).json({
         success: false,
         message: 'El parámetro userId es requerido'
+      });
+    }
+
+    const loginResult = await verifyLoginUser({ uid, token });
+    if (!loginResult.success) {return res.status(404).json({
+        success: false,
+        message: 'No se encontraron recuerdos para el usuario especificado',
+        memories: {}
       });
     }
 

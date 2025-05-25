@@ -128,6 +128,42 @@
 }
 
 
+
+.centrar-horizontal {
+    display: flex;
+    justify-content: center;
+}
+
+.centrar-vertical {
+    display: flex;
+    align-items: center;
+}
+
+.centrar-completo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading {
+  position: fixed; /* Hace que sea flotante y permanezca en su lugar */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  gap: 20px;
+  z-index: 9999; /* Asegura que esté por encima de otros elementos */
+}
+
+
+
+
+
 .video-normal, .video-fullscreen {
   transition: all 1.5s ease-in-out;
 }
@@ -144,13 +180,13 @@
   background-color: rgba(0, 0, 0, 0.9);
 }
 
-button {
+/*button {
   transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
 button:hover {
   transform: scale(1.1);
-}
+}*/
 
 .submitButton {
   background: #2ecc71;
