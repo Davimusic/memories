@@ -30,6 +30,8 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: 'Método no permitido' });
     }
 
+    
+
     // Log de diagnóstico
     console.log('Request received:', {
       query: req.query,
@@ -37,7 +39,10 @@ export default async function handler(req, res) {
     });
 
     const { memoryName, userID } = req.query;
-    const { currentUser: rawUserEmail, type: folderName, fileType, fileName } = req.body;
+    const { currentUser: rawUserEmail, type: folderName, fileType, fileName, token, uid } = req.body;
+
+
+    
 
     // Validar parámetros
     const missingParams = [];
@@ -47,6 +52,8 @@ export default async function handler(req, res) {
     if (!folderName) missingParams.push('type');
     if (!fileType) missingParams.push('fileType');
     if (!fileName) missingParams.push('fileName');
+    if (!token) missingParams.push('token');
+    if (!uid) missingParams.push('uid');
 
     if (missingParams.length > 0) {
       throw new Error(`Parámetros faltantes: ${missingParams.join(', ')}`);
@@ -57,6 +64,8 @@ export default async function handler(req, res) {
     if (!actionType) {
       throw new Error(`Tipo de carpeta inválido. Valores permitidos: ${Object.keys(FOLDER_ACTIONS).join(', ')}`);
     }
+
+    
 
     // Validar fileType
     if (!VALID_FILE_TYPES.includes(fileType)) {
@@ -81,13 +90,27 @@ export default async function handler(req, res) {
     // Sanitizar usuario
     const sanitizedUser = rawUserEmail.replace(/[@.]/g, '_');
     console.log('Usuario sanitizado:', sanitizedUser);
+    
+    
+    
+    console.log('mirarrrrrrrr');
+    console.log({
+      userId: userID,
+      memoryName,
+      userEmail: sanitizedUser,
+      type: actionType,
+      uid,
+      token
+    });
 
     // Verificar permisos
     const permission = await checkMemoryPermission({
       userId: userID,
       memoryName,
-      currentUser: sanitizedUser,
+      userEmail: sanitizedUser,
       type: actionType,
+      uid,
+      token
     });
 
     console.log('Permiso obtenido:', permission);
