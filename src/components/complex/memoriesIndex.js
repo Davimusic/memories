@@ -43,15 +43,21 @@ const MemoriesIndex = () => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         setUid(user.uid);
+        console.log(user.uid);
+        
         try {
           const idToken = await user.getIdToken();
           setToken(idToken);
+          console.log(idToken);
+          
         } catch (error) {
           console.error('Error getting token:', error);
           setError('Failed to authenticate user');
         }
         const email = user.email || user.providerData?.[0]?.email;
         setUserEmail(email);
+        console.log(email);
+        
       } else {
         const path = window.location.pathname;
         notifyFailes('Please log in before continuing...')
