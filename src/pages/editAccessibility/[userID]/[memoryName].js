@@ -12,6 +12,8 @@ import { auth } from '../../../../firebase';
 import ErrorComponent from '@/components/complex/error';
 import Head from 'next/head';
 
+
+
 // Visibility Modal Component
 const VisibilityModal = ({
   isOpen,
@@ -529,6 +531,7 @@ const EditPermissionsModal = ({
 
 // Main Component
 const EditMemoryPermissions = () => {
+  return 'hi'
   const router = useRouter();
   const { userID, memoryName } = router.query;
 
