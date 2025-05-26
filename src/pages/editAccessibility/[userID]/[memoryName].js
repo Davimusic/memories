@@ -959,8 +959,11 @@ export default EditMemoryPermissions;
   }
 `}</style>
 
-
-
+export async function getServerSideProps() {
+  return {
+    props: {},
+  };
+}
 
 
 
