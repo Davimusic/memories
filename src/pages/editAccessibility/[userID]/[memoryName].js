@@ -531,7 +531,6 @@ const EditPermissionsModal = ({
 
 // Main Component
 const EditMemoryPermissions = () => {
-  return 'hi'
   const router = useRouter();
   const { userID, memoryName } = router.query;
 
@@ -962,12 +961,7 @@ export default EditMemoryPermissions;
   }
 `}</style>
 
-export async function getServerSideProps() {
-  return {
-    props: {},
-  };
-}
-//raro
+
 
 
 
