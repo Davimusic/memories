@@ -1,5 +1,75 @@
-/**  @type {import('next').NextConfig} */
+/** @type {import('next').NextConfig} */
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+});
+
 require('dotenv').config();
+
+module.exports = withPWA({
+  reactStrictMode: true,
+  experimental: {
+    esmExternals: 'loose', // Keep this if needed for your project
+  },
+  webpack: (config) => {
+    config.resolve.fallback = {
+      fs: false,
+      path: false,
+      crypto: false,
+      stream: false,
+    };
+    return config;
+  },
+  images: {
+    domains: [
+      'res.cloudinary.com',
+      'lh3.googleusercontent.com',
+      'f005.backblazeb2.com',
+    ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/cloudinary/:path*',
+        destination: `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/:path*`,
+      },
+      {
+        source: '/api/blackBlaze/:path*',
+        destination: `https://f005.backblazeb2.com/file/${process.env.BACKBLAZE_BUCKET_NAME}/:path*`,
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: '/:all*(svg|jpg|png|wav|mp3|aiff)',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+        ],
+      },
+    ];
+  },
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+/** *////  @type {import('next').NextConfig} */
+/*require('dotenv').config();
 
 module.exports = {
   reactStrictMode: true,
@@ -50,4 +120,4 @@ module.exports = {
       },
     ];
   }
-};
+};*/

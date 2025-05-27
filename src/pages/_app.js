@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { initializeApp, getApps } from 'firebase/app';
 import { ToastContainer } from 'react-toastify';
+import Head from 'next/head';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Initialize Firebase client SDK
@@ -54,6 +55,13 @@ export const useAuth = () => useContext(AuthContext);
 export default function App({ Component, pageProps }) {
   return (
     <AuthProvider>
+      <Head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <link rel="apple-touch-icon" href="/photosLoging/f1.webp" />
+      </Head>
       <PayPalScriptProvider
         options={{
           'client-id': 'AbyHsDXyJLxKBgCHv9BAeVbt-JLALZCJ4q_Z1m-dKA58ime8dXCgHL0ycehEvOH1ceJvjCzUOmzUAADN',
