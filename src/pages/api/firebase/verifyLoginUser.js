@@ -1,4 +1,52 @@
-import admin from 'firebase-admin';
+import { getApps, initializeApp, cert } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+
+// Configuración de Firebase Admin con variables de entorno
+const firebaseConfig = {
+  credential: cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+  }),
+};
+
+// Inicializar Firebase Admin si no está inicializado
+let firebaseAdmin;
+if (!getApps().length) {
+  try {
+    firebaseAdmin = initializeApp(firebaseConfig);
+    console.log('🔥 Firebase Admin inicializado con éxito en verifyLoginUser');
+  } catch (error) {
+    console.error('❌ Error al inicializar Firebase Admin:', error);
+    throw error;
+  }
+} else {
+  firebaseAdmin = getApps()[0];
+  console.log('🔥 Usando instancia existente de Firebase Admin en verifyLoginUser');
+}
+
+export const verifyLoginUser = async ({ uid, token }) => {
+  try {
+    const auth = getAuth(firebaseAdmin);
+    const decodedToken = await auth.verifyIdToken(token);
+    if (decodedToken.uid === uid) {
+      return { success: true, message: 'El usuario está logeado' };
+    } else {
+      return { success: false, error: 'El UID no coincide con el token' };
+    }
+  } catch (error) {
+    console.error('Error al verificar el token:', error);
+    return { success: false, error: 'Token inválido' };
+  }
+};
+
+
+
+
+
+
+
+/*import admin from 'firebase-admin';
 
 export const verifyLoginUser = async ({ uid, token }) => {
   try {
@@ -12,7 +60,7 @@ export const verifyLoginUser = async ({ uid, token }) => {
     console.error('Error al verificar el token:', error);
     return { success: false, error: 'Token inválido' };
   }
-};
+};*/
 
 
 

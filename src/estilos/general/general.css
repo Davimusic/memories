@@ -55,7 +55,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: none;
+  border: solid white 2px;
   cursor: pointer;
 }
 
@@ -208,6 +208,31 @@ button:hover {
 .submitButton:disabled {
   background: #95a5a6;
   cursor: not-allowed;
+}
+
+
+.submit-btn {
+    background: var(--backgroundColor2);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 20px;
+}
+
+.submit-btn:hover {
+    background: var(--backgroundColor1);
+    transition: background-color 0.5s;
+}
+
+.submit-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
 }
 
 .effectHover {

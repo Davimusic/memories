@@ -37,7 +37,7 @@ export default async function handler(req, res) {
       body: req.body,
     });
 
-    const { userId, memoryName, filesToDelete, userEmail } = req.body;
+    const { userId, memoryName, filesToDelete, userEmail, uid, token } = req.body;
 
     // Validate parameters
     const missingParams = [];
@@ -62,8 +62,10 @@ export default async function handler(req, res) {
     const permission = await checkMemoryPermission({
       userId,
       memoryName,
-      currentUser: sanitizedUser,
+      userEmail: sanitizedUser,
       type: FOLDER_ACTIONS.editMemories,
+      uid, 
+      token
     });
 
     console.log('Permission check result:', permission);

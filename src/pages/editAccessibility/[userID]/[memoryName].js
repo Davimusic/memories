@@ -559,7 +559,7 @@ const EditMemoryPermissions = () => {
 
   
 
-  /*/ Authentication check
+  // Authentication check
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -642,7 +642,7 @@ const EditMemoryPermissions = () => {
     if (uid && userEmail && token) {
       fetchPermissionData();
     }
-  }, [userID, memoryName, uid, userEmail, token]);*/
+  }, [userID, memoryName, uid, userEmail, token]);
 
   const handleSave = async (e) => {
     e.preventDefault();

@@ -18,7 +18,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const { userId, memoryName, userEmail, filesToDelete } = req.body;
+    const { userId, memoryName, userEmail, filesToDelete, uid, token } = req.body;
 
     console.log('deleteFilesUserMongoDB');
     console.log(userId);
@@ -50,8 +50,10 @@ export default async function handler(req, res) {
     const permission = await checkMemoryPermission({
       userId,
       memoryName,
-      currentUser: sanitizedUser,
+      userEmail: sanitizedUser,
       type: 'edit',
+      uid,
+      token
     });
 
     console.log('Permission check result:', permission);

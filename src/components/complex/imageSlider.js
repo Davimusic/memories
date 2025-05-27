@@ -15,15 +15,6 @@ import "../../estilos/general/general.css";
 
 
 
-
-
-
-
-
-
-
-
-
 const ImageSlider = ({
   images = [],
   controls = {
