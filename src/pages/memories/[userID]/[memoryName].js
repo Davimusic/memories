@@ -1,7 +1,7 @@
 // pages/memories/[id].js
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import styles from '../../../estilos/general/memoryDetail.module.css'; // Asegúrate de tener o crear los estilos correspondientes
+import styles from '../../../estilos/general/memoryDetail.module.css'; 
 import MemoryLogo from '../../../components/complex/memoryLogo';
 import BackgroundGeneric from '../../../components/complex/backgroundGeneric';
 import '../../../estilos/general/general.css'
@@ -14,70 +14,6 @@ import ImageSlider from '../../../components/complex/imageSlider';
 import LoadingMemories from '@/components/complex/loading';
 import { auth } from '../../../../firebase';
 import Modal from '@/components/complex/modal';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const MemoryDetail = () => {
   const router = useRouter();
@@ -193,6 +129,8 @@ const MemoryDetail = () => {
   // Validación de acceso
   useEffect(() => {
   if (!memoryData) return;
+  console.log(memoryData);
+  
   
   // Obtén de forma segura el email del usuario
   const userEmail = auth.currentUser?.reloadUserInfo?.providerUserInfo?.[0]?.email;
@@ -448,12 +386,13 @@ const MemoryDetail = () => {
         <div className={`${styles.memoryContainer} backgroundColor5 color1`}>
           {/* Header */}
           <div className={styles.headerSection}>
-            <div className={styles.titleContainer}>
-              <div style={{marginTop: '-90px', width: '50px'}}>
+            <div className={`${styles.titleContainer}`}>
+              <div className='menuIconPosition' >
                 <MenuIcon size={30} onClick={() => setIsMainMenuOpen(true)} />
               </div>
               <textarea
-                className={`${styles.memoryTitle} title-xl color2`}
+                style={{textAlign: 'center'}}
+                className={`${styles.memoryTitle} title-xl color2 `}
                 value={memoryData?.metadata?.title || "No title available"}
                 readOnly
                 rows={2}
@@ -478,8 +417,8 @@ const MemoryDetail = () => {
                     rows={5}
                   />
                   <div className={styles.datesContainer}>
-                    <div>Created: {new Date(metadata.created_at).toLocaleDateString()}</div>
-                    <div>Last modified: {new Date(metadata.last_updated).toLocaleDateString()}</div>
+                    <div>Created: {new Date(metadata.createdAt).toLocaleDateString()}</div>
+                    <div>Last modified: {new Date(metadata.lastUpdated).toLocaleDateString()}</div>
                   </div>
                 </div>
               )}
