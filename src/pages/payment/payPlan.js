@@ -9,9 +9,19 @@ import Menu from "@/components/complex/menu";
 import MenuIcon from "@/components/complex/menuIcon";
 import SpinnerIcon from '@/components/complex/spinnerIcon';
 import MemoryLogo from '@/components/complex/memoryLogo';
+import LoadingMemories from '@/components/complex/loading';
+import { auth } from '../../../firebase'
+import { toast } from 'react-toastify';
 
 export default function PaypalSubscriptionPlanner() {
+  const notifySuccess = (message) => toast.success(message);
+  const notifyFailes = (message) => toast.error(message);
+
+
   const router = useRouter();
+  const [userEmail, setUserEmail] = useState(null);
+  const [uid, setUid] = useState(null);
+  const [token, setToken] = useState(null);
   const [planDetails, setPlanDetails] = useState(null);
   const [plans, setPlans] = useState({ monthly: null, yearly: null });
   const [loading, setLoading] = useState(true);
@@ -26,15 +36,34 @@ export default function PaypalSubscriptionPlanner() {
   const handleCloseMenu = () => setIsMenuOpen(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+          if (user) {
+            setUid(user.uid);
+            try {
+              const idToken = await user.getIdToken();
+              setToken(idToken);
+            } catch (error) {
+              console.error('Error getting token:', error);
+              setUploadStatus('Failed to authenticate user');
+            }
+            const email = user.email || user.providerData?.[0]?.email;
+            setUserEmail(email);
+          } else {
+            const path = window.location.pathname;
+            notifyFailes('Please log in before continuing...');
+            localStorage.setItem('redirectPath', path);
+            localStorage.setItem('reason', 'userEmailValidationOnly');
+            setTimeout(() => {
+              router.push('/login');
+            }, 2000);
+          }
+        });
     
-    const userEmail = localStorage.getItem('userEmail');
-    if (!userEmail) {
-      localStorage.setItem('redirectPath', '/payment');
-      localStorage.setItem('reason', 'createNewUser');
-      router.push('/login');
-      return;
-    }
+        return () => unsubscribe();
+  }, [router]);
+
+  useEffect(() => {
+    if (!userEmail) return;
 
     const loadLocalStorageData = () => {
       try {
@@ -61,7 +90,7 @@ export default function PaypalSubscriptionPlanner() {
     };
 
     loadLocalStorageData();
-  }, []);
+  }, [userEmail]);
 
   const createPlans = async (planData) => {
     try {
@@ -186,22 +215,7 @@ export default function PaypalSubscriptionPlanner() {
   );
 
   if (loading) return (
-    <BackgroundGeneric showImageSlider={false}>
-      <Menu
-        isOpen={isMenuOpen}
-        onClose={handleCloseMenu}
-        className="backgroundColor1"
-      />
-      <div className="payment-container">
-        <div className="loading-payment">
-          <div className="loading">
-            <SpinnerIcon size={30}/>
-            <MemoryLogo size={200}/>
-            <p>Loading plan information...</p>
-          </div>
-        </div>
-      </div>
-    </BackgroundGeneric>
+    <LoadingMemories/>
   );
 
   if (error) return (

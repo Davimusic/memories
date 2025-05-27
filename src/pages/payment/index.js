@@ -6,8 +6,17 @@ import React, { useState, useEffect } from 'react';
 import Menu from "@/components/complex/menu";
 import MenuIcon from "@/components/complex/menuIcon";
 import Modal from '@/components/complex/modal';
+import { auth } from '../../../firebase'
+import { toast } from 'react-toastify';
 
 const PaymentPlans = () => {
+  const notifySuccess = (message) => toast.success(message);
+  const notifyFailes = (message) => toast.error(message);
+
+  const [userEmail, setUserEmail] = useState(null);
+  const [uid, setUid] = useState(null);
+  const [token, setToken] = useState(null);
+
   // Estados para el menú móvil
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
@@ -35,14 +44,36 @@ const PaymentPlans = () => {
     console.log("Error actualizado:", error);
   }, [plan, error]);
 
+  useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          setUid(user.uid);
+          try {
+            const idToken = await user.getIdToken();
+            setToken(idToken);
+          } catch (error) {
+            console.error('Error getting token:', error);
+            setUploadStatus('Failed to authenticate user');
+          }
+          const email = user.email || user.providerData?.[0]?.email;
+          setUserEmail(email);
+        } else {
+          const path = window.location.pathname;
+          notifyFailes('Please log in before continuing...');
+          localStorage.setItem('redirectPath', path);
+          localStorage.setItem('reason', 'userEmailValidationOnly');
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+        }
+      });
+  
+      return () => unsubscribe();
+    }, [router]);
+
   // Efecto principal: obtiene el plan del usuario al montar el componente
   useEffect(() => {
-    const userEmail = localStorage.getItem('userEmail');
-    if (!userEmail) {
-      console.error("El correo del usuario no está disponible");
-      setError("El correo del usuario no está disponible");
-      return;
-    }
+    if (!userEmail) return
     
     async function fetchPlan() {
       try {
@@ -71,7 +102,7 @@ const PaymentPlans = () => {
     }
 
     fetchPlan();
-  }, []);
+  }, [userEmail]);
 
   // Precios base de los planes
   const planPrices = {

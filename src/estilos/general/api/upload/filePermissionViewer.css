@@ -60,22 +60,31 @@
   height: 100%;
   padding: 1.5rem;
   overflow-y: auto;
+  background-color: var(--backgroundColor5); /* Changed to match parent background */
+  position: relative; /* Added for button positioning */
 }
 
 .memory-form {
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
+  padding-bottom: 60px; /* Space for button */
 }
 
 .file-sections {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  flex: 1; /* Take available space */
 }
 
 .file-section-container {
   padding: 1rem;
+}
+
+.file-section-containerDetails {
+  padding-right: 50%;
 }
 
 .section-header {
@@ -196,8 +205,8 @@
   margin-top: 1rem;
 }
 
-.scroll-preview{
-overflow-y: auto;
+.scroll-preview {
+  overflow-y: auto;
   height: 70vh;
 }
 
@@ -267,8 +276,6 @@ overflow-y: auto;
   opacity: 0.8;
 }
 
-
-
 .empty-state {
   padding: 2rem;
   text-align: center;
@@ -276,31 +283,41 @@ overflow-y: auto;
   font-style: italic;
 }
 
+.counter-and-preview {
+  display: flex;
+  gap: 20px;
+}
+
+.error-message {
+  color: #e74c3c;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
+  .file-section-containerDetails {
+    padding: 0;
+  }
+
   .uploader-content {
     grid-template-columns: 1fr;
     padding: 0;
     margin: 0;
   }
 
-  .files-column{
-    height: 30vh;
-  }
-
-  .permission-details{
+  .permission-details {
     max-height: 30vh;
     overflow-y: auto;
   }
 
-
   .form-column {
     height: 60vh;
   }
-  
+
   .file-section-container {
     background-color: #ffffff00;
   }
-  
+
   .file-uploader {
     width: 100vw;
     height: 100vh;
@@ -313,7 +330,7 @@ overflow-y: auto;
   .preview-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .media-container {
     height: 150px;
   }
@@ -328,7 +345,7 @@ overflow-y: auto;
   .preview-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .media-container {
     height: 200px;
   }

@@ -10,7 +10,16 @@ import Modal from '@/components/complex/modal';
 import LoadingMemories from '@/components/complex/loading';
 import { auth } from '../../../../firebase';
 import ErrorComponent from '@/components/complex/error';
+import { toast } from 'react-toastify';
 import Head from 'next/head';
+
+
+
+
+
+
+
+
 
 
 
@@ -369,7 +378,7 @@ const EditPermissionsModal = ({
   const [tempEditEmailInput, setTempEditEmailInput] = useState('');
   const [modalError, setModalError] = useState('');
 
-
+  const notifyFail = (message) => toast.error(message);
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -378,6 +387,7 @@ const EditPermissionsModal = ({
   const handleTempEditAddEmail = (e) => {
     e.stopPropagation();
     if (!validateEmail(tempEditEmailInput)) {
+      notifyFail('Please enter a valid email address');
       setModalError('Please enter a valid email address');
       return;
     }
@@ -530,34 +540,33 @@ const EditPermissionsModal = ({
 };
 
 // Main Component
-const EditMemoryPermissions = () => {
+const EditMemoryPermissions = ({ initialData, initialError }) => {
   const router = useRouter();
   const { userID, memoryName } = router.query;
 
-  const [userEmail, setUserEmail] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  //const [alertMessage, setAlertMessage] = useState(null);
-  const [permissionResult, setPermissionResult] = useState(null);
+  const notifySuccess = (message) => toast.success(message);
+  const notifyFail = (message) => toast.error(message);
 
-  const [visibility, setVisibility] = useState('private');
-  const [invitedEmails, setInvitedEmails] = useState([]);
-  const [uploadVisibility, setUploadVisibility] = useState('private');
-  const [uploadInvitedEmails, setUploadInvitedEmails] = useState([]);
-  const [editVisibility, setEditVisibility] = useState('private');
-  const [editInvitedEmails, setEditInvitedEmails] = useState([]);
-  const [memoryTitle, setMemoryTitle] = useState('');
+  const [userEmail, setUserEmail] = useState(null);
+  const [isLoading, setIsLoading] = useState(!initialData && !initialError);
+  const [isUploadingInformation, setIsUploadingInformation] = useState(false);
+  const [error, setError] = useState(initialError || '');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [permissionResult, setPermissionResult] = useState(initialData || null);
+
+  const [visibility, setVisibility] = useState(initialData?.accessInformation?.view?.visibility || 'private');
+  const [invitedEmails, setInvitedEmails] = useState(initialData?.accessInformation?.view?.invitedEmails || []);
+  const [uploadVisibility, setUploadVisibility] = useState(initialData?.accessInformation?.upload?.visibility || 'private');
+  const [uploadInvitedEmails, setUploadInvitedEmails] = useState(initialData?.accessInformation?.upload?.invitedEmails || []);
+  const [editVisibility, setEditVisibility] = useState(initialData?.accessInformation?.edit?.visibility || 'private');
+  const [editInvitedEmails, setEditInvitedEmails] = useState(initialData?.accessInformation?.edit?.invitedEmails || []);
+  const [memoryTitle, setMemoryTitle] = useState(initialData?.memoryMetadata?.title || 'Memory');
   const [uid, setUid] = useState(null);
   const [token, setToken] = useState(null);
 
   const [isVisibilityModalOpen, setIsVisibilityModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  
-
-  
 
   // Authentication check
   useEffect(() => {
@@ -569,6 +578,7 @@ const EditMemoryPermissions = () => {
           setToken(token);
         } catch (error) {
           console.error("Error getting token:", error);
+          setError('Failed to authenticate user');
         }
         const email = user.email || user.providerData?.[0]?.email;
         setUserEmail(email);
@@ -583,11 +593,17 @@ const EditMemoryPermissions = () => {
     return () => unsubscribe();
   }, [router]);
 
-  // Fetch permission data
+  // Fetch permission data if not provided by SSR
   useEffect(() => {
     const fetchPermissionData = async () => {
       if (!userID || !memoryName || !uid || !userEmail || !token) {
         setError('Missing required parameters');
+        setIsLoading(false);
+        return;
+      }
+
+      if (initialData) {
+        setPermissionResult(initialData);
         setIsLoading(false);
         return;
       }
@@ -611,14 +627,11 @@ const EditMemoryPermissions = () => {
         }
 
         const data = await response.json();
-        console.log(data);
-        
         setPermissionResult(data);
 
         if (!data.accessAllowed) {
-          setIsLoading(false)
-          setError('You do not have permission to edit access to this memory')
-          //setAlertMessage('You do not have permission to edit access to this memory');
+          setIsLoading(false);
+          setError('You do not have permission to edit access to this memory');
           return;
         }
 
@@ -639,14 +652,14 @@ const EditMemoryPermissions = () => {
       }
     };
 
-    if (uid && userEmail && token) {
+    if (uid && userEmail && token && !initialData) {
       fetchPermissionData();
     }
-  }, [userID, memoryName, uid, userEmail, token]);
+  }, [userID, memoryName, uid, userEmail, token, initialData]);
 
   const handleSave = async (e) => {
     e.preventDefault();
-    //setIsLoading(true);
+    setIsUploadingInformation(true);
     setError('');
 
     try {
@@ -669,50 +682,22 @@ const EditMemoryPermissions = () => {
       });
 
       const data = await response.json();
-      console.log(data);
       
-      if(response.ok) {
-        notifySuccess(data.message)
-      }
-
-      
-      if (!response.ok) {
-        notifyFailes(data.message || 'Failed to update permissions')
+      if (response.ok) {
+        notifySuccess(data.message);
+      } else {
         throw new Error(data.message || 'Failed to update permissions');
       }
-
     } catch (error) {
-      notifyFailes(error.message)
+      notifyFail(error.message);
       setError(error.message);
-      //throw new Error(error.message || 'Failed to update permissions');
     } finally {
-      setIsLoading(false);
+      setIsUploadingInformation(false);
     }
   };
 
   const handleOpenMenu = () => setIsMenuOpen(true);
   const handleCloseMenu = () => setIsMenuOpen(false);
-
-  /*if (alertMessage) {
-    return (
-      <div className="fullscreen-floating mainFont backgroundColor1 color2">
-        <Head>
-          <title>Access Denied | Memory Permissions</title>
-          <meta name="description" content="You don't have permission to edit these memory settings" />
-        </Head>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-        }}>
-          <div className="loading">
-            <h1 className="color1">{alertMessage}</h1>
-          </div>
-        </div>
-      </div>
-    );
-  }*/
 
   if (isLoading) {
     return (
@@ -729,19 +714,32 @@ const EditMemoryPermissions = () => {
   }
 
   if (error) {
-    console.log('lleXDXDga');
-    console.log(error);
-    
-    return <ErrorComponent error={error}/>
+    return <ErrorComponent error={error}/>;
   }
+
+  // Structured data for SEO
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `Edit Permissions: ${memoryTitle}`,
+    description: `Configure visibility and permissions for ${memoryTitle} in the Memory App`,
+    url: `https://yourdomain.com/editAccessibility/${userID}/${encodeURIComponent(memoryName)}`, // Replace with your domain
+  };
 
   return (
     <div className="fullscreen-floating mainFont backgroundColor1 mainFont color2">
       <Head>
         <title>{`Edit Permissions: ${memoryTitle} | Memory App`}</title>
         <meta name="description" content={`Configure visibility and permissions for ${memoryTitle}`} />
+        <meta name="keywords" content={`memory permissions, ${memoryTitle}, memory app, edit access`} />
         <meta property="og:title" content={`Edit Permissions: ${memoryTitle}`} />
         <meta property="og:description" content={`Configure visibility and permissions for ${memoryTitle}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://yourdomain.com/editAccessibility/${userID}/${encodeURIComponent(memoryName)}`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`Edit Permissions: ${memoryTitle}`} />
+        <meta name="twitter:description" content={`Configure visibility and permissions for ${memoryTitle}`} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </Head>
 
       <Menu
@@ -899,10 +897,10 @@ const EditMemoryPermissions = () => {
             <button 
               type="submit" 
               className="submit-btn" 
-              disabled={isLoading}
-              aria-busy={isLoading}
+              disabled={isUploadingInformation}
+              aria-busy={isUploadingInformation}
             >
-              {isLoading ? 'Saving...' : 'Save Changes'}
+              {isUploadingInformation ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>
@@ -943,6 +941,81 @@ const EditMemoryPermissions = () => {
     </div>
   );
 };
+
+/*/ Server-Side Rendering
+export async function getServerSideProps(context) {
+  const { req, params } = context;
+  const { userID, memoryName } = params;
+
+  try {
+    // Extract ID token from Authorization header or cookie
+    let idToken = req.headers.authorization?.startsWith('Bearer ')
+      ? req.headers.authorization.split('Bearer ')[1]
+      : req.cookies.idToken; // Adjust cookie name as needed
+
+    if (!idToken) {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+    }
+
+    // Verify ID token with Firebase Admin SDK
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const uid = decodedToken.uid;
+    const userEmail = decodedToken.email;
+
+    // Fetch permission data from API
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/mongoDb/queries/checkMemoryPermissionFromClient`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: userID,
+        memoryName,
+        type: 'editPermissions',
+        uid,
+        token: idToken,
+        userEmail
+      }),
+    });
+
+    if (!response.ok) {
+      return {
+        props: {
+          initialError: `Error ${response.status}: ${await response.text()}`,
+        },
+      };
+    }
+
+    const data = await response.json();
+    if (data.success && data.accessAllowed) {
+      return {
+        props: {
+          initialData: {
+            accessInformation: data.accessInformation || {},
+            memoryMetadata: data.memoryMetadata || {},
+            accessAllowed: data.accessAllowed,
+          },
+        },
+      };
+    } else {
+      return {
+        props: {
+          initialError: 'You do not have permission to edit access to this memory',
+        },
+      };
+    }
+  } catch (error) {
+    console.error('SSR Error:', error.message);
+    return {
+      props: {
+        initialError: 'Server error occurred',
+      },
+    };
+  }
+}*/
 
 export default EditMemoryPermissions;
 
