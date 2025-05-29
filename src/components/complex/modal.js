@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import '../../estilos/general/general.css';
+import '../../app/globals.css';
 
 const Modal = ({ isOpen, onClose, children, style, className }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -122,7 +122,9 @@ const Modal = ({ isOpen, onClose, children, style, className }) => {
             maxHeight: 'calc(80vh - 40px)',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            padding: '0 15px 15px',
+            //padding: '0 15px 15px',
+            borderBottomLeftRadius: '8px',
+            borderBottomRightRadius: '8px',
           }}
         >
           {children}

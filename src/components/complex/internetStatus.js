@@ -1,5 +1,6 @@
+'use client'; 
 import { useEffect, useState } from 'react';
-import '../../estilos/general/general.css'
+import '../../app/globals.css'
 
 const InternetStatus = ({setModalContent, setIsModalOpen}) => {
   const [isOnline, setIsOnline] = useState(true);

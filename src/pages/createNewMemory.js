@@ -1,35 +1,39 @@
+'use client'; 
+
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Menu from '@/components/complex/menu';
 import MenuIcon from '@/components/complex/menuIcon';
 import '../estilos/general/createNewMemory.css';
-import '../estilos/general/general.css';
 import '../app/globals.css';
 import Modal from '@/components/complex/modal';
 import MemoryLogo from '@/components/complex/memoryLogo';
+import GeneralMold from '@/components/complex/generalMold';
 import { auth } from '../../firebase';
 import LoadingMemories from '@/components/complex/loading';
+import Head from 'next/head';
 
-// Componente para el modal de visibilidad (extraído como componente independiente)
+
+// Visibility Modal Component
 const VisibilityModal = ({
   isOpen,
   onClose,
   initialVisibility,
   initialInvitedEmails,
-  onSave
+  onSave,
 }) => {
-  // Estados temporales para el modal (no afectan al padre hasta guardar)
   const [tempVisibility, setTempVisibility] = useState(initialVisibility);
   const [tempInvitedEmails, setTempInvitedEmails] = useState(initialInvitedEmails);
   const [tempEmailInput, setTempEmailInput] = useState('');
   const [modalError, setModalError] = useState('');
 
-  // Función para validar emails
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+  useEffect(() => {
+    console.log(isOpen);
+  }, [isOpen]);
 
-  // Añadir email a la lista temporal
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   const handleTempAddEmail = (e) => {
     e.stopPropagation();
     if (!validateEmail(tempEmailInput)) {
@@ -45,7 +49,6 @@ const VisibilityModal = ({
     setModalError('');
   };
 
-  // Guardar configuración y notificar al componente padre
   const handleSave = (e) => {
     e.stopPropagation();
     if (tempVisibility === 'invitation' && tempInvitedEmails.length === 0) {
@@ -59,113 +62,70 @@ const VisibilityModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h3>Configure Memory Visibility</h3>
-        
-        {/* Opciones de privacidad */}
-        <div className="privacy-options">
-          {/* Opción por Invitación */}
-          <div 
-            className={`privacy-option ${tempVisibility === 'invitation' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setTempVisibility('invitation');
-            }}
+        <h3 className="title-md">Configure Memory Visibility</h3>
+        <div className="privacy-options grid">
+          <div
+            className={` card ${tempVisibility === 'invitation' ? 'active' : ''}`}
+            onClick={() => setTempVisibility('invitation')}
           >
-            <div className="privacy-icon">📩</div>
-            <div className="privacy-details">
-              <h4>By Invitation</h4>
-              <p>Only specific users can view</p>
-              
-              {/* Sección para añadir emails (solo visible en modo invitación) */}
-              {tempVisibility === 'invitation' && (
-                <div className="email-section">
-                  <div className="file-input-group">
-                    <input
-                      type="email"
-                      value={tempEmailInput}
-                      onChange={(e) => setTempEmailInput(e.target.value)}
-                      placeholder="Enter email addresses"
-                      className="text-input"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <button 
-                      type="button" 
-                      className="submitButton" 
-                      onClick={handleTempAddEmail}
-                    >
-                      Add
-                    </button>
-                  </div>
-                  {/* Lista de emails añadidos */}
-                  <div className="email-tags">
-                    {tempInvitedEmails.map((email, index) => (
-                      <div key={index} className="email-tag">
-                        {email}
-                        <button
-                          className="remove-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setTempInvitedEmails(
-                              tempInvitedEmails.filter((_, i) => i !== index)
-                            );
-                          }}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+            <span className="privacy-icon">📩</span>
+            <h4>By Invitation</h4>
+            <p>Only specific users can view</p>
+            {tempVisibility === 'invitation' && (
+              <div className="email-section">
+                <div className="flex-column">
+                  <input
+                    type="email"
+                    value={tempEmailInput}
+                    onChange={(e) => setTempEmailInput(e.target.value)}
+                    placeholder="Enter email addresses"
+                    className="text-input rounded p-2"
+                  />
+                  <button className="button2 m-1" onClick={handleTempAddEmail}>
+                    Add
+                  </button>
                 </div>
-              )}
-            </div>
+                <div className="email-tags flex-column">
+                  {tempInvitedEmails.map((email, index) => (
+                    <div key={index} className="email-tag card p-1">
+                      {email}
+                      <button
+                        className="close-button"
+                        onClick={() =>
+                          setTempInvitedEmails(tempInvitedEmails.filter((_, i) => i !== index))
+                        }
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-
-          {/* Opción Privado */}
-          <div 
-            className={`privacy-option ${tempVisibility === 'private' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setTempVisibility('private');
-            }}
+          <div
+            className={` card ${tempVisibility === 'private' ? 'active' : ''}`}
+            onClick={() => setTempVisibility('private')}
           >
-            <div className="privacy-icon">🔒</div>
-            <div className="privacy-details">
-              <h4>Private</h4>
-              <p>Only visible to you</p>
-            </div>
+            <span className="privacy-icon">🔒</span>
+            <h4>Private</h4>
+            <p>Only visible to you</p>
           </div>
-          
-          {/* Opción Público */}
-          <div 
-            className={`privacy-option ${tempVisibility === 'public' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setTempVisibility('public');
-            }}
+          <div
+            className={` card ${tempVisibility === 'public' ? 'active' : ''}`}
+            onClick={() => setTempVisibility('public')}
           >
-            <div className="privacy-icon">🌍</div>
-            <div className="privacy-details">
-              <h4>Public</h4>
-              <p>Visible to everyone</p>
-            </div>
+            <span className="privacy-icon">🌍</span>
+            <h4>Public</h4>
+            <p>Visible to everyone</p>
           </div>
         </div>
-
-        {/* Mensaje de error */}
-        {modalError && <div className="error-message">{modalError}</div>}
-
-        {/* Acciones del modal */}
-        <div style={{display: 'flex', gap: '10px', boxSizing: 'border-box'}}>
-          <button 
-            className="submitButton" 
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose();
-            }}
-          >
+        {modalError && <div className="error-message color-error">{modalError}</div>}
+        <div className="demo-actions">
+          <button className="demo-button secondary" onClick={onClose}>
             Cancel
           </button>
-          <button className="submitButton" onClick={handleSave}>
+          <button className="demo-button" onClick={handleSave}>
             Save Changes
           </button>
         </div>
@@ -174,26 +134,21 @@ const VisibilityModal = ({
   );
 };
 
-// Componente para el modal de permisos de subida (extraído como componente independiente)
+// Upload Permissions Modal Component
 const UploadPermissionsModal = ({
   isOpen,
   onClose,
   initialUploadVisibility,
   initialUploadInvitedEmails,
-  onSave
+  onSave,
 }) => {
-  // Estados temporales para el modal
   const [tempUploadVisibility, setTempUploadVisibility] = useState(initialUploadVisibility);
   const [tempUploadInvitedEmails, setTempUploadInvitedEmails] = useState(initialUploadInvitedEmails);
   const [tempUploadEmailInput, setTempUploadEmailInput] = useState('');
   const [modalError, setModalError] = useState('');
 
-  // Función para validar emails
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // Añadir email a la lista temporal
   const handleTempUploadAddEmail = (e) => {
     e.stopPropagation();
     if (!validateEmail(tempUploadEmailInput)) {
@@ -209,7 +164,6 @@ const UploadPermissionsModal = ({
     setModalError('');
   };
 
-  // Guardar configuración y notificar al componente padre
   const handleSave = (e) => {
     e.stopPropagation();
     if (tempUploadVisibility === 'invitation' && tempUploadInvitedEmails.length === 0) {
@@ -223,113 +177,70 @@ const UploadPermissionsModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h3>Configure Upload Permissions</h3>
-        
-        {/* Opciones de privacidad */}
-        <div className="privacy-options">
-          {/* Opción por Invitación */}
-          <div 
-            className={`privacy-option ${tempUploadVisibility === 'invitation' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setTempUploadVisibility('invitation');
-            }}
+        <h3 className="title-md">Configure Upload Permissions</h3>
+        <div className="privacy-options grid">
+          <div
+            className={` card ${tempUploadVisibility === 'invitation' ? 'active' : ''}`}
+            onClick={() => setTempUploadVisibility('invitation')}
           >
-            <div className="privacy-icon">📩</div>
-            <div className="privacy-details">
-              <h4>By Invitation</h4>
-              <p>Only invited users can upload</p>
-              
-              {/* Sección para añadir emails (solo visible en modo invitación) */}
-              {tempUploadVisibility === 'invitation' && (
-                <div className="email-section">
-                  <div className="file-input-group">
-                    <input
-                      type="email"
-                      value={tempUploadEmailInput}
-                      onChange={(e) => setTempUploadEmailInput(e.target.value)}
-                      placeholder="Enter email addresses"
-                      className="text-input"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <button 
-                      type="button" 
-                      className="submitButton" 
-                      onClick={handleTempUploadAddEmail}
-                    >
-                      Add
-                    </button>
-                  </div>
-                  {/* Lista de emails añadidos */}
-                  <div className="email-tags">
-                    {tempUploadInvitedEmails.map((email, index) => (
-                      <div key={index} className="email-tag">
-                        {email}
-                        <button
-                          className="remove-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setTempUploadInvitedEmails(
-                              tempUploadInvitedEmails.filter((_, i) => i !== index)
-                            );
-                          }}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+            <span className="privacy-icon">📩</span>
+            <h4>By Invitation</h4>
+            <p>Only invited users can upload</p>
+            {tempUploadVisibility === 'invitation' && (
+              <div className="email-section">
+                <div className="flex-column">
+                  <input
+                    type="email"
+                    value={tempUploadEmailInput}
+                    onChange={(e) => setTempUploadEmailInput(e.target.value)}
+                    placeholder="Enter email addresses"
+                    className="text-input rounded p-2"
+                  />
+                  <button className="button2 m-1" onClick={handleTempUploadAddEmail}>
+                    Add
+                  </button>
                 </div>
-              )}
-            </div>
+                <div className="email-tags flex-column">
+                  {tempUploadInvitedEmails.map((email, index) => (
+                    <div key={index} className="email-tag card p-1">
+                      {email}
+                      <button
+                        className="close-button"
+                        onClick={() =>
+                          setTempUploadInvitedEmails(tempUploadInvitedEmails.filter((_, i) => i !== index))
+                        }
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-
-          {/* Opción Privado */}
-          <div 
-            className={`privacy-option ${tempUploadVisibility === 'private' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setTempUploadVisibility('private');
-            }}
+          <div
+            className={` card ${tempUploadVisibility === 'private' ? 'active' : ''}`}
+            onClick={() => setTempUploadVisibility('private')}
           >
-            <div className="privacy-icon">🔒</div>
-            <div className="privacy-details">
-              <h4>Private</h4>
-              <p>Only you can upload files</p>
-            </div>
+            <span className="privacy-icon">🔒</span>
+            <h4>Private</h4>
+            <p>Only you can upload files</p>
           </div>
-          
-          {/* Opción Público */}
-          <div 
-            className={`privacy-option ${tempUploadVisibility === 'public' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setTempUploadVisibility('public');
-            }}
+          <div
+            className={` card ${tempUploadVisibility === 'public' ? 'active' : ''}`}
+            onClick={() => setTempUploadVisibility('public')}
           >
-            <div className="privacy-icon">🌍</div>
-            <div className="privacy-details">
-              <h4>Public</h4>
-              <p>Everyone can upload files</p>
-            </div>
+            <span className="privacy-icon">🌍</span>
+            <h4>Public</h4>
+            <p>Everyone can upload files</p>
           </div>
         </div>
-
-        {/* Mensaje de error */}
-        {modalError && <div className="error-message">{modalError}</div>}
-
-        {/* Acciones del modal */}
-        <div style={{display: 'flex', gap: '10px', boxSizing: 'border-box'}}>
-          <button 
-            className="submitButton" 
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose();
-            }}
-          >
+        {modalError && <div className="error-message color-error">{modalError}</div>}
+        <div className="demo-actions">
+          <button className="demo-button secondary" onClick={onClose}>
             Cancel
           </button>
-          <button className="submitButton" onClick={handleSave}>
+          <button className="demo-button" onClick={handleSave}>
             Save Changes
           </button>
         </div>
@@ -338,26 +249,21 @@ const UploadPermissionsModal = ({
   );
 };
 
-// Componente para el modal de permisos de edición (nuevo componente)
+// Edit Permissions Modal Component
 const EditPermissionsModal = ({
   isOpen,
   onClose,
   initialEditVisibility,
   initialEditInvitedEmails,
-  onSave
+  onSave,
 }) => {
-  // Estados temporales para el modal
   const [tempEditVisibility, setTempEditVisibility] = useState(initialEditVisibility);
   const [tempEditInvitedEmails, setTempEditInvitedEmails] = useState(initialEditInvitedEmails);
   const [tempEditEmailInput, setTempEditEmailInput] = useState('');
   const [modalError, setModalError] = useState('');
 
-  // Función para validar emails
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // Añadir email a la lista temporal
   const handleTempEditAddEmail = (e) => {
     e.stopPropagation();
     if (!validateEmail(tempEditEmailInput)) {
@@ -373,7 +279,6 @@ const EditPermissionsModal = ({
     setModalError('');
   };
 
-  // Guardar configuración y notificar al componente padre
   const handleSave = (e) => {
     e.stopPropagation();
     if (tempEditVisibility === 'invitation' && tempEditInvitedEmails.length === 0) {
@@ -387,113 +292,70 @@ const EditPermissionsModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h3>Configure Edit Permissions</h3>
-        
-        {/* Opciones de privacidad */}
-        <div className="privacy-options">
-          {/* Opción por Invitación */}
-          <div 
-            className={`privacy-option ${tempEditVisibility === 'invitation' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setTempEditVisibility('invitation');
-            }}
+        <h3 className="title-md">Configure Edit Permissions</h3>
+        <div className="privacy-options grid">
+          <div
+            className={` card ${tempEditVisibility === 'invitation' ? 'active' : ''}`}
+            onClick={() => setTempEditVisibility('invitation')}
           >
-            <div className="privacy-icon">📩</div>
-            <div className="privacy-details">
-              <h4>By Invitation</h4>
-              <p>Only invited users can edit</p>
-              
-              {/* Sección para añadir emails (solo visible en modo invitación) */}
-              {tempEditVisibility === 'invitation' && (
-                <div className="email-section">
-                  <div className="file-input-group">
-                    <input
-                      type="email"
-                      value={tempEditEmailInput}
-                      onChange={(e) => setTempEditEmailInput(e.target.value)}
-                      placeholder="Enter email addresses"
-                      className="text-input"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <button 
-                      type="button" 
-                      className="submitButton" 
-                      onClick={handleTempEditAddEmail}
-                    >
-                      Add
-                    </button>
-                  </div>
-                  {/* Lista de emails añadidos */}
-                  <div className="email-tags">
-                    {tempEditInvitedEmails.map((email, index) => (
-                      <div key={index} className="email-tag">
-                        {email}
-                        <button
-                          className="remove-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setTempEditInvitedEmails(
-                              tempEditInvitedEmails.filter((_, i) => i !== index)
-                            );
-                          }}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+            <span className="privacy-icon">📩</span>
+            <h4>By Invitation</h4>
+            <p>Only invited users can edit</p>
+            {tempEditVisibility === 'invitation' && (
+              <div className="email-section">
+                <div className="flex-column">
+                  <input
+                    type="email"
+                    value={tempEditEmailInput}
+                    onChange={(e) => setTempEditEmailInput(e.target.value)}
+                    placeholder="Enter email addresses"
+                    className="text-input rounded p-2"
+                  />
+                  <button className="button2 m-1" onClick={handleTempEditAddEmail}>
+                    Add
+                  </button>
                 </div>
-              )}
-            </div>
+                <div className="email-tags flex-column">
+                  {tempEditInvitedEmails.map((email, index) => (
+                    <div key={index} className="email-tag card p-1">
+                      {email}
+                      <button
+                        className="close-button"
+                        onClick={() =>
+                          setTempEditInvitedEmails(tempEditInvitedEmails.filter((_, i) => i !== index))
+                        }
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-
-          {/* Opción Privado */}
-          <div 
-            className={`privacy-option ${tempEditVisibility === 'private' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setTempEditVisibility('private');
-            }}
+          <div
+            className={` card ${tempEditVisibility === 'private' ? 'active' : ''}`}
+            onClick={() => setTempEditVisibility('private')}
           >
-            <div className="privacy-icon">🔒</div>
-            <div className="privacy-details">
-              <h4>Private</h4>
-              <p>Only you can edit</p>
-            </div>
+            <span className="privacy-icon">🔒</span>
+            <h4>Private</h4>
+            <p>Only you can edit</p>
           </div>
-          
-          {/* Opción Público */}
-          <div 
-            className={`privacy-option ${tempEditVisibility === 'public' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setTempEditVisibility('public');
-            }}
+          <div
+            className={` card ${tempEditVisibility === 'public' ? 'active' : ''}`}
+            onClick={() => setTempEditVisibility('public')}
           >
-            <div className="privacy-icon">🌍</div>
-            <div className="privacy-details">
-              <h4>Public</h4>
-              <p>Everyone can edit</p>
-            </div>
+            <span className="privacy-icon">🌍</span>
+            <h4>Public</h4>
+            <p>Everyone can edit</p>
           </div>
         </div>
-
-        {/* Mensaje de error */}
-        {modalError && <div className="error-message">{modalError}</div>}
-
-        {/* Acciones del modal */}
-        <div style={{display: 'flex', gap: '10px', boxSizing: 'border-box'}}>
-          <button 
-            className="submitButton" 
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose();
-            }}
-          >
+        {modalError && <div className="error-message color-error">{modalError}</div>}
+        <div className="demo-actions">
+          <button className="demo-button secondary" onClick={onClose}>
             Cancel
           </button>
-          <button className="submitButton" onClick={handleSave}>
+          <button className="demo-button" onClick={handleSave}>
             Save Changes
           </button>
         </div>
@@ -502,11 +364,10 @@ const EditPermissionsModal = ({
   );
 };
 
-// Componente principal CreateNewMemory
+// Main CreateNewMemory Component
+// Componente principal actualizado con 100% de funcionalidades
 const CreateNewMemory = () => {
   const router = useRouter();
-
-  // Estados principales del formulario
   const [memoryTitle, setMemoryTitle] = useState('');
   const [description, setDescription] = useState('');
   const [userEmail, setUserEmail] = useState(null);
@@ -518,175 +379,142 @@ const CreateNewMemory = () => {
   const [isAlreadyUser, setIsAlreadyUser] = useState(false);
   const [alertMessage, setAlertMessage] = useState(null);
   
-  // Estados para visibilidad del recuerdo
+  // Estados para permisos
   const [visibility, setVisibility] = useState('private');
   const [invitedEmails, setInvitedEmails] = useState([]);
-
-  // Estados para permisos de subida de archivos
   const [uploadVisibility, setUploadVisibility] = useState('private');
   const [uploadInvitedEmails, setUploadInvitedEmails] = useState([]);
-
-  // Estados para permisos de edición (nuevos estados)
   const [editVisibility, setEditVisibility] = useState('private');
   const [editInvitedEmails, setEditInvitedEmails] = useState([]);
-
-  // Estados para controlar la apertura de modales
+  
+  // Estados para modales
   const [isVisibilityModalOpen, setIsVisibilityModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  // Autenticación de usuario
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setUid(user.uid);
+        try {
+          const idToken = await user.getIdToken();
+          setToken(idToken);
+        } catch (error) {
+          console.error('Error getting token:', error);
+          setError('Failed to authenticate user');
+        }
+        const email = user.email || user.providerData?.[0]?.email;
+        setUserEmail(email);
+        setIsAlreadyUser(true)
+      } else {
+        const path = window.location.pathname;
+        notifyFailes('Please log in before continuing...')
+        localStorage.setItem('redirectPath', path);
+        localStorage.setItem('reason', 'userEmailValidationOnly');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000); 
+      }
+    });
 
-
-  // Primer useEffect: Escuchar cambios en el estado de autenticación
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(async (user) => {
-          if (user) {
-            setUid(user.uid);
-            try {
-              const idToken = await user.getIdToken();
-              setToken(idToken);
-            } catch (error) {
-              console.error('Error getting token:', error);
-              setError('Failed to authenticate user');
-            }
-            const email = user.email || user.providerData?.[0]?.email;
-            setUserEmail(email);
-          } else {
-            const path = window.location.pathname;
-            notifyFailes('Please log in before continuing...')
-            localStorage.setItem('redirectPath', path);
-            localStorage.setItem('reason', 'userEmailValidationOnly');
-            setTimeout(() => {
-              router.push('/login');
-            }, 2000); 
-          }
-        });
-    
-        return () => unsubscribe();
+    return () => unsubscribe();
   }, [router]);
 
-  //verifica permisos
   useEffect(() => {
+    console.log(isVisibilityModalOpen);
+  }, [isVisibilityModalOpen]);
+
+  // Verificación de permisos del usuario
+  /*useEffect(() => {
     if (typeof window === 'undefined') return;
     if (userEmail === null) return;
 
-
-    //const email = localStorage.getItem('userEmail');
-    
     if (userEmail) {
-      // Transformar el email para usarlo como ID (reemplazar @ y . por _)
       const transformUserId = (userId) => userId.replace(/[@.]/g, '_');
       setUserEmail(transformUserId(userEmail));
-      console.log(transformUserId(userEmail));
-      
     } else {
-      console.log('no hay correo en createNewMemory')
-      const path = window.location.pathname
+      const path = window.location.pathname;
       localStorage.setItem('redirectPath', path);
       localStorage.setItem('reason', 'userEmailValidationOnly');
       router.push('/login');
-      return
+      return;
     }
-  
+
     const fetchPermission = async () => {
       try {
-        console.log("Iniciando consulta para correo:", userEmail);
         const response = await fetch('/api/mongoDb/queries/verifyUserExistence', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: userEmail
-          }),
+          body: JSON.stringify({ email: userEmail }),
         });
-  
+
         const data = await response.json();
         if(data.success){
           if(data.exists){
-            console.log('usuario existente en la plataforma ' + userEmail);
-            setIsAlreadyUser(true)
-            return
+            setIsAlreadyUser(true);
           } else {
-            console.log('usuario  NO existente en la plataforma ');
-            setAlertMessage(`The user ${localStorage.getItem('userEmail')} is not registered on the platform. To register, please use the next link.`)
+            setAlertMessage(`The user ${localStorage.getItem('userEmail')} is not registered on the platform. To register, please use the next link.`);
           }
         }
-        
       } catch (err) {
         console.error("Error al obtener permisos:", err.message);
-        setUploadError(err.message);
+        setError(err.message);
       }
     };
-  
+
     fetchPermission();
-  }, [userEmail]);
+  }, [userEmail]);*/
 
-  // Handlers para abrir/cerrar el menú
-  const handleOpenMenu = () => setIsMenuOpen(true);
-  const handleCloseMenu = () => setIsMenuOpen(false);
+  const handleRedirect = () => {
+    localStorage.setItem('redirectPath', '/payment');
+    localStorage.setItem('reason', 'createNewUser');
+    router.push('/login');
+  };
 
-  // Handler para guardar la configuración de visibilidad
   const handleSaveVisibility = (newVisibility, newInvitedEmails) => {
     setVisibility(newVisibility);
     setInvitedEmails(newInvitedEmails);
   };
 
-  // Handler para guardar la configuración de permisos de subida
   const handleSaveUpload = (newUploadVisibility, newUploadInvitedEmails) => {
     setUploadVisibility(newUploadVisibility);
     setUploadInvitedEmails(newUploadInvitedEmails);
   };
 
-  // Handler para guardar la configuración de permisos de edición (nuevo handler)
   const handleSaveEdit = (newEditVisibility, newEditInvitedEmails) => {
     setEditVisibility(newEditVisibility);
     setEditInvitedEmails(newEditInvitedEmails);
   };
 
-  // Handler para enviar el formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    // Validaciones del formulario
-    if (!memoryTitle) {
-      setError('Please provide a title');
-      setIsLoading(false);
-      return;
+    // Validaciones
+    const validations = [
+      [!memoryTitle, 'Please provide a title'],
+      [visibility === 'invitation' && !invitedEmails.length, 'Add at least one email for memory access'],
+      [uploadVisibility === 'invitation' && !uploadInvitedEmails.length, 'Add at least one email for upload permissions'],
+      [editVisibility === 'invitation' && !editInvitedEmails.length, 'Add at least one email for edit permissions'],
+      [!userEmail, 'User not authenticated']
+    ];
+
+    for (const [condition, message] of validations) {
+      if (condition) {
+        setError(message);
+        setIsLoading(false);
+        return;
+      }
     }
 
-    if (visibility === 'invitation' && invitedEmails.length === 0) {
-      setError('Please add at least one email for memory access');
-      setIsLoading(false);
-      return;
-    }
-
-    if (uploadVisibility === 'invitation' && uploadInvitedEmails.length === 0) {
-      setError('Please add at least one email for upload permissions');
-      setIsLoading(false);
-      return;
-    }
-
-    if (editVisibility === 'invitation' && editInvitedEmails.length === 0) {
-      setError('Please add at least one email for edit permissions');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!userEmail) {
-      setError('User not authenticated');
-      setIsLoading(false);
-      alert('falta')
-      return;
-    }
+    
 
     try {
-      // Enviar datos al servidor
       const response = await fetch('/api/mongoDb/createNewMemoryUser', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: userEmail,
           memoryTitle,
@@ -696,17 +524,17 @@ const CreateNewMemory = () => {
           fileUploadVisibility: uploadVisibility,
           fileUploadInvitedEmails: uploadInvitedEmails,
           editVisibility,
-          editInvitedEmails
+          editInvitedEmails,
+          uid, 
+          token
         }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to create memory');
+        throw new Error('Failed to create memory');
       }
 
-      // Resetear el formulario después de crear el recuerdo
+      // Reset y redirección
       setMemoryTitle('');
       setDescription('');
       setVisibility('private');
@@ -716,225 +544,171 @@ const CreateNewMemory = () => {
       setEditVisibility('private');
       setEditInvitedEmails([]);
       
-      // Mostrar mensaje de éxito
-      console.log('Memory created successfully!');
       router.push('/memories');
-
     } catch (error) {
-      console.error('Error creating memory:', error);
-      setError(error.message);
+      setError(error.message || 'An error occurred');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleRedirect = () => {
-    localStorage.setItem('redirectPath', '/payment');
-    localStorage.setItem('reason', 'createNewUser');
-    router.push('/login');
-  };
+  // Contenido principal
+  const leftContent = (
+    <div className="card-content">
+      <div style={{ display: 'flex' }}>
+        <h2 className="card-title">Create New Memory</h2>
+      </div>
+      
+      <form className="memory-form flex-column" onSubmit={handleSubmit}>
+        <div className="form-group flex-column">
+          <label className="title-sm">Memory Title *</label>
+          <input
+            type="text"
+            className="text-input rounded p-2"
+            value={memoryTitle}
+            onChange={(e) => setMemoryTitle(e.target.value)}
+            required
+            disabled={isLoading}
+          />
+        </div>
+        
+        <div className="form-group flex-column">
+          <label className="title-sm">Description</label>
+          <textarea
+            style={{resize: 'none'}}
+            className="text-input rounded p-2"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows="5"
+            disabled={isLoading}
+          />
+        </div>
+        
+        {error && <div className="error-message color-error">{error}</div>}
+        
+        <button 
+          type="submit" 
+          className="demo-button" 
+          disabled={isLoading}
+        >
+          {isLoading ? 'Creating...' : 'Create Memory'}
+        </button>
+      </form>
+    </div>
+  );
+
+  // Contenido lateral con permisos
+  const rightContent = (
+    <div className="card-content flex-column">
+      {/* Sección de visibilidad */}
+      <div className="permission-section">
+        <h4 className="card-title">Memory Visibility</h4>
+        <div 
+          className="selected-settings card pointer" 
+          onClick={() => setIsVisibilityModalOpen(true)}
+        >
+          {visibility === 'private' && (
+            <div className="privacy-option">
+              <span className="privacy-icon">🔒</span>
+              <h5>Private</h5>
+              <p>Only visible to you</p>
+            </div>
+          )}
+          {visibility === 'public' && (
+            <div className="privacy-option">
+              <span className="privacy-icon">🌍</span>
+              <h5>Public</h5>
+              <p>Visible to everyone</p>
+            </div>
+          )}
+          {visibility === 'invitation' && (
+            <div className="privacy-option">
+              <span className="privacy-icon">📩</span>
+              <h5>By Invitation</h5>
+              <p>{invitedEmails.length} invited users</p>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Sección de permisos de subida */}
+      <div className="permission-section">
+        <h4 className="card-title">Upload Permissions</h4>
+        <div 
+          className="selected-settings card pointer" 
+          onClick={() => setIsUploadModalOpen(true)}
+        >
+          {uploadVisibility === 'private' && (
+            <div className="privacy-option">
+              <span className="privacy-icon">🔒</span>
+              <h5>Private</h5>
+              <p>Only you can upload</p>
+            </div>
+          )}
+          {uploadVisibility === 'public' && (
+            <div className="privacy-option">
+              <span className="privacy-icon">🌍</span>
+              <h5>Public</h5>
+              <p>Everyone can upload</p>
+            </div>
+          )}
+          {uploadVisibility === 'invitation' && (
+            <div className="privacy-option">
+              <span className="privacy-icon">📩</span>
+              <h5>By Invitation</h5>
+              <p>{uploadInvitedEmails.length} users can upload</p>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Sección de permisos de edición */}
+      <div className="permission-section">
+        <h4 className="card-title">Edit Permissions</h4>
+        <div 
+          className="selected-settings card pointer" 
+          onClick={() => setIsEditModalOpen(true)}
+        >
+          {editVisibility === 'private' && (
+            <div className="privacy-option">
+              <span className="privacy-icon">🔒</span>
+              <h5>Private</h5>
+              <p>Only you can edit</p>
+            </div>
+          )}
+          {editVisibility === 'public' && (
+            <div className="privacy-option">
+              <span className="privacy-icon">🌍</span>
+              <h5>Public</h5>
+              <p>Everyone can edit</p>
+            </div>
+          )}
+          {editVisibility === 'invitation' && (
+            <div className="privacy-option">
+              <span className="privacy-icon">📩</span>
+              <h5>By Invitation</h5>
+              <p>{editInvitedEmails.length} users can edit</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="fullscreen-floating mainFont backgroundColor1 mainFont color2">
-      {/* Componente del menú lateral */}
-
-      {isAlreadyUser ? (
-        <>
-          <Menu
-            isOpen={isMenuOpen}
-            onClose={handleCloseMenu}
-            className="backgroundColor1"
-          />
-
-          <div className="file-uploader">
-            {/* Encabezado con icono de menú y título */}
-            <div style={{ display: 'flex' }}>
-              <div className="menu-icon-container">
-                <MenuIcon onClick={handleOpenMenu} style={{ zIndex: 10 }} />
-              </div>
-              <h2 className="title">Create New Memory</h2>
-            </div>
-
-            {/* Contenido principal del formulario */}
-            <div className="uploader-content">
-              {/* Columna del formulario */}
-              <div className="form-column">
-                <form className="memory-form" onSubmit={handleSubmit}>
-                  {/* Campo para el título del recuerdo */}
-                  <div className="form-group">
-                    <h3>Memory Title *</h3>
-                    <input
-                      type="text"
-                      className="text-input"
-                      value={memoryTitle}
-                      onChange={(e) => setMemoryTitle(e.target.value)}
-                      required
-                      disabled={isLoading}
-                    />
-                  </div>
-
-                  {/* Campo para la descripción */}
-                  <div className="form-group">
-                    <h3>Description (Optional)</h3>
-                    <textarea
-                      className="text-input"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows="5"
-                      disabled={isLoading}
-                    />
-                  </div>
-
-                  {/* Mensaje de error */}
-                  {error && <div className="error-message">{error}</div>}
-
-                  {/* Botón para enviar el formulario */}
-                  <div className="actions">
-                    <button 
-                      type="submit" 
-                      className="submit-btn" 
-                      disabled={isLoading}
-                    >
-                      {isLoading ? 'Creating...' : 'Create Memory'}
-                    </button>
-                  </div>
-                </form>
-              </div>
-
-              {/* Columna de configuración */}
-              <div className="files-column">
-                {/* Sección de visibilidad del recuerdo */}
-                <div className="file-section-container">
-                  <div className="section-header">
-                    <h4>Memory Visibility</h4>
-                  </div>
-                  
-                  {/* Configuración actual de visibilidad */}
-                  <div className="selected-settings" onClick={() => setIsVisibilityModalOpen(true)}>
-                    {visibility === 'private' && (
-                      <div className="privacy-option active">
-                        <div className="privacy-icon">🔒</div>
-                        <div className="privacy-details">
-                          <h4>Private</h4>
-                          <p>Only visible to you</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {visibility === 'public' && (
-                      <div className="privacy-option active">
-                        <div className="privacy-icon">🌍</div>
-                        <div className="privacy-details">
-                          <h4>Public</h4>
-                          <p>Visible to everyone</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {visibility === 'invitation' && (
-                      <div className="privacy-option active">
-                        <div className="privacy-icon">📩</div>
-                        <div className="privacy-details">
-                          <h4>By Invitation</h4>
-                          <p>{invitedEmails.length} invited users</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Sección de permisos de subida */}
-                <div className="file-section-container">
-                  <div className="section-header">
-                    <h4>Upload Permissions</h4>
-                  </div>
-                  
-                  {/* Configuración actual de permisos de subida */}
-                  <div className="selected-settings" onClick={() => setIsUploadModalOpen(true)}>
-                    {uploadVisibility === 'private' && (
-                      <div className="privacy-option active">
-                        <div className="privacy-icon">🔒</div>
-                        <div className="privacy-details">
-                          <h4>Private</h4>
-                          <p>Only you can upload</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {uploadVisibility === 'public' && (
-                      <div className="privacy-option active">
-                        <div className="privacy-icon">🌍</div>
-                        <div className="privacy-details">
-                          <h4>Public</h4>
-                          <p>Everyone can upload</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {uploadVisibility === 'invitation' && (
-                      <div className="privacy-option active">
-                        <div className="privacy-icon">📩</div>
-                        <div className="privacy-details">
-                          <h4>By Invitation</h4>
-                          <p>{uploadInvitedEmails.length} users can upload</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Sección de permisos de edición (nueva sección) */}
-                <div className="file-section-container">
-                  <div className="section-header">
-                    <h4>Edit Permissions</h4>
-                  </div>
-                  
-                  {/* Configuración actual de permisos de edición */}
-                  <div className="selected-settings" onClick={() => setIsEditModalOpen(true)}>
-                    {editVisibility === 'private' && (
-                      <div className="privacy-option active">
-                        <div className="privacy-icon">🔒</div>
-                        <div className="privacy-details">
-                          <h4>Private</h4>
-                          <p>Only you can edit</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {editVisibility === 'public' && (
-                      <div className="privacy-option active">
-                        <div className="privacy-icon">🌍</div>
-                        <div className="privacy-details">
-                          <h4>Public</h4>
-                          <p>Everyone can edit</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {editVisibility === 'invitation' && (
-                      <div className="privacy-option active">
-                        <div className="privacy-icon">📩</div>
-                        <div className="privacy-details">
-                          <h4>By Invitation</h4>
-                          <p>{editInvitedEmails.length} users can edit</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Modales */}
-          <VisibilityModal
+    <>
+      <Head>
+        <title>Create New Memory | Memory App</title>
+        <meta name="description" content="Create a new memory in the Memory App" />
+      </Head>
+      <VisibilityModal
             isOpen={isVisibilityModalOpen}
             onClose={() => setIsVisibilityModalOpen(false)}
             initialVisibility={visibility}
             initialInvitedEmails={invitedEmails}
             onSave={handleSaveVisibility}
           />
-
+          
           <UploadPermissionsModal
             isOpen={isUploadModalOpen}
             onClose={() => setIsUploadModalOpen(false)}
@@ -942,7 +716,7 @@ const CreateNewMemory = () => {
             initialUploadInvitedEmails={uploadInvitedEmails}
             onSave={handleSaveUpload}
           />
-
+          
           <EditPermissionsModal
             isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
@@ -950,12 +724,40 @@ const CreateNewMemory = () => {
             initialEditInvitedEmails={editInvitedEmails}
             onSave={handleSaveEdit}
           />
-        </>
+      
+      {isAlreadyUser ? (
+        <GeneralMold
+          pageTitle="Create New Memory"
+          leftContent={leftContent}
+          rightContent={rightContent}
+          isMenuOpen={isMenuOpen}
+          setIsMenuOpen={setIsMenuOpen}
+        >
+        </GeneralMold>
+      ) : alertMessage ? (
+        <div className="fullscreen-floating flex-center">
+          <div className="card p-4 text-center">
+            <p className="text-lg mb-4">{alertMessage}</p>
+            <button 
+              className="demo-button"
+              onClick={handleRedirect}
+            >
+              Register Now
+            </button>
+          </div>
+        </div>
       ) : (
-        <LoadingMemories/>
+        <LoadingMemories />
       )}
-    </div>
+    </>
   );
 };
+
+// Exportar los modales con las mismas funcionalidades de la primera versión
+/*export { 
+  VisibilityModal, 
+  UploadPermissionsModal, 
+  EditPermissionsModal 
+};*/
 
 export default CreateNewMemory;

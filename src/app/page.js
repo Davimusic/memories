@@ -1,18 +1,19 @@
-"use client"; //no sé por qué lo necesita
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation"; // Usa 'next/navigation' en vez de 'next/router'
 
-import RootLayout from "./layout";
-
-
-// app/page.js
 export default function HomePage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/memories");
+  }, [router]);
+
   return (
-    <main style={{backgroundColor: 'green'}}>
-      <h1 className="mainFont">fuente principal</h1>
-      <p>
-        Si ves este estilo peculiar y distorsionado, es la fuente "Nosifer" en acción.
-      </p>
+    <main style={{ backgroundColor: "green" }}>
+      <h1 className="mainFont">Fuente Principal</h1>
+      <p>Si ves este estilo peculiar y distorsionado, es la fuente "Nosifer" en acción.</p>
     </main>
   );
 }
-
 

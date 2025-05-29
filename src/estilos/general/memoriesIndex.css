@@ -1,0 +1,157 @@
+
+.memories-section {
+  padding: 1rem;
+}
+
+.controls-container {
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sort-select {
+  max-width: 200px;
+}
+
+.memories-table-container {
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.memories-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.scrollTable{
+    border-radius: 0.7em;
+    max-height: 50vh;
+    overflow: auto;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 1fr 3fr 2fr 2fr 1fr 1fr;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1fr 3fr 2fr 2fr 1fr 1fr;
+  align-items: center;
+}
+
+.table-cell {
+  padding: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions-cell {
+  display: flex;
+  align-items: center;
+}
+
+.action-button {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+.name-cell,
+.description-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.types-cell .flex-column {
+  gap: 0.25rem;
+}
+
+.date-cell .content-small {
+  display: none;
+}
+
+/* Modal-specific styles */
+.actions-modal .button {
+  justify-content: flex-start;
+  width: 100%;
+  text-align: left;
+}
+
+.actions-modal .button svg {
+  margin-right: 0.5rem;
+}
+
+/* Responsive adjustments for tables */
+@media (max-width: 1000px) {
+  .controls-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sort-select {
+    width: 100%;
+  }
+
+  .memories-table {
+    display: block;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .table-row {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+  }
+
+  .table-cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    white-space: normal;
+  }
+
+  .table-cell::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: var(--text-secondary);
+    margin-right: 0.5rem;
+  }
+
+  .actions-cell {
+    justify-content: center;
+  }
+
+  .date-cell .content-small {
+    display: inline;
+  }
+}
+
+@media (max-width: 576px) {
+  .memories-section {
+    padding: 0.5rem;
+  }
+
+  .table-row {
+    padding: 0.75rem;
+  }
+
+  .action-button {
+    width: 100%;
+    text-align: center;
+  }
+}

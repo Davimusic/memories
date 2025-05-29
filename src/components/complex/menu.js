@@ -1,23 +1,17 @@
+'use client'; 
+
 import React, { useState, useEffect } from 'react';
-import { HexColorPicker } from 'react-colorful';
-//import Modal from './Modal'; // Importa el componente Modal existente
-//import ColorPickerModalContent from './ColorPickerModalContent'; // Importa el nuevo componente
 import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../../firebase';
-'../../estilos/general/general.css';
+import '../../app/globals.css'
+import '../../estilos/general/menu.css'
 
 
 
+const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
+  //if (!isOpen) return null;
 
-
-
-
-
-
-
-
-const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userName, setUserName] = useState('');
   const [userImage, setUserImage] = useState('');
@@ -25,8 +19,8 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
   const [planStatus, setPlanStatus] = useState('');
   const [userEmail, setUserEmail] = useState(null);
   const router = useRouter();
+  
 
-  // State para almacenar colores actuales
   const [colors, setColors] = useState({
     backgroundColor1: '',
     backgroundColor2: '',
@@ -35,20 +29,18 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
     backgroundColor5: '',
   });
 
+  
 
-   useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(async (user) => {
-          if (user) {
-            const email = user.email || user.providerData?.[0]?.email;
-            setUserEmail(email);
-          } 
-        });
-        return () => unsubscribe();
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const email = user.email || user.providerData?.[0]?.email;
+        setUserEmail(email);
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
-   
-
-  // Obtener datos de usuario desde localStorage
   useEffect(() => {
     const name = localStorage.getItem('userName') || '';
     const image = localStorage.getItem('userImage') || '';
@@ -58,7 +50,6 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
     setUserMyLikes(myLikes);
   }, []);
 
-  // Obtener colores desde variables CSS
   useEffect(() => {
     const rootStyles = getComputedStyle(document.documentElement);
     const newColors = {
@@ -71,25 +62,14 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
     setColors(newColors);
   }, []);
 
-  // Obtener el estado del plan del backend solo una vez por sesión
   useEffect(() => {
-    // Verificar si existe el email del usuario almacenado en localStorage
-    /*const storedEmail = localStorage.getItem("userEmail");
-    if (!storedEmail) {
-      console.log('correo NO existe');
-      return;
-    } else {
-      console.log('correo sí existe');
-    }*/
-   if(userEmail === null) return 
+    if (userEmail === null) return;
 
-    // Obtener el contenido almacenado en sessionStorage
     const cachedPlanString = sessionStorage.getItem('userPlanStatus');
     let parsedPlan = null;
 
     if (cachedPlanString) {
       try {
-        // Intentar parsear el contenido; si no es JSON válido, se captura el error
         parsedPlan = JSON.parse(cachedPlanString);
         console.log("Contenido parseado:", parsedPlan);
       } catch (error) {
@@ -100,11 +80,9 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
       console.log("No se encontró ningún valor en 'userPlanStatus'.");
     }
 
-    // Si ya tenemos un plan cacheado, lo usamos:
     if (parsedPlan) {
       setPlanStatus(parsedPlan);
     } else {
-      // Si no hay plan cacheado, se consulta el endpoint.
       fetch('/api/mongoDb/queries/getUserPlan', {
         method: 'POST',
         headers: {
@@ -119,13 +97,8 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
           return response.json();
         })
         .then((data) => {
-          // Suponemos que data.plan tiene una forma como:
-          // { amountPaid: 0, availableGB: 3, paymentType: "monthly", planName: "free" }
           console.log("Plan obtenido del endpoint:", data.plan);
           setPlanStatus(data.plan);
-
-          // Guardamos el plan en sessionStorage.
-          // Si data.plan es un objeto, lo convertimos a JSON; de lo contrario, se guarda directamente.
           const planToStore =
             typeof data.plan === "object"
               ? JSON.stringify(data.plan)
@@ -138,7 +111,6 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
     }
   }, [userEmail]);
 
-  // Función para actualizar un color (ejemplo en vivo)
   const updateColor = (colorClass, hexValue) => {
     if (/^#([0-9A-Fa-f]{3}){1,2}$/i.test(hexValue)) {
       const updatedColors = { ...colors, [colorClass]: hexValue };
@@ -149,10 +121,9 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
     return false;
   };
 
-  // Función para manejar el logout
   const handleLogout = async () => {
     try {
-      await signOut(auth); // Ajusta según tu método de signOut
+      await signOut(auth);
       localStorage.removeItem('userName');
       localStorage.removeItem('userImage');
       localStorage.removeItem('userEmail');
@@ -163,77 +134,53 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
     }
   };
 
-  // Prevención de propagación de clics en elementos hijos
   const handleMenuClick = (e) => e.stopPropagation();
 
-  // Función para renderizar el estado del plan de forma legible
   const renderPlanStatus = () => {
-  if (!planStatus) return null;
+    if (!planStatus) return null;
 
-  if (typeof planStatus === 'object') {
-    const isFree = planStatus.planName?.toLowerCase() === "free";
-    return (
-      <>
-        <p className="title-xxs">Plan: {planStatus.planName}</p>
-        { !isFree && (
-          <p className="title-xxs">Payment Type: {planStatus.paymentType}</p>
-        )}
-        <p className="title-xxs">Available GB: {planStatus.availableGB}</p>
-      </>
-    );
-  } else {
-    return <p className="title-sm">Plan: {planStatus}</p>;
-  }
-};
-
+    if (typeof planStatus === 'object') {
+      const isFree = planStatus.planName?.toLowerCase() === "free";
+      return (
+        <>
+          <p className="title-xxs menu-link">Plan: {planStatus.planName}</p>
+          {!isFree && (
+            <p className="title-xxs menu-link">Payment Type: {planStatus.paymentType}</p>
+          )}
+          <p className="title-xxs menu-link">Available GB: {planStatus.availableGB}</p>
+        </>
+      );
+    } else {
+      return <p className="title-sm menu-link">Plan: {planStatus}</p>;
+    }
+  };
 
   return (
     <>
-      {/* Menú lateral */}
       <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: isOpen ? 0 : '-300px',
-          width: '300px',
-          height: '100vh',
-          zIndex: 9990,
-          transition: 'left 0.3s ease, visibility 0.3s ease, opacity 0.3s ease',
-          padding: '20px',
-          boxShadow: '2px 0 5px rgba(0, 0, 0, 0.5)',
-          visibility: isOpen ? 'visible' : 'hidden',
-          opacity: isOpen ? 1 : 0,
-        }}
-        className={`${className} color5 backgroundColor1`}
+        className={`menu fullscreen-floating card ${isOpen ? 'menu-open' : 'menu-closed'}  ${isDarkMode ? 'dark-mode' : ''}`}
         onClick={onClose}
       >
-        <div onClick={handleMenuClick}>
-          <p className="title-md" style={{ margin: 0 }}>{userMyLikes}</p>
-          <p className="title-xl" style={{ marginBottom: '20px' }}>Menu</p>
+        <div className="menu-content" onClick={handleMenuClick}>
+          <p className="title-md menu-link">{userMyLikes}</p>
+          <p className="title-xl menu-link {">Menu</p>
 
-          {/* Muestra la información del usuario */}
           {userName && (
-            <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center' }}>
+            <div className="user-info centrar-horizontal">
               {userImage && (
                 <img
                   src={userImage}
                   alt="User"
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    marginRight: '10px',
-                  }}
+                  className="user-image"
                 />
               )}
-              <p className="title-sm" style={{ margin: 0 }}>{userName}</p>
+              <p className="title-sm menu-link">{userName}</p>
             </div>
           )}
 
-          {/* Items de navegación */}
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {['Memories', 'update Plane'].map((item, index) => (//'Favorites', 'Settings'
-              <li className='effectHover' key={index} style={{ marginBottom: '15px', width: '100%', borderRadius: '0.7em', paddingLeft: '10px' }}>
+          <ul className="menu-list">
+            {['Memories', 'update Plane'].map((item, index) => (
+              <li key={index} className="menu-item effectHover borderRadius1">
                 <a
                   href={
                     item === 'Memories'
@@ -242,48 +189,59 @@ const Menu = ({ isOpen, onClose, className = '', openUpdateBackgroundColor }) =>
                       ? '/payment'
                       : '/#'
                   }
-                  style={{ textDecoration: 'none' }}
-                  className="title-md color5"
+                  className="menu-link title-md "
                 >
                   {item}
                 </a>
               </li>
             ))}
-            <li style={{ marginBottom: '15px' }}>
-              <p onClick={handleLogout} className="title-md effectHover" style={{ cursor: 'pointer', borderRadius: '10px', width: '100%', paddingLeft: '10px' }}>
+            <li className="menu-item">
+              <p
+                onClick={handleLogout}
+                className="title-md color1 effectHover borderRadius1 logout-link"
+              >
                 Log out
               </p>
             </li>
           </ul>
-          {/* Muestra el estado del plan obtenido solo una vez por sesión */}
+
           {planStatus && (
-            <div style={{ marginBottom: '20px' }}>
+            <div className="plan-status">
               {renderPlanStatus()}
             </div>
           )}
         </div>
       </div>
 
-      {/* Overlay para cerrar el menú */}
       {isOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 999,
-          }}
-          onClick={onClose}
-        />
+        <div className="menu-overlay fullscreen-floating" onClick={onClose} />
       )}
     </>
   );
 };
 
 export default Menu;
+
+
+/*import React, { useState, useEffect } from 'react';
+const Menu = ({ isOpen, onClose, ariaLabel, isDarkMode }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className={`menu ${isDarkMode ? 'dark' : ''}`}
+      aria-label={ariaLabel}
+    >
+      <button onClick={onClose}>Cerrar</button>
+      <ul>
+        <li>Opción 1</li>
+        <li>Opción 2</li>
+      </ul>
+    </div>
+  );
+};
+
+export default Menu*/
 
 
 

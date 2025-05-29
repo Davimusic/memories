@@ -1,4 +1,5 @@
 import clientPromise from '../connectToDatabase';
+import { verifyLoginUser } from '../firebase/verifyLoginUser'; 
 
 export default async function handler(req, res) {
   try {
@@ -18,7 +19,9 @@ export default async function handler(req, res) {
       fileUploadVisibility,
       fileUploadInvitedEmails,
       editVisibility,
-      editInvitedEmails
+      editInvitedEmails,
+      uid,
+      token
     } = req.body;
 
     if (!userId || !memoryTitle) {
@@ -28,17 +31,26 @@ export default async function handler(req, res) {
       });
     }
 
+    const loginResult = await verifyLoginUser({ uid, token });
+        if (!loginResult.success) {
+          return res.status(401).json({
+            success: false,
+            message: 'Authentication failed: ' + loginResult.error
+          });
+    }
+
     const client = await clientPromise;
     const db = client.db('goodMemories');
     const collection = db.collection('MemoriesCollection');
 
     // Normalizar título para usar como clave
     const normalizedTitle = memoryTitle.replace(/\s+/g, '_');
+    const normalizedUserID = userId.replace(/[@.]/g, '_')
 
     // Verificar si el recuerdo ya existe
     const existingMemory = await collection.findOne({
       _id: "globalMemories",
-      [`${userId}.${normalizedTitle}`]: { $exists: true }
+      [`${normalizedUserID}.${normalizedTitle}`]: { $exists: true }
     });
 
     if (existingMemory) {
@@ -54,7 +66,7 @@ export default async function handler(req, res) {
       metadata: {
         title: memoryTitle,
         description: description || '',
-        createdBy: userId,
+        createdBy: normalizedUserID,
         createdAt: now.toISOString(),
         lastUpdated: now.toISOString(),
         status: 'active'
@@ -94,7 +106,7 @@ export default async function handler(req, res) {
     await collection.updateOne(
       { _id: "globalMemories" },
       { $set: { 
-        [`${userId}.${normalizedTitle}`]: memoryData 
+        [`${normalizedUserID}.${normalizedTitle}`]: memoryData 
       }},
       { upsert: true }
     );
@@ -103,7 +115,7 @@ export default async function handler(req, res) {
       success: true,
       message: "Recuerdo creado exitosamente",
       memory: {
-        id: `${userId}_${normalizedTitle.toLowerCase()}`,
+        id: `${normalizedUserID}_${normalizedTitle.toLowerCase()}`,
         ...memoryData.metadata,
         permissions: memoryData.access,
         mediaCount: {
