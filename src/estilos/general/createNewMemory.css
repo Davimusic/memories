@@ -33,3 +33,36 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.modal-content {
+  background: var(--card-bg);
+  padding: 1rem;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  color: var(--text-primary); /* Ensure all text inherits the primary text color */
+}
+
+.modal-content h3,
+.modal-content h4,
+.modal-content p,
+.modal-content label {
+  color: var(--text-primary); /* Explicitly set text color for headings and paragraphs */
+}
+
+.modal-content .privacy-icon {
+  font-size: 1.5rem;
+  color: var(--text-primary); /* Ensure icons adapt to theme */
+}
+
+.modal-content .email-tag {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-content .error-message {
+  color: var(--error); /* Keep error message color as defined */
+}

@@ -135,6 +135,7 @@ const VisibilityModal = ({
 };
 
 // Upload Permissions Modal Component
+// Upload Permissions Modal Component
 const UploadPermissionsModal = ({
   isOpen,
   onClose,
@@ -180,7 +181,7 @@ const UploadPermissionsModal = ({
         <h3 className="title-md">Configure Upload Permissions</h3>
         <div className="privacy-options grid">
           <div
-            className={` card ${tempUploadVisibility === 'invitation' ? 'active' : ''}`}
+            className={`card ${tempUploadVisibility === 'invitation' ? 'active' : ''}`}
             onClick={() => setTempUploadVisibility('invitation')}
           >
             <span className="privacy-icon">📩</span>
@@ -219,7 +220,7 @@ const UploadPermissionsModal = ({
             )}
           </div>
           <div
-            className={` card ${tempUploadVisibility === 'private' ? 'active' : ''}`}
+            className={`card ${tempUploadVisibility === 'private' ? 'active' : ''}`}
             onClick={() => setTempUploadVisibility('private')}
           >
             <span className="privacy-icon">🔒</span>
@@ -227,7 +228,7 @@ const UploadPermissionsModal = ({
             <p>Only you can upload files</p>
           </div>
           <div
-            className={` card ${tempUploadVisibility === 'public' ? 'active' : ''}`}
+            className={`card ${tempUploadVisibility === 'public' ? 'active' : ''}`}
             onClick={() => setTempUploadVisibility('public')}
           >
             <span className="privacy-icon">🌍</span>

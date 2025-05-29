@@ -1,6 +1,6 @@
 'use client'; 
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef  } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../../firebase';
@@ -9,18 +9,18 @@ import '../../estilos/general/menu.css'
 
 
 
-const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
-  //if (!isOpen) return null;
+const Menu = ({ isOpen, onClose, openUpdateBackgroundColor, isDarkMode }) => {
+  // Refs for DOM access and click-outside detection
+  const menuRef = useRef(null);
+  const overlayRef = useRef(null);
 
+  // State for user data and UI
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userName, setUserName] = useState('');
   const [userImage, setUserImage] = useState('');
   const [userMyLikes, setUserMyLikes] = useState([]);
   const [planStatus, setPlanStatus] = useState('');
   const [userEmail, setUserEmail] = useState(null);
-  const router = useRouter();
-  
-
   const [colors, setColors] = useState({
     backgroundColor1: '',
     backgroundColor2: '',
@@ -29,8 +29,51 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
     backgroundColor5: '',
   });
 
-  
+  const router = useRouter();
 
+  // Close menu when clicking outside or pressing Escape
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        menuRef.current && 
+        !menuRef.current.contains(event.target) && 
+        overlayRef.current?.contains(event.target)
+      ) {
+        onClose();
+      }
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
+
+  // Control body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+
+  // Auth state listener for user email
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -41,6 +84,7 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
     return () => unsubscribe();
   }, []);
 
+  // Get user data from localStorage
   useEffect(() => {
     const name = localStorage.getItem('userName') || '';
     const image = localStorage.getItem('userImage') || '';
@@ -50,6 +94,7 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
     setUserMyLikes(myLikes);
   }, []);
 
+  // Get CSS variables for color theming
   useEffect(() => {
     const rootStyles = getComputedStyle(document.documentElement);
     const newColors = {
@@ -62,6 +107,7 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
     setColors(newColors);
   }, []);
 
+  // Fetch user plan status
   useEffect(() => {
     if (userEmail === null) return;
 
@@ -71,13 +117,9 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
     if (cachedPlanString) {
       try {
         parsedPlan = JSON.parse(cachedPlanString);
-        console.log("Contenido parseado:", parsedPlan);
       } catch (error) {
-        console.log("Error al parsear; se usará el contenido sin formatear:", cachedPlanString);
         parsedPlan = cachedPlanString;
       }
-    } else {
-      console.log("No se encontró ningún valor en 'userPlanStatus'.");
     }
 
     if (parsedPlan) {
@@ -91,18 +133,14 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
         body: JSON.stringify({ email: userEmail }),
       })
         .then((response) => {
-          if (!response.ok) {
-            throw new Error('Error al obtener el estado del plan');
-          }
+          if (!response.ok) throw new Error('Error al obtener el estado del plan');
           return response.json();
         })
         .then((data) => {
-          console.log("Plan obtenido del endpoint:", data.plan);
           setPlanStatus(data.plan);
-          const planToStore =
-            typeof data.plan === "object"
-              ? JSON.stringify(data.plan)
-              : data.plan;
+          const planToStore = typeof data.plan === "object" 
+            ? JSON.stringify(data.plan) 
+            : data.plan;
           sessionStorage.setItem('userPlanStatus', planToStore);
         })
         .catch((error) => {
@@ -111,6 +149,7 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
     }
   }, [userEmail]);
 
+  // Helper function to update CSS colors
   const updateColor = (colorClass, hexValue) => {
     if (/^#([0-9A-Fa-f]{3}){1,2}$/i.test(hexValue)) {
       const updatedColors = { ...colors, [colorClass]: hexValue };
@@ -121,6 +160,7 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
     return false;
   };
 
+  // Handle user logout
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -134,8 +174,10 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
     }
   };
 
+  // Prevent click propagation in menu content
   const handleMenuClick = (e) => e.stopPropagation();
 
+  // Render plan status information
   const renderPlanStatus = () => {
     if (!planStatus) return null;
 
@@ -157,14 +199,28 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
 
   return (
     <>
+      {/* Overlay that appears when menu is open */}
+      {isOpen && (
+        <div 
+          ref={overlayRef}
+          className={`menu-overlay ${isDarkMode ? 'dark-mode' : ''}`}
+          onClick={onClose}
+        />
+      )}
+
+      {/* Main menu container */}
       <div
-        className={`menu fullscreen-floating card ${isOpen ? 'menu-open' : 'menu-closed'}  ${isDarkMode ? 'dark-mode' : ''}`}
-        onClick={onClose}
+        ref={menuRef}
+        className={`menu ${isOpen ? 'menu-open' : 'menu-closed'} ${isDarkMode ? 'dark-mode' : ''}`}
       >
         <div className="menu-content" onClick={handleMenuClick}>
+          {/* User likes section */}
           <p className="title-md menu-link">{userMyLikes}</p>
-          <p className="title-xl menu-link {">Menu</p>
+          
+          {/* Menu title */}
+          <p className="title-xl menu-link">Menu</p>
 
+          {/* User info section */}
           {userName && (
             <div className="user-info centrar-horizontal">
               {userImage && (
@@ -178,6 +234,7 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
             </div>
           )}
 
+          {/* Menu items list */}
           <ul className="menu-list">
             {['Memories', 'update Plane'].map((item, index) => (
               <li key={index} className="menu-item effectHover borderRadius1">
@@ -189,7 +246,7 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
                       ? '/payment'
                       : '/#'
                   }
-                  className="menu-link title-md "
+                  className="menu-link title-md"
                 >
                   {item}
                 </a>
@@ -205,6 +262,7 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
             </li>
           </ul>
 
+          {/* Plan status section */}
           {planStatus && (
             <div className="plan-status">
               {renderPlanStatus()}
@@ -212,10 +270,6 @@ const Menu = ({ isOpen, onClose,  openUpdateBackgroundColor, isDarkMode  }) => {
           )}
         </div>
       </div>
-
-      {isOpen && (
-        <div className="menu-overlay fullscreen-floating" onClick={onClose} />
-      )}
     </>
   );
 };
