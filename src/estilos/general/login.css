@@ -1,13 +1,14 @@
+/* LOGIN CONTAINER */
 .login-container {
   width: 100%;
   max-width: 400px;
-  margin: 0 auto;          /* Se centra horizontalmente */
+  margin: 0 auto; /* Centers horizontally */
   display: flex;
   flex-direction: column;
-  height: '100%';
-  
-  /* Si deseas añadir un espacio vertical fijo, podrías agregar padding o margin, pero
-     en este ejemplo se deja la adaptación al contenido */
+  min-height: 100%; /* Changed from height: '100%' to min-height for flexibility */
+  height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 /* FORMULARIO DEL LOGIN */
@@ -16,7 +17,7 @@
   padding: 30px;
   background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -63,8 +64,14 @@
 }
 
 .input-field:focus {
-  border-color: #4285F4;
+  border-color: #4285f4;
   outline: none;
+}
+
+.input-field:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* CONTENEDOR PARA LA CONTRASEÑA */
@@ -82,6 +89,11 @@
   color: #666;
 }
 
+.show-hide-icon.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* ESTILOS PARA BOTONES */
 .submit-button,
 .google-button {
@@ -97,6 +109,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative; /* For positioning the spinner */
 }
 
 .submit-button {
@@ -105,8 +118,16 @@
 }
 
 .google-button {
-  background-color: #4285F4;
+  background-color: #4285f4;
   color: #fff;
+}
+
+/* Disabled state for buttons */
+.submit-button:disabled,
+.google-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 /* ICONO DE GOOGLE */
@@ -121,7 +142,7 @@
 .back-to-login {
   text-align: center;
   margin-top: 1rem;
-  color: #4285F4;
+  color: #4285f4;
   font-size: 0.9rem;
   cursor: pointer;
   transition: color 0.2s;
@@ -130,62 +151,198 @@
 .toggle-auth-mode:hover,
 .forgot-password-link:hover,
 .back-to-login:hover {
-  color: #3367D6;
+  color: #3367d6;
   text-decoration: underline;
+}
+
+.toggle-auth-mode.disabled,
+.forgot-password-link.disabled,
+.back-to-login.disabled {
+  color: #999;
+  cursor: not-allowed;
+  text-decoration: none;
 }
 
 /* MENSAJES: error y éxito */
 .error-message {
-  color: #D32F2F;
+  color: #d32f2f;
   text-align: center;
   margin-bottom: 1rem;
   font-size: 0.9rem;
+  padding: 10px;
+  background-color: #ffebee; /* Light red background for visibility */
+  border-radius: 6px;
 }
 
 .login-success-message {
-  color: #388E3C;
+  color: #388e3c;
   text-align: center;
   margin-bottom: 1rem;
+  font-size: 0.9rem;
+  padding: 10px;
+  background-color: #e8f5e9; /* Light green background */
+  border-radius: 6px;
+}
+
+/* TERMS SECTION (Moved outside form) */
+.terms-section {
+  
+  display: flex;
+  justify-content: center; /* Center the checkbox */
+  padding: 15px;
+  background-color: #ffffff; /* Match form background */
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  
+}
+
+.terms-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terms-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #4285f4; /* Match input focus color */
+}
+
+.terms-checkbox input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.terms-checkbox label {
+  font-size: 0.9rem; /* Match input-label size */
+  color: #333;
+}
+
+.terms-link {
+  color: #4285f4; /* Match link color */
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.terms-link:hover {
+  color: #3367d6; /* Match hover color */
+}
+
+.terms-link.disabled {
+  color: #999;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+/* LOADING SPINNER */
+.loading-spinner {
+  display: flex;
+  align-items: center;
+}
+
+.loading-spinner::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #4285f4; /* Match input focus color */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* MODAL */
 .modal-content {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 1.1rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 20px;
+  font-size: 0.9rem; /* Match other text sizes */
+  line-height: 1.6;
   color: #333;
+  text-align: left; /* Changed from center for terms readability */
 }
 
 .modal-button {
+  margin-top: 15px;
   padding: 10px 20px;
-  background-color: #000;
+  background-color: #000; /* Match submit-button */
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 6px; /* Match other buttons */
   cursor: pointer;
   font-size: 1rem;
   transition: background-color 0.3s;
 }
 
 .modal-button:hover {
-  background-color: #333;
+  background-color: #333; /* Match submit-button hover */
 }
 
+.modal-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* RESPONSIVE: Tablets and below */
 @media (max-width: 1023px) {
+
+  .login-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto; /* Centers horizontally */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers children horizontally */
+  justify-content: center; /* Centers children vertically */
+  min-height: 100%; /* Ensures flexibility */
+  height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
   .login-form {
     padding: 25px;
     background-color: rgba(255, 255, 255, 0.747);
   }
+
+  .terms-section {
+    background-color: rgba(255, 255, 255, 0.747); /* Match form */
+  }
 }
 
-/* RESPONSIVE: ajustes para móviles */
+/* RESPONSIVE: Mobile */
 @media (max-width: 480px) {
   
+
+  .login-form {
+    padding: 20px;
+  }
+
+  .terms-section {
+    padding: 10px;
+    margin-top: 15px;
+  }
+
   .login-title {
     font-size: 1.5rem;
   }
-  
+
   .input-field {
     padding: 10px 12px;
+  }
+
+  .terms-checkbox label {
+    font-size: 0.85rem; /* Slightly smaller for mobile */
   }
 }

@@ -167,6 +167,7 @@ const Menu = ({ isOpen, onClose, openUpdateBackgroundColor, isDarkMode }) => {
       localStorage.removeItem('userName');
       localStorage.removeItem('userImage');
       localStorage.removeItem('userEmail');
+      localStorage.removeItem('reason');
       router.push('/login');
       onClose();
     } catch (error) {

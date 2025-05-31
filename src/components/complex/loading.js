@@ -1,6 +1,6 @@
 import React from 'react';
 import Head from 'next/head'; // Assuming Next.js for <Head> component
-import '../../estilos/general/general.css';
+//import '../../estilos/general/general.css';
 import '../../app/globals.css';
 import BackgroundGeneric from './backgroundGeneric';
 import MemoryLogo from './memoryLogo';
@@ -20,7 +20,7 @@ const LoadingMemories = () => {
       </Head>
       <BackgroundGeneric showImageSlider={false}>
         <div
-          className="loading backgroundColor1"
+          //className="loading backgroundColor1"
           role="status"
           aria-live="polite"
           style={{
@@ -38,7 +38,7 @@ const LoadingMemories = () => {
             zIndex: 9999,
           }}
         >
-          <MemoryLogo size={300} aria-label="Memories Logo" />
+          <MemoryLogo size={200} aria-label="Memories Logo" />
           <p className="color1 title-lg" aria-label="Loading memories">
             Loading...
           </p>

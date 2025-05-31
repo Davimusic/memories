@@ -1,40 +1,37 @@
+'use client'; 
+//este no està sujeto a GeneralMold, es una copia de interfaz, mas, no està servida en la plantilla padre
 // pages/memories/[id].js
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-//import '../../../app/globals.css'
+import '../../../app/globals.css'
+import '../../../estilos/general/generalMold.css'
 import styles from '../../../estilos/general/memoryDetail.module.css'; 
+
 import MemoryLogo from '../../../components/complex/memoryLogo';
 import BackgroundGeneric from '../../../components/complex/backgroundGeneric';
 import Menu from '../../../components/complex/menu';
 import MenuIcon from '../../../components/complex/menuIcon';
 import SpinnerIcon from '@/components/complex/spinnerIcon';
-import Video from '../../../components/simple/video';
-import AudioPlayer from '@/components/complex/audioPlayer';
-import ImageSlider from '../../../components/complex/imageSlider';
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
+//import Video from '../../../components/simple/video';
+//import AudioPlayer from '@/components/complex/audioPlayer';
+//import ImageSlider from '../../../components/complex/imageSlider';
 import LoadingMemories from '@/components/complex/loading';
 import { auth } from '../../../../firebase';
 import Head from 'next/head';
 import Modal from '@/components/complex/modal';
-import GeneralMold from '@/components/complex/generalMold';
+import InternetStatus from '@/components/complex/internetStatus';
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+const Video = dynamic(() => import('../../../components/simple/video'), { ssr: false });
+const AudioPlayer = dynamic(() => import('../../../components/complex/audioPlayer'), { ssr: false });
+const ImageSlider = dynamic(() => import('../../../components/complex/imageSlider'), { ssr: false });
 
 export async function getServerSideProps(context) {
   const { userID, memoryName } = context.query;
 
-  // Validate query parameters
   if (!userID || !memoryName) {
     return {
       props: {
@@ -61,11 +58,18 @@ export async function getServerSideProps(context) {
       throw new Error('Failed to load memory data');
     }
 
-    // Format data to match the original component's structure
     const formattedData = {
       ...mongoData.memory,
       ownerEmail: mongoData.ownerEmail,
-      metadata: mongoData.memory.metadata || {},
+      metadata: {
+        ...mongoData.memory.metadata,
+        createdAt: mongoData.memory.metadata.createdAt
+          ? new Date(mongoData.memory.metadata.createdAt).toISOString()
+          : null,
+        lastUpdated: mongoData.memory.metadata.lastUpdated
+          ? new Date(mongoData.memory.metadata.lastUpdated).toISOString()
+          : null,
+      },
       access: mongoData.memory.access || {},
       media: {
         photos: mongoData.memory.media.photos || [],
@@ -104,8 +108,10 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [mediaType, setMediaType] = useState(null);
   const [previewFolder, setPreviewFolder] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Use GeneralMold's modal state
-  const [modalContent, setModalContent] = useState(null); // Use GeneralMold's modal content
+  const [isMainMenuOpen, setIsMainMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const mediaCache = useRef(new Map());
 
   const [mediaState, setMediaState] = useState({
@@ -127,13 +133,28 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
     isHybridView: false,
   });
 
-  // Fetch user email
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => {
+      const newMode = !prev;
+      localStorage.setItem('darkMode', JSON.stringify(newMode));
+      return newMode;
+    });
+  };
+
+  useEffect(() => {
+    const savedMode = localStorage.getItem('darkMode');
+    setIsDarkMode(savedMode ? JSON.parse(savedMode) : false);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDarkMode);
+  }, [isDarkMode]);
+
   useEffect(() => {
     const email = auth.currentUser?.reloadUserInfo?.providerUserInfo?.[0]?.email;
     if (email) setUserEmail(email);
   }, []);
 
-  // Preload media
   useEffect(() => {
     if (!memoryData) return;
 
@@ -144,12 +165,18 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
           let media;
           if (mediaType === 'photos') {
             media = new Image();
-            media.onload = () => mediaCache.current.set(url, true);
+            media.onload = () => {
+              mediaCache.current.set(url, true);
+              setFolderContents((prev) => ({ ...prev }));
+            };
             media.onerror = () => mediaCache.current.set(url, false);
           } else if (mediaType === 'videos') {
             media = document.createElement('video');
             media.preload = 'metadata';
-            media.onloadeddata = () => mediaCache.current.set(url, true);
+            media.onloadeddata = () => {
+              mediaCache.current.set(url, true);
+              setFolderContents((prev) => ({ ...prev }));
+            };
             media.onerror = () => mediaCache.current.set(url, false);
           }
           if (media) media.src = url;
@@ -158,7 +185,6 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
     });
   }, [memoryData]);
 
-  // Access validation
   useEffect(() => {
     if (!memoryData || !userEmail) return;
 
@@ -212,19 +238,6 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
     checkViewPermissions();
   }, [memoryData, userEmail, router]);
 
-  // Automatically open the first folder with content on mount
-  useEffect(() => {
-    if (!memoryData) return;
-
-    const foldersWithContent = Object.keys(memoryData.media).filter(
-      (folderName) => memoryData.media[folderName].length > 0
-    );
-
-    if (foldersWithContent.length > 0 && !previewFolder) {
-      handleFolderClick(foldersWithContent[0]);
-    }
-  }, [memoryData]);
-
   const handleFolderClick = async (folderName) => {
     setFolderLoadingStates((prev) => ({ ...prev, [folderName]: true }));
     setPreviewFolder(folderName);
@@ -248,33 +261,11 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
       }));
     }
 
-    // Set modal content for folder preview
-    setModalContent(
-      <div className={styles.previewContent}>
-        {folderLoadingStates[folderName] ? (
-          <div className={styles.loadingPreview}>
-            <SpinnerIcon size={40} />
-            <p>Loading contents...</p>
-          </div>
-        ) : folderContents[folderName]?.files?.length > 0 ? (
-          <div className={styles.previewGrid}>
-            {folderContents[folderName].files.map((file, index) =>
-              renderPreviewItem(file, index, folderName)
-            )}
-          </div>
-        ) : (
-          <p>No files in this category.</p>
-        )}
-      </div>
-    );
-    setIsModalOpen(true); // Open the modal
     setFolderLoadingStates((prev) => ({ ...prev, [folderName]: false }));
   };
 
   const closeFolderPreview = () => {
     setPreviewFolder(null);
-    setIsModalOpen(false); // Close the modal
-    setModalContent(null);
   };
 
   const handleFileSelect = (url, folderName, index) => {
@@ -321,9 +312,7 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
   };
 
   const renderPreviewItem = (file, index, folderName) => {
-    const isCached = mediaCache.current.has(file.url);
     const formattedUrl = formatImageUrl(file.url);
-
     return (
       <article
         key={index}
@@ -331,50 +320,28 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
         className={styles.previewItem}
         aria-label={`Open ${file.fileName}`}
       >
-        {!isCached && (
-          <div className={styles.loadingOverlay}>
-            {/* Placeholder for loading overlay */}
-          </div>
-        )}
         {folderName === 'photos' ? (
           <div className={styles.imagePreview}>
             <img
-              src={isCached ? formattedUrl : '/placeholder-image.jpg'}
+              src={formattedUrl || '/placeholder-image.jpg'}
               alt={`Preview of ${file.fileName}`}
               loading="lazy"
-              onLoad={() => mediaCache.current.set(file.url, true)}
-              onError={() => mediaCache.current.set(file.url, false)}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </div>
         ) : folderName === 'videos' ? (
           <div className={styles.videoPreview}>
-            {isCached ? (
-              <video
-                src={file.url}
-                muted
-                playsInline
-                preload="metadata"
-                onLoadedData={() => {
-                  if (!mediaCache.current.has(file.url)) {
-                    mediaCache.current.set(file.url, true);
-                  }
-                }}
-                style={{ display: 'block', width: '100%', height: '100%' }}
-              />
-            ) : (
-              <img
-                src="/video-placeholder.jpg"
-                alt={`Preview of ${file.fileName}`}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            )}
+            <img
+              src="/video-placeholder.jpg"
+              alt={`Preview of ${file.fileName}`}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
             <div className={styles.playIcon}>▶</div>
           </div>
         ) : folderName === 'audios' ? (
           <div className={styles.audioPreview}>
             <div className={styles.audioIcon}>🎵</div>
-            <span>{file.fileName}</span>
+            <span style={{color: 'white'}}>{file.fileName}</span>
           </div>
         ) : (
           <div className={styles.filePreview}>
@@ -391,19 +358,14 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
 
   if (error || !memoryData) {
     return (
-      <GeneralMold
-        pageTitle="Error"
-        pageDescription="An error occurred while loading the memory."
-        leftContent={
+      <div className="fullscreen-floating">
+        <div className="general-mold">
           <div className={styles.loading}>
             <MemoryLogo size={300} />
-            <p className="color2 title-xl">Error: {error || 'Memory not found'}</p>
+            <p className="text-secondary title-xl">Error: {error || 'Memory not found'}</p>
           </div>
-        }
-        visibility="public"
-        owner={null}
-        metaKeywords="error, memory, media"
-      />
+        </div>
+      </div>
     );
   }
 
@@ -413,63 +375,63 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
 
   const { metadata } = memoryData;
 
-  // Map visibility from roll
-  const visibility =
-    roll === 'Anyone can upload memories'
-      ? 'public'
-      : roll === 'You are the owner'
-      ? 'private'
-      : roll === 'Invited to upload memories'
-      ? 'invitation'
-      : 'private'; // Default to private for 'User not allowed'
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: metadata?.title || 'Memory Detail',
+    description: metadata?.description || 'A collection of media files for a specific memory.',
+    url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/memory/${userID}/${memoryName}`,
+    datePublished: metadata?.createdAt ? new Date(metadata.createdAt).toISOString() : undefined,
+    dateModified: metadata?.lastUpdated ? new Date(metadata.lastUpdated).toISOString() : undefined,
+    image: memoryData.media.photos?.[0]?.url
+      ? formatImageUrl(memoryData.media.photos[0].url)
+      : '/default-og-image.jpg',
+  };
 
-  // Left content: Memory metadata
   const leftContent = (
-    <div>
-      <h1 className={`${styles.memoryTitle} title-xl color2 centrar-horizontal`}>
-        {metadata?.title || 'No title available'}
-      </h1>
+    <div className={styles.infoColumn} aria-label="Memory information">
       <p>
-        <strong className={roll !== 'User not allowed' ? 'color2' : 'alertColor'}>Role:</strong>{' '}
-        <span className={roll !== 'User not allowed' ? 'color2' : 'alertColor'}>{roll}</span>
+        <strong className={roll !== 'User not allowed' ? 'text-secondary' : 'alertColor'}>Role:</strong>{' '}
+        <span className={roll !== 'User not allowed' ? 'text-secondary' : 'alertColor'}>{roll}</span>
       </p>
       {roll === 'User not allowed' && (
-        <p style={{ color: 'red' }}>
+        <p className="alertColor">
           If you believe this is a mistake, please contact the account owner.
         </p>
       )}
+      <h2 className="text-primary">{metadata?.title || 'No title available'}</h2>
+      
       {metadata && (
         <div className={styles.metadataContainer}>
-          <p className={`${styles.memoryDescription} color1`}>
+          <p className={`${styles.memoryDescription} text-primary`}>
             {metadata.description || 'No description available'}
           </p>
           <div className={styles.datesContainer}>
-            <p>Created: {new Date(metadata.createdAt).toLocaleDateString()}</p>
-            <p>Last modified: {new Date(metadata.lastUpdated).toLocaleDateString()}</p>
+            <p className={'folderToggle'}>Created: {new Date(metadata.createdAt).toLocaleDateString()}</p>
+            <p className={'folderToggle'}>Last modified: {new Date(metadata.lastUpdated).toLocaleDateString()}</p>
           </div>
         </div>
       )}
     </div>
   );
 
-  // Right content: Folder list and media player
   const rightContent = (
-    <div>
-      <h2 className="color1">Folders</h2>
+    <section className={styles.filesColumn} aria-label="Media files">
+      <h2 className="text-primary">Folders</h2>
       {foldersWithContent.length > 0 ? (
-        <ul className={`${styles.foldersList} color2`} aria-label="List of media folders">
+        <ul className={`${styles.foldersList} text-secondary`} aria-label="List of media folders">
           {foldersWithContent.map((folderName) => (
             <li style={{ listStyle: 'none' }} key={folderName} className={styles.folderItem}>
               <button
-                style={{ width: '100%', backgroundColor: 'none', border: 'none' }}
+                style={{ width: '100%', background: 'none', border: 'none' }}
                 className={styles.folderHeader}
                 onClick={() => handleFolderClick(folderName)}
                 aria-expanded={previewFolder === folderName}
                 aria-label={`Open ${folderName} folder`}
               >
                 <div className={styles.folderInfo}>
-                  <h3>{folderName}</h3>
-                  <span className={styles.folderCount}>
+                  <h3 className='text-secondary'>{folderName}</h3>
+                  <span className={'text-secondary'}>
                     {memoryData.media[folderName].length}{' '}
                     {memoryData.media[folderName].length === 1 ? 'item' : 'items'}
                   </span>
@@ -481,87 +443,234 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
           ))}
         </ul>
       ) : (
-        <p className={styles.noFoldersMessage}>No folders available for this memory.</p>
+        <p className={`${styles.noFoldersMessage} text-muted`}>No folders available for this memory.</p>
       )}
-
-      {selectedMedia && (
-        <div className={styles.mediaOverlay} role="dialog" aria-label="Media player">
-          <button
-            onClick={closeMediaPlayer}
-            className={styles.closeButton}
-            aria-label="Close media player"
-          >
-            ×
-          </button>
-          {mediaType === 'video' && (
-            <Video
-              srcs={mediaState.srcs}
-              currentIndex={mediaState.currentIndex}
-              setCurrentIndex={(index) => setMediaState((prev) => ({ ...prev, currentIndex: index }))}
-              setCurrentTimeMedia={(time) =>
-                setMediaState((prev) => ({ ...prev, currentTimeMedia: time }))
-              }
-              currentTimeMedia={mediaState.currentTimeMedia}
-              setVolumeMedia={(vol) => setMediaState((prev) => ({ ...prev, volumeMedia: vol }))}
-              volumeMedia={mediaState.volumeMedia}
-              setIsMutedMedia={(muted) => setMediaState((prev) => ({ ...prev, isMutedMedia: muted }))}
-              isMutedMedia={mediaState.isMutedMedia}
-              setIsRepeatMedia={(repeat) =>
-                setMediaState((prev) => ({ ...prev, isRepeatMedia: repeat }))
-              }
-              isRepeatMedia={mediaState.isRepeatMedia}
-              setIsLike={(like) => setMediaState((prev) => ({ ...prev, isLike: like }))}
-              isLike={mediaState.isLike}
-              isHybridView={mediaState.isHybridView}
-              buttonColor="white"
-            />
-          )}
-          {mediaType === 'audio' && (
-            <div className={styles.audioPlayerWrapper}>
-              <AudioPlayer
-                currentIndex={mediaState.currentIndex}
-                audioFiles={mediaState.content}
-                className={styles.customAudioPlayer}
-              />
-            </div>
-          )}
-          {mediaType === 'image' && (
-            <ImageSlider
-              images={mediaState.content
-                .filter((item) => item.src)
-                .map((item) => formatImageUrl(item.src))}
-              initialCurrentIndex={mediaState.currentIndex}
-              onIndexChange={(index) => setMediaState((prev) => ({ ...prev, currentIndex: index }))}
-              controls={{
-                showPrevious: true,
-                showPlayPause: true,
-                showNext: true,
-                showShuffle: true,
-                showEffects: true,
-                showDownload: true,
-              }}
-              timeToShow={5000}
-              showControls={true}
-            />
-          )}
-        </div>
-      )}
-    </div>
+    </section>
   );
 
   return (
-    <GeneralMold
-      pageTitle={metadata?.title || 'Memory Detail'}
-      pageDescription={metadata?.description || 'View photos, videos, and other media for this memory.'}
-      metaKeywords="memory, media, photos, videos, audios, documents"
-      metaAuthor={memoryData.ownerEmail || ''}
-      visibility={visibility}
-      owner={memoryData.ownerEmail}
-      leftContent={leftContent}
-      rightContent={rightContent}
-      setModalContent={setModalContent}
-      setIsModalOpen={setIsModalOpen}
-    />
+    <div className="" role="main" aria-label="Memory detail page">
+      <Suspense fallback={<LoadingMemories />}>
+        <Head>
+          <title>{metadata?.title || 'Memory Detail'}</title>
+          <meta
+            name="description"
+            content={metadata?.description || 'View photos, videos, and other media for this memory.'}
+          />
+          <meta name="keywords" content="memory, media, photos, videos, audios, documents" />
+          <meta name="robots" content={memoryData.access?.view?.visibility === 'public' ? 'index, follow' : 'noindex'} />
+          <meta property="og:title" content={metadata?.title || 'Memory Detail'} />
+          <meta
+            property="og:description"
+            content={metadata?.description || 'View photos, videos, and other media for this memory.'}
+          />
+          <meta property="og:type" content="website" />
+          <meta
+            property="og:url"
+            content={`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/memory/${userID}/${memoryName}`}
+          />
+          <meta
+            property="og:image"
+            content={
+              memoryData.media.photos?.[0]?.url
+                ? formatImageUrl(memoryData.media.photos[0].url)
+                : '/default-og-image.jpg'
+            }
+          />
+          <link
+            rel="canonical"
+            href={`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/memory/${userID}/${memoryName}`}
+          />
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+        </Head>
+
+        <InternetStatus setModalContent={setModalContent} setIsModalOpen={setIsModalOpen} />
+
+        <header className="header">
+          <button
+            className="back-button button"
+            onClick={() => window.history.back()}
+            aria-label="Volver a la página anterior"
+          >
+            ←
+          </button>
+          <button
+            className="menu-button button"
+            onClick={() => setIsMainMenuOpen(true)}
+            aria-label={isMainMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          >
+            ☰
+          </button>
+          <button
+            className="theme-toggle button"
+            onClick={toggleDarkMode}
+            aria-label={isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+          >
+            {isDarkMode ? '☀️' : '🌙'}
+          </button>
+          <div className="visibility">
+            <span className="visibility-icon" aria-hidden="true">
+              {memoryData.access?.view?.visibility === 'public'
+                ? '👁️'
+                : memoryData.access?.view?.visibility === 'private'
+                ? '🔒'
+                : '👥'}
+            </span>
+            <span className="visibility-label content-small">
+              {memoryData.access?.view?.visibility === 'public'
+                ? 'Público'
+                : memoryData.access?.view?.visibility === 'private'
+                ? 'Privado'
+                : 'Solo Invitados'}
+            </span>
+          </div>
+        </header>
+
+        <Menu
+          isOpen={isMainMenuOpen}
+          onClose={() => setIsMainMenuOpen(false)}
+          aria-label="Menú de navegación"
+          isDarkMode={isDarkMode}
+        />
+     
+        <div  style={{
+          position: 'fixed',
+          top: 60, // El div se posiciona a 60px desde el borde superior de la ventana.
+          left: 0,
+          right: 0,
+        }}>
+        <div  className={`content-container ${leftContent && rightContent ? 'dual-content' : 'single-content'}`}>
+          {leftContent && (
+            <section
+              className={`left-container card ${leftContent && rightContent ? '' : 'full-width'}`}
+              aria-label="Contenido izquierdo"
+            >
+              {leftContent}
+            </section>
+          )}
+          {rightContent && (
+            <section
+              className={`right-container card ${leftContent && rightContent ? '' : 'full-width'}`}
+              aria-label="Contenido derecho"
+            >
+              {rightContent}
+            </section>
+          )}
+        </div>
+        </div>
+
+        {previewFolder && (
+          <div className="modal-overlay" role="dialog" aria-label={`${previewFolder} preview`}>
+            <div className="modal-content">
+              <button
+                onClick={closeFolderPreview}
+                className="closeButton"
+                aria-label="Close folder preview"
+              >
+                ×
+              </button>
+              <h2 className={styles.previewTitle}>{previewFolder}</h2>
+              <div className={styles.previewContent}>
+                {folderLoadingStates[previewFolder] ? (
+                  <div className={styles.loadingPreview}>
+                    <SpinnerIcon size={40} />
+                    <p>Loading contents...</p>
+                  </div>
+                ) : folderContents[previewFolder]?.files?.length > 0 ? (
+                  <div className={styles.previewGrid}>
+                    {folderContents[previewFolder].files.map((file, index) =>
+                      renderPreviewItem(file, index, previewFolder)
+                    )}
+                  </div>
+                ) : (
+                  <p>No files in this category.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {selectedMedia && (
+          <div className="modal-overlay" role="dialog" aria-label="Media player">
+            <div className="modal-content">
+              <button
+                onClick={closeMediaPlayer}
+                className="closeButton"
+                aria-label="Close media player"
+              >
+                ×
+              </button>
+              {mediaType === 'video' && (
+                <Video
+                  srcs={mediaState.srcs}
+                  currentIndex={mediaState.currentIndex}
+                  setCurrentIndex={(index) => setMediaState((prev) => ({ ...prev, currentIndex: index }))}
+                  setCurrentTimeMedia={(time) =>
+                    setMediaState((prev) => ({ ...prev, currentTimeMedia: time }))
+                  }
+                  currentTimeMedia={mediaState.currentTimeMedia}
+                  setVolumeMedia={(vol) => setMediaState((prev) => ({ ...prev, volumeMedia: vol }))}
+                  volumeMedia={mediaState.volumeMedia}
+                  setIsMutedMedia={(muted) => setMediaState((prev) => ({ ...prev, isMutedMedia: muted }))}
+                  isMutedMedia={mediaState.isMutedMedia}
+                  setIsRepeatMedia={(repeat) =>
+                    setMediaState((prev) => ({ ...prev, isRepeatMedia: repeat }))
+                  }
+                  isRepeatMedia={mediaState.isRepeatMedia}
+                  setIsLike={(like) => setMediaState((prev) => ({ ...prev, isLike: like }))}
+                  isLike={mediaState.isLike}
+                  isHybridView={mediaState.isHybridView}
+                  buttonColor="white"
+                />
+              )}
+              {mediaType === 'audio' && (
+                <div className={styles.audioPlayerWrapper}>
+                  <AudioPlayer
+                    currentIndex={mediaState.currentIndex}
+                    audioFiles={mediaState.content}
+                    className={styles.customAudioPlayer}
+                  />
+                </div>
+              )}
+              {mediaType === 'image' && (
+                <ImageSlider
+                  images={mediaState.content
+                    .filter((item) => item.src)
+                    .map((item) => formatImageUrl(item.src))}
+                  initialCurrentIndex={mediaState.currentIndex}
+                  onIndexChange={(index) => setMediaState((prev) => ({ ...prev, currentIndex: index }))}
+                  controls={{
+                    showPrevious: true,
+                    showPlayPause: true,
+                    showNext: true,
+                    showShuffle: true,
+                    showEffects: true,
+                    showDownload: true,
+                  }}
+                  timeToShow={5000}
+                  showControls={true}
+                />
+              )}
+            </div>
+          </div>
+        )}
+
+        {isModalOpen && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              {modalContent}
+              <button
+                className='closeButton'
+                onClick={() => setIsModalOpen(false)}
+                aria-label="Cerrar modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+      </Suspense>
+    </div>
   );
 };
 
@@ -585,8 +694,8 @@ export default MemoryDetail;
 
 
 
-/*/ getServerSideProps for server-side data fetching
-export async function getServerSideProps(context) {
+// getServerSideProps for server-side data fetching
+/*export async function getServerSideProps(context) {
   const { userID, memoryName } = context.query;
 
   // Validate query parameters

@@ -63,7 +63,7 @@ const VisibilityModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h3 className="title-md">Configure Memory Visibility</h3>
-        <div className="privacy-options grid">
+        <div className="privacy-options">
           <div
             className={` card ${tempVisibility === 'invitation' ? 'active' : ''}`}
             onClick={() => setTempVisibility('invitation')}
@@ -179,7 +179,7 @@ const UploadPermissionsModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h3 className="title-md">Configure Upload Permissions</h3>
-        <div className="privacy-options grid">
+        <div className="privacy-options">
           <div
             className={`card ${tempUploadVisibility === 'invitation' ? 'active' : ''}`}
             onClick={() => setTempUploadVisibility('invitation')}
@@ -294,7 +294,7 @@ const EditPermissionsModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h3 className="title-md">Configure Edit Permissions</h3>
-        <div className="privacy-options grid">
+        <div className="privacy-options">
           <div
             className={` card ${tempEditVisibility === 'invitation' ? 'active' : ''}`}
             onClick={() => setTempEditVisibility('invitation')}

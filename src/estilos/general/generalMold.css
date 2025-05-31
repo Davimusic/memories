@@ -139,7 +139,14 @@ body {
   padding: 1.5rem;
   box-shadow: var(--shadow);
   transition: var(--transition);
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribución equidistante en vertical */
+  align-items: stretch; /* Asegura que los elementos se expandan */
+  height: 100%; /* Asegura que ocupen toda la altura disponible */
 }
+
 
 /* Full width when only one content area */
 .left-container.full-width, 

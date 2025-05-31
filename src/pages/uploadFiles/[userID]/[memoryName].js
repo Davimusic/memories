@@ -4,16 +4,36 @@ import MenuIcon from '@/components/complex/menuIcon';
 import Menu from '@/components/complex/menu';
 import Modal from "@/components/complex/modal";
 import ShowHide from '@/components/complex/showHide';
+import GeneralMold from '@/components/complex/generalMold';
 import { auth } from '../../../../firebase';
 import { toast } from 'react-toastify';
 //import { onAuthStateChanged } from 'firebase/auth';
 
 import '../../../app/globals.css';
 import '../../../estilos/general/api/upload/filePermissionViewer.css'
-import '../../../estilos/general/general.css'
+//import '../../../estilos/general/general.css'
 
 
 
+
+
+
+
+
+
+const ALLOWED_EXTENSIONS = {
+  audio: ['mp3'],
+  video: ['mp4'],
+  image: ['jpg', 'jpeg', 'png', 'gif'],
+};
+
+const ALLOWED_MIME_TYPES = {
+  'audio/mp3': 'audio',
+  'video/mp4': 'video',
+  'image/jpeg': 'image',
+  'image/png': 'image',
+  'image/gif': 'image',
+};
 
 const validateFileType = (file) => {
   const extension = file.name.split('.').pop().toLowerCase();
@@ -38,7 +58,7 @@ const validateFileType = (file) => {
 
 const openDB = () =>
   new Promise((resolve, reject) => {
-    const request = indexedDB.open('uploads', 1);
+    const request = indexedDB.open('Uploads', 1);
     request.onupgradeneeded = () => {
       const db = request.result;
       db.createObjectStore('uploadTasks');
@@ -50,14 +70,12 @@ const openDB = () =>
 const generateUniqueKey = () => `${Date.now()}_${Math.random().toString(36).substring(2)}`;
 
 const storeUploadTasks = async (files, uploadInfo) => {
-  console.log('Storing upload tasks for files:', files.map(f => f.name), 'UploadInfo:', uploadInfo);
   const db = await openDB();
   const tx = db.transaction('uploadTasks', 'readwrite');
   const store = tx.objectStore('uploadTasks');
   const keys = [];
   for (const file of files) {
     const key = generateUniqueKey();
-    console.log('Storing task for file:', file.name, 'with key:', key);
     const task = {
       file,
       memoryName: uploadInfo.memoryName,
@@ -67,41 +85,20 @@ const storeUploadTasks = async (files, uploadInfo) => {
       fileType: validateFileType(file).fileType,
       fileName: file.name,
       uid: uploadInfo.uid,
-      token: uploadInfo.token
+      token: uploadInfo.token,
     };
     await new Promise((resolve) => {
       const req = store.put(task, key);
-      req.onsuccess = () => {
-        console.log('Stored task for key:', key);
-        resolve();
-      };
+      req.onsuccess = () => resolve();
       req.onerror = () => console.error('Error storing task for key:', key);
     });
     keys.push(key);
   }
   await new Promise((resolve) => {
-    tx.oncomplete = () => {
-      console.log('Transaction completed, stored keys:', keys);
-      resolve();
-    };
+    tx.oncomplete = () => resolve();
   });
   db.close();
-  console.log('Returning keys:', keys);
   return keys;
-};
-
-const ALLOWED_EXTENSIONS = {
-  audio: ['mp3'],
-  video: ['mp4'],
-  image: ['jpg', 'jpeg', 'png', 'gif'],
-};
-
-const ALLOWED_MIME_TYPES = {
-  'audio/mp3': 'audio',
-  'video/mp4': 'video',
-  'image/jpeg': 'image',
-  'image/png': 'image',
-  'image/gif': 'image',
 };
 
 const formatFileSize = (bytes) => {
@@ -112,9 +109,78 @@ const formatFileSize = (bytes) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-const DirectBunnyUploader = () => {
+// Add getServerSideProps to fetch memory data
+export async function getServerSideProps(context) {
+  const { userID, memoryName } = context.query;
+
+  if (!userID || !memoryName) {
+    return {
+      props: {
+        error: 'Missing userID or memoryName',
+      },
+    };
+  }
+
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const res = await fetch(`${apiUrl}/api/mongoDb/postMemoryReferenceUser`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userID, memoryTitle: memoryName }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+      setError(res.status)
+    }
+
+    const mongoData = await res.json();
+
+    if (!mongoData.success) {
+      throw new Error('Failed to load memory data');
+    }
+
+    const formattedData = {
+      ...mongoData.memory,
+      ownerEmail: mongoData.ownerEmail,
+      metadata: {
+        ...mongoData.memory.metadata,
+        createdAt: mongoData.memory.metadata.createdAt
+          ? new Date(mongoData.memory.metadata.createdAt).toISOString()
+          : null,
+        lastUpdated: mongoData.memory.metadata.lastUpdated
+          ? new Date(mongoData.memory.metadata.lastUpdated).toISOString()
+          : null,
+      },
+      access: mongoData.memory.access || {},
+      media: {
+        photos: mongoData.memory.media.photos || [],
+        videos: mongoData.memory.media.videos || [],
+        audios: mongoData.memory.media.audios || [],
+        documents: mongoData.memory.media.documents || [],
+      },
+    };
+
+    return {
+      props: {
+        initialMemoryData: formattedData,
+        userID,
+        memoryName,
+      },
+    };
+  } catch (err) {
+    console.error('getServerSideProps error:', err.message);
+    return {
+      props: {
+        error: err.message || 'Failed to fetch memory data',
+      },
+    };
+  }
+}
+
+const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: initialError }) => {
   const router = useRouter();
-  const { userID, memoryName } = router.query;
+  const { folderName: queryFolderName } = router.query;
   const notifySuccess = (message) => toast.success(message);
   const notifyFailes = (message) => toast.error(message);
 
@@ -124,16 +190,18 @@ const DirectBunnyUploader = () => {
   const [files, setFiles] = useState([]);
   const [uploadStatus, setUploadStatus] = useState('');
   const [uploadResults, setUploadResults] = useState([]);
-  const [folderName, setFolderName] = useState('');
+  const [folderName, setFolderName] = useState(queryFolderName || '');
   const [isLoading, setIsLoading] = useState(false);
   const [existingFiles, setExistingFiles] = useState([]);
   const [totalSize, setTotalSize] = useState('0 Bytes');
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [activeFileType, setActiveFileType] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [invalidFilesError, setInvalidFilesError] = useState(null);
   const [isServiceWorkerReady, setIsServiceWorkerReady] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [roll, setRoll] = useState('false'); // Add roll state
+  const [error, setError] = useState(initialError);
+  const [memoryData, setMemoryData] = useState(initialMemoryData);
 
   const audioInputRef = useRef(null);
   const videoInputRef = useRef(null);
@@ -166,6 +234,62 @@ const DirectBunnyUploader = () => {
     return () => unsubscribe();
   }, [router]);
 
+  // Role-checking logic similar to MemoryDetail
+  useEffect(() => {
+    if (!memoryData || !userEmail) return;
+
+    const checkViewPermissions = () => {
+      const viewAccess = memoryData.access?.view;
+      if (!viewAccess) {
+        setError('Invalid access configuration');
+        return;
+      }
+
+      const { visibility, invitedEmails = [] } = viewAccess;
+      const currentPath = router.asPath;
+
+      if (visibility === 'public') {
+        setRoll('Anyone can upload memories');
+        return;
+      }
+
+      if (!userEmail) {
+        localStorage.setItem('redirectPath', currentPath);
+        localStorage.setItem('reason', 'userEmailValidationOnly');
+        router.push('/login');
+        return;
+      }
+
+      const transformEmail = (email) => email.replace(/[@.]/g, '_');
+      const currentUserTransformed = transformEmail(userEmail);
+      const ownerTransformed = transformEmail(memoryData.ownerEmail);
+
+      if (visibility === 'private') {
+        if (currentUserTransformed === ownerTransformed) {
+          setRoll('You are the owner');
+          return;
+        }
+        setRoll('User not allowed');
+        setMemoryData(null);
+        setError('User not allowed');
+        return;
+      }
+
+      if (visibility === 'invitation') {
+        const transformedInvites = invitedEmails.map(transformEmail);
+        if (transformedInvites.includes(currentUserTransformed)) {
+          setRoll('Invited to upload memories');
+          return;
+        }
+        setRoll('User not allowed');
+        setMemoryData(null);
+        setError('User not allowed');
+      }
+    };
+
+    checkViewPermissions();
+  }, [memoryData, userEmail, router]);
+
   useEffect(() => {
     const registerServiceWorker = async () => {
       if ('serviceWorker' in navigator) {
@@ -176,8 +300,6 @@ const DirectBunnyUploader = () => {
           }
 
           const registration = await navigator.serviceWorker.register('/service-worker.js');
-          console.log('Service Worker registered');
-
           if (registration.active) {
             setIsServiceWorkerReady(true);
           } else {
@@ -197,17 +319,7 @@ const DirectBunnyUploader = () => {
     };
 
     registerServiceWorker();
-
-    const path = window.location.pathname;
-    const parts = path.split('/');
-    if (parts.length > 2) {
-      setFolderName(parts[1]);
-    }
-  }, [router]);
-
-  useEffect(() => {
-    console.log({ userID, memoryName, userEmail, folderName });
-  }, [userID, memoryName, userEmail, folderName]);
+  }, []);
 
   useEffect(() => {
     const handleServiceWorkerMessage = (event) => {
@@ -235,21 +347,21 @@ const DirectBunnyUploader = () => {
       const allowedFormats = {
         image: 'JPEG, PNG, GIF',
         video: 'MP4',
-        audio: 'MP3'
+        audio: 'MP3',
       }[fileType];
       setInvalidFilesError({
-        title: `Archivos ${fileType} inválidos detectados`,
-        message: `Los archivos seleccionados contienen formatos no soportados.`,
-        allowed: `Formatos permitidos: ${allowedFormats}`
+        title: `Invalid ${fileType} files detected`,
+        message: `The selected files contain unsupported formats.`,
+        allowed: `Allowed formats: ${allowedFormats}`,
       });
       return;
     }
 
-    const filesWithPreview = selectedFiles.map(file => ({
+    const filesWithPreview = selectedFiles.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
       type: fileType,
-      id: `${file.name}_${file.lastModified}_${file.size}`
+      id: `${file.name}_${file.lastModified}_${file.size}`,
     }));
 
     setFiles((prevFiles) => {
@@ -263,7 +375,7 @@ const DirectBunnyUploader = () => {
   };
 
   const removeFile = (index) => {
-    setFiles(prev => {
+    setFiles((prev) => {
       const updatedFiles = [...prev];
       const [removedFile] = updatedFiles.splice(index, 1);
       URL.revokeObjectURL(removedFile.preview);
@@ -280,12 +392,17 @@ const DirectBunnyUploader = () => {
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!files.length || !memoryName || !userEmail || !folderName) {
-      console.log('Missing parameters:', { files: files.length, memoryName, userEmail, folderName });
-      setUploadStatus('Faltan parámetros: archivo, memoria, email o carpeta');
+      setUploadStatus('Missing parameters: file, memory, email, or folder');
       return;
     }
 
-    setUploadStatus('Preparando subida...');
+    // Check if user is allowed to upload
+    if (roll === 'User not allowed') {
+      setUploadStatus('You do not have permission to upload files.');
+      return;
+    }
+
+    setUploadStatus('Preparing upload...');
     setIsLoading(true);
 
     try {
@@ -295,19 +412,18 @@ const DirectBunnyUploader = () => {
         folderName,
         currentUser: userEmail,
         uid,
-        token
+        token,
       };
 
       if (navigator.serviceWorker.controller) {
-        const taskKeys = await storeUploadTasks(files.map(f => f.file), uploadInfo);
-        console.log('Sending taskKeys to service worker:', taskKeys);
+        const taskKeys = await storeUploadTasks(files.map((f) => f.file), uploadInfo);
         navigator.serviceWorker.controller.postMessage({
           type: 'START_UPLOADS',
           keys: taskKeys,
         });
-        setUploadStatus('Subida iniciada en segundo plano');
+        setUploadStatus('Upload started in background');
       } else {
-        setUploadStatus('Service Worker no activo, subiendo directamente...');
+        setUploadStatus('Service Worker not active, uploading directly...');
         for (const file of files) {
           const authResponse = await fetch(
             `/api/bunny/secureUpload?memoryName=${encodeURIComponent(memoryName)}&userID=${userID}`,
@@ -320,7 +436,7 @@ const DirectBunnyUploader = () => {
                 fileType: file.type,
                 fileName: file.file.name,
                 token,
-                uid
+                uid,
               }),
             }
           );
@@ -336,14 +452,14 @@ const DirectBunnyUploader = () => {
 
           if (!uploadResponse.ok) throw new Error('Upload failed');
         }
-        setUploadStatus('Subida completada directamente');
+        setUploadStatus('Upload completed directly');
       }
 
       setFiles([]);
       setTotalSize('0 Bytes');
       setIsModalOpen(true);
     } catch (error) {
-      setUploadStatus(`Error al preparar la subida: ${error.message}`);
+      setUploadStatus(`Upload preparation error: ${error.message}`);
       console.error('Upload error:', error);
     } finally {
       setIsLoading(false);
@@ -363,10 +479,7 @@ const DirectBunnyUploader = () => {
     };
 
     return (
-      <div 
-        className={`file-counter color2 ${count > 0 ? 'has-files' : ''}`}
-        onClick={handleClick}
-      >
+      <div className={`file-counter color2 ${count > 0 ? 'has-files' : ''}`} onClick={handleClick}>
         <span className="counter-badge color2">{count}</span>
         <span className="counter-label color2">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
       </div>
@@ -375,33 +488,21 @@ const DirectBunnyUploader = () => {
 
   const renderPreviewItem = (file, index) => {
     const uniqueKey = `${file.file.name}_${file.file.lastModified}_${file.file.size}`;
-    
+
     return (
       <div key={uniqueKey} className="preview-item">
         <div className="media-container">
           {file.type === 'image' && (
-            <img 
-              src={file.preview} 
-              alt="Preview" 
-              className="media-preview"
-            />
+            <img src={file.preview} alt="Preview" className="media-preview" />
           )}
           {file.type === 'video' && (
             <div className="video-wrapper">
-              <video 
-                controls
-                src={file.preview}
-                className="media-preview"
-              />
+              <video controls src={file.preview} className="media-preview" />
             </div>
           )}
           {file.type === 'audio' && (
             <div className="audio-wrapper audio-preview-container">
-              <audio
-                controls
-                src={file.preview}
-                className="audio-preview"
-              />
+              <audio controls src={file.preview} className="audio-preview" />
               <div className="audio-meta">
                 {file.file.name} ({(file.file.size / 1024 / 1024).toFixed(2)} MB)
               </div>
@@ -409,8 +510,8 @@ const DirectBunnyUploader = () => {
           )}
         </div>
         <div className="file-meta">
-          <button 
-            className="closeXButton"
+          <button
+            className="closeButton"
             onClick={(e) => {
               e.stopPropagation();
               removeFile(index);
@@ -424,336 +525,321 @@ const DirectBunnyUploader = () => {
     );
   };
 
+  // Modified leftContent to include role
+  const leftContent = (
+    <div className="file-section-containerDetails p-3">
+      <div className="section-header">
+        <h3 className="title-md">Memory Details</h3>
+      </div>
+      <div className="permission-details">
+        <div className="permission-item">
+          <span className="permission-label">Role:</span>
+          <span className={`permission-value ${roll === 'User not allowed' ? 'alertColor' : ''}`}>
+            {roll}
+          </span>
+        </div>
+        {roll === 'User not allowed' && (
+          <p className="alertColor">
+            If you believe this is a mistake, please contact the account owner.
+          </p>
+        )}
+        <div className="permission-item">
+          <span className="permission-label">User:</span>
+          <span className="permission-value">{userEmail || 'Loading...'}</span>
+        </div>
+        <div className="permission-item">
+          <span className="permission-label">Total Size:</span>
+          <span className="permission-value">{totalSize}</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Right Content remains mostly unchanged
+  const rightContent = (
+    <div className="uploader-content p-3">
+      <form onSubmit={handleUpload} className="memory-form">
+        {uploadStatus && <div className="error-message">{uploadStatus}</div>}
+
+        <div className="file-sections">
+          <div className="file-section-container">
+            <div className="section-header">
+              <h3 className="title-md">Photos</h3>
+              <div className="section-controls">
+                <div className="counter-and-preview">
+                  {files.filter((f) => f.type === 'image').length > 0 && (
+                    <>
+                      <span className="file-count-badge">
+                        {files.filter((f) => f.type === 'image').length}
+                      </span>
+                      <ShowHide
+                        onClick={() => {
+                          setActiveFileType('image');
+                          setIsPreviewModalOpen(true);
+                        }}
+                        isVisible={isPreviewModalOpen && activeFileType === 'image'}
+                        size={20}
+                      />
+                    </>
+                  )}
+                </div>
+                <button
+                  className="add button2"
+                  type="button"
+                  onClick={triggerImageInput}
+                  disabled={isLoading || roll === 'User not allowed'}
+                  aria-label="Add image files"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => handleFileChange(e, 'image')}
+              accept="image/jpeg,image/png,image/gif"
+              ref={imageInputRef}
+              id="image-input"
+              hidden
+              aria-label="Select image files"
+            />
+          </div>
+
+          <div className="file-section-container">
+            <div className="section-header">
+              <h3 className="title-md">Videos</h3>
+              <div className="section-controls">
+                <div className="counter-and-preview">
+                  {files.filter((f) => f.type === 'video').length > 0 && (
+                    <>
+                      <span className="file-count-badge">
+                        {files.filter((f) => f.type === 'video').length}
+                      </span>
+                      <ShowHide
+                        onClick={() => {
+                          setActiveFileType('video');
+                          setIsPreviewModalOpen(true);
+                        }}
+                        isVisible={isPreviewModalOpen && activeFileType === 'video'}
+                        size={20}
+                      />
+                    </>
+                  )}
+                </div>
+                <button
+                  className="add button2"
+                  type="button"
+                  onClick={triggerVideoInput}
+                  disabled={isLoading || roll === 'User not allowed'}
+                  aria-label="Add video files"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => handleFileChange(e, 'video')}
+              accept="video/mp4"
+              ref={videoInputRef}
+              id="video-input"
+              hidden
+              aria-label="Select video files"
+            />
+          </div>
+
+          <div className="file-section-container">
+            <div className="section-header">
+              <h3 className="title-md">Audios</h3>
+              <div className="section-controls">
+                <div className="counter-and-preview">
+                  {files.filter((f) => f.type === 'audio').length > 0 && (
+                    <>
+                      <span className="file-count-badge">
+                        {files.filter((f) => f.type === 'audio').length}
+                      </span>
+                      <ShowHide
+                        onClick={() => {
+                          setActiveFileType('audio');
+                          setIsPreviewModalOpen(true);
+                        }}
+                        isVisible={isPreviewModalOpen && activeFileType === 'audio'}
+                        size={20}
+                      />
+                    </>
+                  )}
+                </div>
+                <button
+                  className="add button2"
+                  type="button"
+                  onClick={triggerAudioInput}
+                  disabled={isLoading || roll === 'User not allowed'}
+                  aria-label="Add audio files"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => handleFileChange(e, 'audio')}
+              accept="audio/mp3"
+              ref={audioInputRef}
+              id="audio-input"
+              hidden
+              aria-label="Select audio files"
+            />
+          </div>
+        </div>
+
+        {files.length > 0 && (
+          <button
+            type="submit"
+            disabled={isLoading || !isServiceWorkerReady || roll === 'User not allowed'}
+            className={`submit-btn button2 ${isLoading ? 'uploading' : ''}`}
+            aria-label="Upload selected files"
+          >
+            {isLoading ? 'Preparing...' : `Upload ${files.length} File(s)`}
+          </button>
+        )}
+      </form>
+
+      <div className="file-section-container m-3">
+        {isLoading ? (
+          <p className="content-default">Loading files...</p>
+        ) : existingFiles.length === 0 ? (
+          <p className="content-default"></p>
+        ) : (
+          <div className="preview-grid">
+            {existingFiles.map((file, index) => {
+              const ext = file.name.split('.').pop().toLowerCase();
+              const isImage = ALLOWED_EXTENSIONS.image.includes(ext);
+              const isAudio = ALLOWED_EXTENSIONS.audio.includes(ext);
+              const isVideo = ALLOWED_EXTENSIONS.video.includes(ext);
+
+              return (
+                <div key={index} className="preview-item">
+                  <div className="media-container">
+                    {isImage && <img src={file.url} alt={file.name} className="media-preview" />}
+                    {isAudio && (
+                      <div className="audio-wrapper audio-preview-container">
+                        <audio controls src={file.url} className="audio-preview" />
+                        <div className="audio-meta">{file.name}</div>
+                      </div>
+                    )}
+                    {isVideo && (
+                      <div className="video-wrapper">
+                        <video controls src={file.url} className="media-preview" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {uploadResults.length > 0 && (
+        <div className="file-section-container m-3">
+          <div className="section-header">
+            <h3 className="title-md">Upload Results</h3>
+          </div>
+          <div className="preview-grid">
+            {uploadResults.map((result, index) => (
+              <div key={index} className="preview-item">
+                <div className="media-container">
+                  <p className="font-medium truncate">{result.file}</p>
+                  <div className="content-small m-1">
+                    {result.status === 'fulfilled' ? (
+                      <div className="text-green-600">
+                        ✅ Uploaded successfully
+                        <div className="content-small break-all">{result.data.url}</div>
+                      </div>
+                    ) : (
+                      <div className="text-red-600">❌ Error: {result.data.message}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  
+
   return (
-    <div className="fullscreen-floating mainFont backgroundColor1 color2">
-      <Menu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} className='backgroundColor1' />
+    <>
+      <GeneralMold
+        pageTitle={memoryName || 'Upload Files'}
+        pageDescription="Upload photos, videos, and audios for your memories."
+        leftContent={leftContent}
+        rightContent={rightContent}
+        visibility="private"
+        metaKeywords="file upload, media, photos, videos, audios"
+        metaAuthor={userEmail || 'User'}
+        error={error}
+      />
 
       <Modal isOpen={!!invalidFilesError} onClose={() => setInvalidFilesError(null)}>
-        <div className="modal-content">
-          <h3>{invalidFilesError?.title}</h3>
-          <p>{invalidFilesError?.message}</p>
-          <p style={{color: '#4CAF50'}}>{invalidFilesError?.allowed}</p>
-          <button 
-            className='add' 
-            onClick={() => setInvalidFilesError(null)}
-          >
-            Cerrar
+        <div className="modal-content card p-3">
+          <h3 className="title-md">{invalidFilesError?.title}</h3>
+          <p className="content-default">{invalidFilesError?.message}</p>
+          <p className="content-default" style={{ color: '#4CAF50' }}>
+            {invalidFilesError?.allowed}
+          </p>
+          <button className="button2" onClick={() => setInvalidFilesError(null)}>
+            Close
           </button>
         </div>
       </Modal>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div className="modal-content">
-          <h3>{uploadStatus}</h3>
-          <button className='add' onClick={() => setIsModalOpen(false)}>Cerrar</button>
+        <div className="modal-content card p-3">
+          <h3 className="title-md">{uploadStatus}</h3>
+          <button className="button2" onClick={() => setIsModalOpen(false)}>
+            Close
+          </button>
         </div>
       </Modal>
 
       {isPreviewModalOpen && (
-        <div className="preview-modal-overlay" onClick={() => setIsPreviewModalOpen(false)}>
-          <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => setIsPreviewModalOpen(false)}>
+          <div className="modal-content card p-3" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3 className='color1'>{activeFileType?.toUpperCase()}</h3>
-              <button 
-                className="closeXButton"
+              <h3 className="title-md color1">{activeFileType?.toUpperCase()}</h3>
+              <button
+                className="closeButton"
                 onClick={() => setIsPreviewModalOpen(false)}
                 aria-label="Close preview modal"
               >
                 ×
               </button>
             </div>
-            {files.filter(f => f.type === activeFileType).length > 0 ? (
-              <div className='scroll-preview'>
+            {files.filter((f) => f.type === activeFileType).length > 0 ? (
+              <div className="scroll-preview">
                 <div className="preview-grid">
-                  {files.filter(f => f.type === activeFileType).map((file, index) => 
-                    renderPreviewItem(file, index)
-                  )}
+                  {files
+                    .filter((f) => f.type === activeFileType)
+                    .map((file, index) => renderPreviewItem(file, index))}
                 </div>
               </div>
             ) : (
-              <div className="empty-state">
-                <p>No hay archivos para mostrar</p>
+              <div className="empty-state p-3">
+                <p className="content-default">No files to display</p>
               </div>
             )}
           </div>
         </div>
       )}
-
-      <div className="file-uploader">
-        <div className="header-container" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <MenuIcon onClick={() => setIsMenuOpen(true)} style={{ zIndex: 10 }} />
-          <h2 className="title"> {memoryName}</h2>
-        </div>
-
-        <div className="uploader-content">
-          <div className="">
-            <div className="file-section-containerDetails">
-              <div className="section-header">
-                <h3>Detalles de la Memoria</h3>
-              </div>
-              <div className="permission-details">
-                <div className="permission-item">
-                  <span className="permission-label">Usuario:</span>
-                  <span className="permission-value">{userEmail}</span>
-                </div>
-                
-                <div className="permission-item">
-                  <span className="permission-label">Tamaño Total:</span>
-                  <span className="permission-value">{totalSize}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="">
-            <form onSubmit={handleUpload} className="memory-form">
-              {uploadStatus && <div className="error-message">{uploadStatus}</div>}
-
-              <div className="file-sections">
-                <div className="file-section-container">
-                  <div className="section-header">
-                    <h3>Fotos</h3>
-                    <div className="section-controls">
-                      <div className="counter-and-preview">
-                        {files.filter(f => f.type === 'image').length > 0 && (
-                          <>
-                            <span className="file-count-badge">
-                              {files.filter(f => f.type === 'image').length}
-                            </span>
-                            <ShowHide 
-                              onClick={() => {
-                                setActiveFileType('image');
-                                setIsPreviewModalOpen(true);
-                              }}
-                              isVisible={isPreviewModalOpen && activeFileType === 'image'}
-                              size={20}
-                            />
-                          </>
-                        )}
-                      </div>
-                      <button 
-                        className='add'
-                        type="button"
-                        onClick={triggerImageInput}
-                        disabled={isLoading}
-                        aria-label="Add image files"
-                      >
-                        Añadir
-                      </button>
-                    </div>
-                  </div>
-                  <input
-                    type="file"
-                    multiple
-                    onChange={(e) => handleFileChange(e, 'image')}
-                    accept="image/jpeg,image/png,image/gif"
-                    ref={imageInputRef}
-                    id="image-input"
-                    hidden
-                    aria-label="Select image files"
-                  />
-                </div>
-
-                <div className="file-section-container">
-                  <div className="section-header">
-                    <h3>Videos</h3>
-                    <div className="section-controls">
-                      <div className="counter-and-preview">
-                        {files.filter(f => f.type === 'video').length > 0 && (
-                          <>
-                            <span className="file-count-badge">
-                              {files.filter(f => f.type === 'video').length}
-                            </span>
-                            <ShowHide 
-                              onClick={() => {
-                                setActiveFileType('video');
-                                setIsPreviewModalOpen(true);
-                              }}
-                              isVisible={isPreviewModalOpen && activeFileType === 'video'}
-                              size={20}
-                            />
-                          </>
-                        )}
-                      </div>
-                      <button 
-                        className='add'
-                        type="button"
-                        onClick={triggerVideoInput}
-                        disabled={isLoading}
-                        aria-label="Add video files"
-                      >
-                        Añadir
-                      </button>
-                    </div>
-                  </div>
-                  <input
-                    type="file"
-                    multiple
-                    onChange={(e) => handleFileChange(e, 'video')}
-                    accept="video/mp4"
-                    ref={videoInputRef}
-                    id="video-input"
-                    hidden
-                    aria-label="Select video files"
-                  />
-                </div>
-
-                <div className="file-section-container">
-                  <div className="section-header">
-                    <h3>Audios</h3>
-                    <div className="section-controls">
-                      <div className="counter-and-preview">
-                        {files.filter(f => f.type === 'audio').length > 0 && (
-                          <>
-                            <span className="file-count-badge">
-                              {files.filter(f => f.type === 'audio').length}
-                            </span>
-                            <ShowHide 
-                              onClick={() => {
-                                setActiveFileType('audio');
-                                setIsPreviewModalOpen(true);
-                              }}
-                              isVisible={isPreviewModalOpen && activeFileType === 'audio'}
-                              size={20}
-                            />
-                          </>
-                        )}
-                      </div>
-                      <button 
-                        className='add'
-                        type="button"
-                        onClick={triggerAudioInput}
-                        disabled={isLoading}
-                        aria-label="Add audio files"
-                      >
-                        Añadir
-                      </button>
-                    </div>
-                  </div>
-                  <input
-                    type="file"
-                    multiple
-                    onChange={(e) => handleFileChange(e, 'audio')}
-                    accept="audio/mp3"
-                    ref={audioInputRef}
-                    id="audio-input"
-                    hidden
-                    aria-label="Select audio files"
-                  />
-                </div>
-              </div>
-
-              <button 
-                type="submit" 
-                disabled={isLoading || !files.length || !isServiceWorkerReady}
-                className={`submit-btn ${isLoading ? 'uploading' : ''}`}
-                aria-label="Upload selected files"
-              >
-                {isLoading ? 'Preparando...' : `Subir ${files.length} Archivo(s)`}
-              </button>
-            </form>
-          </div>
-        </div>
-
-        <div className="file-section-container mt-6">
-          {isLoading ? (
-            <p>Cargando archivos...</p>
-          ) : existingFiles.length === 0 ? (
-            <p></p>
-          ) : (
-            <div className="preview-grid">
-              {existingFiles.map((file, index) => {
-                const ext = file.name.split('.').pop().toLowerCase();
-                const isImage = ALLOWED_EXTENSIONS.image.includes(ext);
-                const isAudio = ALLOWED_EXTENSIONS.audio.includes(ext);
-                const isVideo = ALLOWED_EXTENSIONS.video.includes(ext);
-
-                return (
-                  <div key={index} className="preview-item">
-                    <div className="media-container">
-                      {isImage && (
-                        <img
-                          src={file.url}
-                          alt={file.name}
-                          className="media-preview"
-                        />
-                      )}
-                      {isAudio && (
-                        <div className="audio-wrapper audio-preview-container">
-                          <audio
-                            controls
-                            src={file.url}
-                            className="audio-preview"
-                          />
-                          <div className="audio-meta">
-                            {file.name}
-                          </div>
-                        </div>
-                      )}
-                      {isVideo && (
-                        <div className="video-wrapper">
-                          <video
-                            controls
-                            src={file.url}
-                            className="media-preview"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {uploadResults.length > 0 && (
-          <div className="file-section-container mt-6">
-            <div className="section-header">
-              <h3>Resultados de Subida</h3>
-            </div>
-            <div className="preview-grid">
-              {uploadResults.map((result, index) => (
-                <div key={index} className="preview-item">
-                  <div className="media-container">
-                    <p className="font-medium truncate">{result.file}</p>
-                    <div className="text-sm mt-1">
-                      {result.status === 'fulfilled' ? (
-                        <div className="text-green-600">
-                          ✅ Subido correctamente
-                          <div className="text-xs break-all">{result.data.url}</div>
-                        </div>
-                      ) : (
-                        <div className="text-red-600">❌ Error: {result.data.message}</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    </>
   );
 };
 
 export default DirectBunnyUploader;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

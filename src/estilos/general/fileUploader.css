@@ -73,6 +73,7 @@
   flex: 1;
   gap: 24px;
   overflow: hidden;
+  height: 100%;
 }
 
 /* Left Column - Form Inputs */

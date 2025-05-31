@@ -12,8 +12,8 @@ const BackgroundGeneric = ({
 }) => {
   // Definimos nuestros degradados directamente en un array
   const backgroundGradients = [
-    "linear-gradient(135deg, var(--backgroundColor1), var(--backgroundColor2))",
-    "linear-gradient(135deg, var(--backgroundColor2), var(--gradient-color1))",
+    "linear-gradient(135deg, var(--bg-secondary), var(--gradient-color1))",
+    "linear-gradient(135deg, var(--bg-primary), var(--gradient-color1))",
     "linear-gradient(135deg, var(--backgroundColor3), var(--gradient-color2))",
     "linear-gradient(135deg, var(--backgroundColor4), var(--gradient-color3))",
     "linear-gradient(135deg, var(--backgroundColor5), var(--gradient-color4))"

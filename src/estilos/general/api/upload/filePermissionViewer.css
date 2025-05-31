@@ -1,82 +1,61 @@
-.fullscreen-floating {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: auto;
-  padding: 20px;
-}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
-.file-uploader {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 95%;
-  max-width: 1200px;
-  min-height: 70vh;
-  padding: 20px;
-  margin: 0;
-  border-radius: 0.7em;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  background-color: var(--backgroundColor5);
-}
-
-.uploader-content {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 2rem;
-  padding: 1.5rem;
-  height: 60vh;
-}
-
+/* Permission Details */
 .permission-details {
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   margin-top: 1rem;
+  height: 100%;
+  justify-content: space-around; /* O space-evenly / center según la necesidad */
 }
+
+
 
 .permission-item {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color4);
+  border-bottom: 1px solid var(--text-muted);
 }
 
 .permission-label {
   font-weight: 600;
   font-size: 0.9rem;
   margin-bottom: 0.3rem;
-  color: var(--color2);
+  color: var(--accent);
 }
 
 .permission-value {
   display: block;
   padding: 0.6rem;
   font-size: 0.95rem;
-  color: var(--color5);
+  color: var(--text-secondary);
 }
 
-.form-column {
-  height: 100%;
-  padding: 1.5rem;
-  overflow-y: auto;
-  background-color: var(--backgroundColor5); /* Changed to match parent background */
-  position: relative; /* Added for button positioning */
-}
-
-.memory-form {
-  height: 100%;
+.uploader-content{
   display: flex;
   flex-direction: column;
-  position: relative;
-  padding-bottom: 60px; /* Space for button */
+  gap: 1rem;
+  margin-top: 1rem;
+  height: 100%;
+  justify-content: space-between; 
+}
+
+/* Form and File Sections */
+.memory-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
 }
 
 .file-sections {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  flex: 1; /* Take available space */
+  margin-top: 1rem;
+  height: 100%;
+  justify-content: space-between; 
 }
 
 .file-section-container {
@@ -84,8 +63,13 @@
 }
 
 .file-section-containerDetails {
-  padding-right: 50%;
+  display: flex;
+  flex-direction: column; /* Asegura distribución vertical */
+  gap: 1rem; /* Espacio entre elementos */
+  padding: 1rem;
+  height: 100%;
 }
+
 
 .section-header {
   display: flex;
@@ -96,35 +80,23 @@
 
 .section-header h3 {
   margin: 0;
-  color: var(--color2);
+  color: var(--accent);
   font-size: 1.1rem;
 }
 
-.submitButton {
-  background: #2ecc71;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 16px;
+.submit-btn {
+  padding: 0.75rem 1.5rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  box-sizing: border-box;
 }
 
-.submitButton:hover {
-  background: #27ae60;
-}
-
-.submitButton:disabled {
-  background: #95a5a6;
+.submit-btn:disabled {
+  background: var(--text-muted);
   cursor: not-allowed;
 }
 
 .section-controls {
   display: flex;
-  gap: 20px;
+  gap: 1rem;
   align-items: center;
 }
 
@@ -132,7 +104,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: var(--transition);
 }
 
 .file-counter.has-files:hover {
@@ -140,8 +112,8 @@
 }
 
 .counter-badge {
-  background: var(--color2);
-  color: var(--backgroundColor1);
+  background: var(--accent);
+  color: white;
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -156,48 +128,7 @@
   font-size: 0.9rem;
 }
 
-.title {
-  display: flex;
-  justify-content: center; 
-  width: 100%;
-  margin-left: -40px;
-}
-
-.preview-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.preview-modal {
-  background: var(--backgroundColor1);
-  padding: 2rem;
-  border-radius: 10px;
-  max-width: 90%;
-  width: 1200px;
-  max-height: 90vh;
-  animation: modalFadeIn 0.3s ease forwards;
-}
-
-.modal-header {
-  position: sticky;
-  top: 0;
-  background: var(--backgroundColor1);
-  z-index: 2;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--color4);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
+/* Preview Modal */
 .preview-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -207,15 +138,16 @@
 
 .scroll-preview {
   overflow-y: auto;
-  height: 70vh;
+  height: calc(100vh - 150px);
 }
+
 
 .preview-item {
   position: relative;
-  border: 1px solid var(--color4);
+  border: 1px solid var(--text-muted);
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.2s;
+  transition: var(--transition);
 }
 
 .preview-item:hover {
@@ -257,9 +189,9 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 10px;
+  height: 40px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
 }
 
@@ -279,52 +211,31 @@
 .empty-state {
   padding: 2rem;
   text-align: center;
-  color: var(--color4);
+  color: var(--text-muted);
   font-style: italic;
 }
 
 .counter-and-preview {
   display: flex;
   gap: 20px;
+  width: 50px;
 }
 
 .error-message {
-  color: #e74c3c;
+  color: var(--error);
   margin-bottom: 1rem;
   font-size: 0.9rem;
 }
 
+/* Responsive Adjustments */
 @media (max-width: 768px) {
   .file-section-containerDetails {
-    padding: 0;
-  }
-
-  .uploader-content {
-    grid-template-columns: 1fr;
-    padding: 0;
-    margin: 0;
+    padding: 0.5rem;
   }
 
   .permission-details {
     max-height: 30vh;
     overflow-y: auto;
-  }
-
-  .form-column {
-    height: 60vh;
-  }
-
-  .file-section-container {
-    background-color: #ffffff00;
-  }
-
-  .file-uploader {
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-    padding: 10px;
-    box-sizing: border-box;
-    border-radius: 0;
   }
 
   .preview-grid {
@@ -333,11 +244,6 @@
 
   .media-container {
     height: 150px;
-  }
-
-  .title {
-    margin-left: 0;
-    font-size: 1.2rem;
   }
 }
 
@@ -349,9 +255,4 @@
   .media-container {
     height: 200px;
   }
-}
-
-@keyframes modalFadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
 }

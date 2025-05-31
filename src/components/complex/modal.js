@@ -100,16 +100,9 @@ const Modal = ({ isOpen, onClose, children, style, className }) => {
           borderTopRightRadius: '8px',
         }}>
           <button 
-            className='color2' 
+            className='closeButton' 
             onClick={handleClose} 
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '32px',
-              cursor: 'pointer',
-              padding: '0 10px',
-              lineHeight: '1',
-            }}
+            
             aria-label="Cerrar modal"
           >
             ×

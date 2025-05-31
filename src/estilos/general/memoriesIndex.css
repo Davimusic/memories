@@ -25,10 +25,12 @@
   border-collapse: collapse;
 }
 
-.scrollTable{
-    border-radius: 0.7em;
-    max-height: 50vh;
-    overflow: auto;
+.scrollTable {
+  flex: 1;          /* Crece para ocupar el máximo espacio disponible */
+  overflow: auto;   /* Permite scroll cuando el contenido excede el espacio disponible */
+  border-radius: 0.7em;
+  /* Si deseas limitar la altura máxima a algo relativo al viewport, puedes usar max-height adicional */
+  /* max-height: 100%;  En este caso, es redundante porque se hereda el tamaño del contenedor */
 }
 
 .table-header {
@@ -88,6 +90,23 @@
   margin-right: 0.5rem;
 }
 
+
+
+.accionsContainer {
+  display: flex;
+  justify-content:  space-between; /* Espacio igual entre cada elemento */
+}
+
+.no-memories {
+  height: 100%;
+      /* Hace que el elemento se posicione relativo a la ventana */
+  
+}
+
+
+
+
+
 /* Responsive adjustments for tables */
 @media (max-width: 1000px) {
   .controls-container {
@@ -114,7 +133,7 @@
     border-radius: 0.5rem;
     margin-bottom: 1rem;
     padding: 1rem;
-    box-shadow: var(--shadow);
+    /*box-shadow: var(--shadow);*/
   }
 
   .table-cell {

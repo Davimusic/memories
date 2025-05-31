@@ -76,6 +76,11 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
         return;
       }
 
+      /*console.log(userEmail);
+      console.log(uid);
+      console.log(token);*/
+      
+
       try {
         const response = await fetch('/api/mongoDb/getAllReferencesUser', {
           method: 'POST',
@@ -83,6 +88,8 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
           body: JSON.stringify({ userId: userEmail, uid, token }),
         });
 
+        console.log(response);
+        
         if (!response.ok) {
           if (response.status === 404) {
             setMemoriesState({});
@@ -204,9 +211,16 @@ const leftContent = loading ? (
 ) : (
   <section className="memories-section" style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
     <h1 className="visually-hidden">Your Memories</h1>
-    <div className="flex-column controls-container">
+    <button
+            className={`button2 rounded p-2 ${filteredMemories.length === 0 ? 'backgroundColor2' : ''}`}
+            onClick={handleCreateMemory}
+            aria-label="Create new memory"
+          >
+            New Memory
+          </button>
+    <div className="flex-column ">
       {filteredMemories.length > 0 && (
-        <div style={{display: 'flex', gap: '30px'}} className="">
+        <div style={{display: 'flex', gap: '30px', flexWrap: 'wrap', paddingBottom: '20px'}} className="">
           <label htmlFor="sort" className="visually-hidden">Sort memories by</label>
           <select
             style={{maxHeight: '40px'}}
@@ -220,15 +234,9 @@ const leftContent = loading ? (
             <option value="creationDate">Creation Date</option>
             <option value="lastModified">Last Modified</option>
           </select>
+          
         </div>
       )}
-      <button
-        className={`button2 rounded p-2 ${filteredMemories.length === 0 ? 'backgroundColor2' : ''}`}
-        onClick={handleCreateMemory}
-        aria-label="Create new memory"
-      >
-        New Memory
-      </button>
     </div>
 
     <div  className='scrollTable'>
@@ -308,8 +316,8 @@ const leftContent = loading ? (
         <div className="flex-column p-3">
           <h2 className="title-md color1">{selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}</h2>
           <button
-            style={{display: 'flex', gap: '30px', justifyContent: 'center'}}
-            className="button2 rounded p-2 m-1"
+            
+            className={`button2 rounded p-2 m-1 accionsContainer`}
             onClick={() =>
               handleAction(
                 `/memories/${userInformation.id}/${encodeURIComponent(selectedMemory.memoryTitle)}`
@@ -320,8 +328,8 @@ const leftContent = loading ? (
             <ShowHide size={24} /> View
           </button>
           <button
-          style={{display: 'flex', gap: '30px', justifyContent: 'center'}}
-            className="button2 rounded p-2 m-1"
+          
+            className="button2 rounded p-2 m-1 accionsContainer"
             onClick={() =>
               handleAction(
                 `/uploadFiles/${userInformation.id}/${encodeURIComponent(selectedMemory.memoryTitle)}`
@@ -332,8 +340,8 @@ const leftContent = loading ? (
             <UploadIcon size={24} /> Upload Files
           </button>
           <button
-          style={{display: 'flex', gap: '30px', justifyContent: 'center'}}
-            className="button2 rounded p-2 m-1"
+          
+            className="button2 rounded p-2 m-1 accionsContainer"
             onClick={() =>
               handleAction(
                 `/editMemories/${userInformation.id}/${encodeURIComponent(selectedMemory.memoryTitle)}`
@@ -341,11 +349,11 @@ const leftContent = loading ? (
             }
             aria-label={`Edit ${selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}`}
           >
-            <EditToggleIcon size={24} /> Edit
+            <EditToggleIcon size={24} /> Edit Files
           </button>
           <button
-          style={{display: 'flex', gap: '30px', justifyContent: 'center'}}
-            className="button2 rounded p-2 m-1"
+          
+            className="button2 rounded p-2 m-1 accionsContainer"
             onClick={() =>
               handleAction(
                 `/editAccessibility/${userInformation.id}/${encodeURIComponent(selectedMemory.memoryTitle)}`
