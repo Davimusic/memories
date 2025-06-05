@@ -68,6 +68,11 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
     return () => unsubscribe();
   }, [router]);
 
+  useEffect(() => {
+    console.log(userInformation);
+    
+  }, [userInformation]);
+
   // Fetch memories data if not provided
   useEffect(() => {
     const fetchMemories = async () => {
@@ -104,6 +109,8 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
         }
 
         const data = await response.json();
+        console.log(data);
+        
         if (data.success) {
           setUserID(data.userInfoId);
           const { userInformation, ...actualMemories } = data.memories;
@@ -320,7 +327,7 @@ const leftContent = loading ? (
             className={`button2 rounded p-2 m-1 accionsContainer`}
             onClick={() =>
               handleAction(
-                `/memories/${userInformation.id}/${encodeURIComponent(selectedMemory.memoryTitle)}`
+                `/memories/${userID}/${encodeURIComponent(selectedMemory.memoryTitle)}`
               )
             }
             aria-label={`View ${selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}`}
@@ -332,7 +339,7 @@ const leftContent = loading ? (
             className="button2 rounded p-2 m-1 accionsContainer"
             onClick={() =>
               handleAction(
-                `/uploadFiles/${userInformation.id}/${encodeURIComponent(selectedMemory.memoryTitle)}`
+                `/uploadFiles/${userID}/${encodeURIComponent(selectedMemory.memoryTitle)}`
               )
             }
             aria-label={`Upload files to ${selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}`}
@@ -344,7 +351,7 @@ const leftContent = loading ? (
             className="button2 rounded p-2 m-1 accionsContainer"
             onClick={() =>
               handleAction(
-                `/editMemories/${userInformation.id}/${encodeURIComponent(selectedMemory.memoryTitle)}`
+                `/editMemories/${userID}/${encodeURIComponent(selectedMemory.memoryTitle)}`
               )
             }
             aria-label={`Edit ${selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}`}
@@ -356,7 +363,7 @@ const leftContent = loading ? (
             className="button2 rounded p-2 m-1 accionsContainer"
             onClick={() =>
               handleAction(
-                `/editAccessibility/${userInformation.id}/${encodeURIComponent(selectedMemory.memoryTitle)}`
+                `/editAccessibility/${userID}/${encodeURIComponent(selectedMemory.memoryTitle)}`
               )
             }
             aria-label={`Edit accessibility ${selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}`}

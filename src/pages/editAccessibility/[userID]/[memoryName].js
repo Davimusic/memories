@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Menu from '@/components/complex/menu';
 import MenuIcon from '@/components/complex/menuIcon';
-import '../../../estilos/general/createNewMemory.css';
-import '../../../estilos/general/general.css';
+//import '../../../estilos/general/createNewMemory.css';
 import '../../../estilos/general/api/edit/editAccessibility.css';
 import '../../../app/globals.css';
 import Modal from '@/components/complex/modal';
@@ -12,14 +11,7 @@ import { auth } from '../../../../firebase';
 import ErrorComponent from '@/components/complex/error';
 import { toast } from 'react-toastify';
 import Head from 'next/head';
-
-
-
-
-
-
-
-
+import GeneralMold from '@/components/complex/generalMold';
 
 
 
@@ -35,6 +27,12 @@ const VisibilityModal = ({
   const [tempInvitedEmails, setTempInvitedEmails] = useState(initialInvitedEmails || []);
   const [tempEmailInput, setTempEmailInput] = useState('');
   const [modalError, setModalError] = useState('');
+
+  // Sync modal state with props when they change
+  useEffect(() => {
+    setTempVisibility(initialVisibility || 'private');
+    setTempInvitedEmails(initialInvitedEmails || []);
+  }, [initialVisibility, initialInvitedEmails]);
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -69,8 +67,6 @@ const VisibilityModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h1 className="visually-hidden">Memory Visibility Settings</h1>
-        <h2>Configure Memory Visibility</h2>
-        
         <div className="privacy-options" role="radiogroup" aria-labelledby="visibility-heading">
           <div 
             className={`privacy-option ${tempVisibility === 'invitation' ? 'active' : ''}`}
@@ -86,7 +82,6 @@ const VisibilityModal = ({
             <div className="privacy-details">
               <h3 id="invitation-heading">By Invitation</h3>
               <p>Only specific users can view</p>
-              
               {tempVisibility === 'invitation' && (
                 <div className="email-section">
                   <div className="file-input-group">
@@ -103,7 +98,7 @@ const VisibilityModal = ({
                     />
                     <button 
                       type="button" 
-                      className="submitButton" 
+                      className="button2" 
                       onClick={handleTempAddEmail}
                       aria-label="Add email"
                     >
@@ -123,9 +118,7 @@ const VisibilityModal = ({
                           className="remove-btn"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setTempInvitedEmails(
-                              tempInvitedEmails.filter((_, i) => i !== index)
-                            );
+                            setTempInvitedEmails(tempInvitedEmails.filter((_, i) => i !== index));
                           }}
                           aria-label={`Remove ${email}`}
                         >
@@ -174,9 +167,9 @@ const VisibilityModal = ({
           </div>
         </div>
 
-        <div style={{display: 'flex', gap: '10px', boxSizing: 'border-box'}}>
+        <div style={{ display: 'flex', gap: '10px', boxSizing: 'border-box' }}>
           <button 
-            className="submitButton" 
+            className="button2" 
             onClick={(e) => {
               e.stopPropagation();
               onClose();
@@ -185,7 +178,7 @@ const VisibilityModal = ({
           >
             Cancel
           </button>
-          <button className="submitButton" onClick={handleSave} type="button">
+          <button className="button2" onClick={handleSave} type="button">
             Save Changes
           </button>
         </div>
@@ -206,6 +199,12 @@ const UploadPermissionsModal = ({
   const [tempUploadInvitedEmails, setTempUploadInvitedEmails] = useState(initialUploadInvitedEmails || []);
   const [tempUploadEmailInput, setTempUploadEmailInput] = useState('');
   const [modalError, setModalError] = useState('');
+
+  // Sync modal state with props when they change
+  useEffect(() => {
+    setTempUploadVisibility(initialUploadVisibility || 'private');
+    setTempUploadInvitedEmails(initialUploadInvitedEmails || []);
+  }, [initialUploadVisibility, initialUploadInvitedEmails]);
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -239,9 +238,7 @@ const UploadPermissionsModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h1 className="visually-hidden centrar-horizontal">Upload Permissions Settings</h1>
-        <h2>Configure Upload Permissions</h2>
-        
+        <h1 className="visually-hidden">Upload Permissions Settings</h1>
         <div className="privacy-options" role="radiogroup" aria-labelledby="upload-heading">
           <div 
             className={`privacy-option ${tempUploadVisibility === 'invitation' ? 'active' : ''}`}
@@ -257,7 +254,6 @@ const UploadPermissionsModal = ({
             <div className="privacy-details">
               <h3 id="upload-invitation-heading">By Invitation</h3>
               <p>Only invited users can upload</p>
-              
               {tempUploadVisibility === 'invitation' && (
                 <div className="email-section">
                   <div className="file-input-group">
@@ -274,7 +270,7 @@ const UploadPermissionsModal = ({
                     />
                     <button 
                       type="button" 
-                      className="submitButton" 
+                      className="button2" 
                       onClick={handleTempUploadAddEmail}
                       aria-label="Add email"
                     >
@@ -294,9 +290,7 @@ const UploadPermissionsModal = ({
                           className="remove-btn"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setTempUploadInvitedEmails(
-                              tempUploadInvitedEmails.filter((_, i) => i !== index)
-                            );
+                            setTempUploadInvitedEmails(tempUploadInvitedEmails.filter((_, i) => i !== index));
                           }}
                           aria-label={`Remove ${email}`}
                         >
@@ -345,9 +339,9 @@ const UploadPermissionsModal = ({
           </div>
         </div>
 
-        <div style={{display: 'flex', gap: '10px', boxSizing: 'border-box'}}>
+        <div style={{ display: 'flex', gap: '10px', boxSizing: 'border-box' }}>
           <button 
-            className="submitButton" 
+            className="button2" 
             onClick={(e) => {
               e.stopPropagation();
               onClose();
@@ -356,7 +350,7 @@ const UploadPermissionsModal = ({
           >
             Cancel
           </button>
-          <button className="submitButton" onClick={handleSave} type="button">
+          <button className="button2" onClick={handleSave} type="button">
             Save Changes
           </button>
         </div>
@@ -378,7 +372,11 @@ const EditPermissionsModal = ({
   const [tempEditEmailInput, setTempEditEmailInput] = useState('');
   const [modalError, setModalError] = useState('');
 
-  const notifyFail = (message) => toast.error(message);
+  // Sync modal state with props when they change
+  useEffect(() => {
+    setTempEditVisibility(initialEditVisibility || 'private');
+    setTempEditInvitedEmails(initialEditInvitedEmails || []);
+  }, [initialEditVisibility, initialEditInvitedEmails]);
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -387,7 +385,6 @@ const EditPermissionsModal = ({
   const handleTempEditAddEmail = (e) => {
     e.stopPropagation();
     if (!validateEmail(tempEditEmailInput)) {
-      notifyFail('Please enter a valid email address');
       setModalError('Please enter a valid email address');
       return;
     }
@@ -414,8 +411,7 @@ const EditPermissionsModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h1 className="visually-hidden">Edit Permissions Settings</h1>
-        <h2>Configure Edit Permissions</h2>
-        
+        <h2 className="modal-title">Edit Permissions</h2>
         <div className="privacy-options" role="radiogroup" aria-labelledby="edit-heading">
           <div 
             className={`privacy-option ${tempEditVisibility === 'invitation' ? 'active' : ''}`}
@@ -431,7 +427,6 @@ const EditPermissionsModal = ({
             <div className="privacy-details">
               <h3 id="edit-invitation-heading">By Invitation</h3>
               <p>Only invited users can edit</p>
-              
               {tempEditVisibility === 'invitation' && (
                 <div className="email-section">
                   <div className="file-input-group">
@@ -448,7 +443,7 @@ const EditPermissionsModal = ({
                     />
                     <button 
                       type="button" 
-                      className="submitButton" 
+                      className="button2" 
                       onClick={handleTempEditAddEmail}
                       aria-label="Add email"
                     >
@@ -468,9 +463,7 @@ const EditPermissionsModal = ({
                           className="remove-btn"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setTempEditInvitedEmails(
-                              tempEditInvitedEmails.filter((_, i) => i !== index)
-                            );
+                            setTempEditInvitedEmails(tempEditInvitedEmails.filter((_, i) => i !== index));
                           }}
                           aria-label={`Remove ${email}`}
                         >
@@ -519,9 +512,9 @@ const EditPermissionsModal = ({
           </div>
         </div>
 
-        <div style={{display: 'flex', gap: '10px', boxSizing: 'border-box'}}>
+        <div className="modal-actions">
           <button 
-            className="submitButton" 
+            className="cancel-button button2" 
             onClick={(e) => {
               e.stopPropagation();
               onClose();
@@ -530,7 +523,7 @@ const EditPermissionsModal = ({
           >
             Cancel
           </button>
-          <button className="submitButton" onClick={handleSave} type="button">
+          <button className="submit-button button2" onClick={handleSave} type="button">
             Save Changes
           </button>
         </div>
@@ -540,136 +533,109 @@ const EditPermissionsModal = ({
 };
 
 // Main Component
-const EditMemoryPermissions = ({ initialData, initialError }) => {
+const EditMemoryPermissions = () => {
   const router = useRouter();
-  const { userID, memoryName } = router.query;
+  const { userID: urlUserID, memoryName: urlMemoryName } = router.query;
 
-  const notifySuccess = (message) => toast.success(message);
-  const notifyFail = (message) => toast.error(message);
-
-  const [userEmail, setUserEmail] = useState(null);
-  const [isLoading, setIsLoading] = useState(!initialData && !initialError);
-  const [isUploadingInformation, setIsUploadingInformation] = useState(false);
-  const [error, setError] = useState(initialError || '');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [permissionResult, setPermissionResult] = useState(initialData || null);
-
-  const [visibility, setVisibility] = useState(initialData?.accessInformation?.view?.visibility || 'private');
-  const [invitedEmails, setInvitedEmails] = useState(initialData?.accessInformation?.view?.invitedEmails || []);
-  const [uploadVisibility, setUploadVisibility] = useState(initialData?.accessInformation?.upload?.visibility || 'private');
-  const [uploadInvitedEmails, setUploadInvitedEmails] = useState(initialData?.accessInformation?.upload?.invitedEmails || []);
-  const [editVisibility, setEditVisibility] = useState(initialData?.accessInformation?.edit?.visibility || 'private');
-  const [editInvitedEmails, setEditInvitedEmails] = useState(initialData?.accessInformation?.edit?.invitedEmails || []);
-  const [memoryTitle, setMemoryTitle] = useState(initialData?.memoryMetadata?.title || 'Memory');
-  const [uid, setUid] = useState(null);
-  const [token, setToken] = useState(null);
-
+  // States
+  const [visibility, setVisibility] = useState('private');
+  const [invitedEmails, setInvitedEmails] = useState([]);
+  const [uploadVisibility, setUploadVisibility] = useState('private');
+  const [uploadInvitedEmails, setUploadInvitedEmails] = useState([]);
+  const [editVisibility, setEditVisibility] = useState('private');
+  const [editInvitedEmails, setEditInvitedEmails] = useState([]);
+  const [memoryTitle, setMemoryTitle] = useState('Memory');
   const [isVisibilityModalOpen, setIsVisibilityModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isUploadingInformation, setIsUploadingInformation] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [permissionResult, setPermissionResult] = useState(null);
+  const [permissionError, setPermissionError] = useState('');
+  const [rollUser, setRollUSer] = useState('private');
 
-  // Authentication check
+  // Estado inicial para detectar cambios
+  const initialStateRef = useRef({
+    visibility: 'private',
+    invitedEmails: [],
+    uploadVisibility: 'private',
+    uploadInvitedEmails: [],
+    editVisibility: 'private',
+    editInvitedEmails: [],
+  });
+
+  console.log(permissionResult);
+ 
+  
+  
+
+  // Update states based on permissionResult
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        setUid(user.uid);
-        try {
-          const token = await user.getIdToken();
-          setToken(token);
-        } catch (error) {
-          console.error("Error getting token:", error);
-          setError('Failed to authenticate user');
-        }
-        const email = user.email || user.providerData?.[0]?.email;
-        setUserEmail(email);
-      } else {
-        const path = window.location.pathname;
-        localStorage.setItem("redirectPath", path);
-        localStorage.setItem("reason", "userEmailValidationOnly");
-        router.push("/login");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
-
-  // Fetch permission data if not provided by SSR
-  useEffect(() => {
-    const fetchPermissionData = async () => {
-      if (!userID || !memoryName || !uid || !userEmail || !token) {
-        setError('Missing required parameters');
-        setIsLoading(false);
-        return;
-      }
-
-      if (initialData) {
-        setPermissionResult(initialData);
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch('/api/mongoDb/queries/checkMemoryPermissionFromClient', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: userID,
-            memoryName,
-            type: 'editPermissions',
-            uid,
-            token,
-            userEmail
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setPermissionResult(data);
-
-        if (!data.accessAllowed) {
-          setIsLoading(false);
-          setError('You do not have permission to edit access to this memory');
-          return;
-        }
-
-        // Update state with accessInformation
-        const accessInfo = data.accessInformation || {};
-        setVisibility(accessInfo.view?.visibility || 'private');
-        setInvitedEmails(accessInfo.view?.invitedEmails || []);
-        setUploadVisibility(accessInfo.upload?.visibility || 'private');
-        setUploadInvitedEmails(accessInfo.upload?.invitedEmails || []);
-        setEditVisibility(accessInfo.edit?.visibility || 'private');
-        setEditInvitedEmails(accessInfo.edit?.invitedEmails || []);
-        setMemoryTitle(data.memoryMetadata?.title || 'Memory');
-        setIsLoading(false);
-      } catch (err) {
-        console.error('Fetch error:', err.message);
-        setError(err.message);
-        setIsLoading(false);
-      }
-    };
-
-    if (uid && userEmail && token && !initialData) {
-      fetchPermissionData();
+    if (permissionResult) {
+      setRollUSer(permissionResult.requiredVisibility)
+      setVisibility(permissionResult.accessInformation?.view.visibility || 'private');
+      setInvitedEmails(permissionResult.accessInformation?.view?.invitedEmails || []);
+      setUploadVisibility(permissionResult.accessInformation?.upload?.visibility || 'private');
+      setUploadInvitedEmails(permissionResult.accessInformation?.upload?.invitedEmails || []);
+      setEditVisibility(permissionResult.accessInformation?.edit?.visibility || 'private');
+      setEditInvitedEmails(permissionResult.accessInformation?.edit?.invitedEmails || []);
+      setMemoryTitle(permissionResult.memoryMetadata?.title || 'Memory');
+      setPermissionError(permissionResult.accessInformation?.reason || '');
+      initialStateRef.current = {
+        visibility: permissionResult.accessInformation?.view.visibility || 'private',
+        invitedEmails: permissionResult.accessInformation?.view?.invitedEmails || [],
+        uploadVisibility: permissionResult.accessInformation?.upload?.visibility || 'private',
+        uploadInvitedEmails: permissionResult.accessInformation?.upload?.invitedEmails || [],
+        editVisibility: permissionResult.accessInformation?.edit?.visibility || 'private',
+        editInvitedEmails: permissionResult.accessInformation?.edit?.invitedEmails || [],
+      };
+      setIsLoading(false);
+    } else {
+      setPermissionError('No permission data available');
+      setIsLoading(false);
     }
-  }, [userID, memoryName, uid, userEmail, token, initialData]);
+  }, [permissionResult]);
 
+  // Verificar si hay cambios
+  const hasChanges = () => {
+    return (
+      visibility !== initialStateRef.current.visibility ||
+      JSON.stringify(invitedEmails) !== JSON.stringify(initialStateRef.current.invitedEmails) ||
+      uploadVisibility !== initialStateRef.current.uploadVisibility ||
+      JSON.stringify(uploadInvitedEmails) !== JSON.stringify(initialStateRef.current.uploadInvitedEmails) ||
+      editVisibility !== initialStateRef.current.editVisibility ||
+      JSON.stringify(editInvitedEmails) !== JSON.stringify(initialStateRef.current.editInvitedEmails)
+    );
+  };
+
+  // Guardar cambios
   const handleSave = async (e) => {
     e.preventDefault();
     setIsUploadingInformation(true);
     setError('');
 
     try {
+      if (!urlUserID || !urlMemoryName) {
+        throw new Error('Missing URL parameters');
+      }
+
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error('User not authenticated');
+      }
+
+      const uid = currentUser.uid;
+      const token = await currentUser.getIdToken();
+      const userEmail = currentUser.email;
+
       const response = await fetch('/api/mongoDb/queries/updateMemoryPermissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: userID,
-          memoryName,
-          currentUser: userEmail.replace(/[@.]/g, '_'),
+          userId: urlUserID,
+          memoryName: urlMemoryName,
+          currentUser: userEmail,
           visibility,
           invitedEmails,
           fileUploadVisibility: uploadVisibility,
@@ -677,235 +643,217 @@ const EditMemoryPermissions = ({ initialData, initialError }) => {
           editVisibility,
           editInvitedEmails,
           uid,
-          token
+          token,
         }),
       });
 
       const data = await response.json();
-      
+
       if (response.ok) {
-        notifySuccess(data.message);
+        toast.success(data.message);
+        initialStateRef.current = { visibility, invitedEmails, uploadVisibility, uploadInvitedEmails, editVisibility, editInvitedEmails };
+        setPermissionResult((prev) => ({
+          ...prev,
+          accessInformation: {
+            ...prev.accessInformation,
+            view: { visibility, invitedEmails },
+            upload: { visibility: uploadVisibility, invitedEmails: uploadInvitedEmails },
+            edit: { visibility: editVisibility, invitedEmails: editInvitedEmails },
+          },
+        }));
+        // Update parent with new permission data
+        setPermissionResult({
+          ...permissionResult,
+          accessInformation: {
+            ...permissionResult.accessInformation,
+            view: { visibility, invitedEmails },
+            upload: { visibility: uploadVisibility, invitedEmails: uploadInvitedEmails },
+            edit: { visibility: editVisibility, invitedEmails: editInvitedEmails },
+          },
+        });
       } else {
-        throw new Error(data.message || 'Failed to update permissions');
+        throw new Error(data.message || 'Error updating permissions');
       }
-    } catch (error) {
-      notifyFail(error.message);
-      setError(error.message);
+    } catch (err) {
+      toast.error(err.message);
+      setError(err.message);
     } finally {
       setIsUploadingInformation(false);
     }
   };
 
-  const handleOpenMenu = () => setIsMenuOpen(true);
-  const handleCloseMenu = () => setIsMenuOpen(false);
+  // Componente para sección de permiso
+  const PermissionSection = ({ title, icon, type, count, onClick }) => {
+    const getTypeText = () => {
+      switch (type) {
+        case 'private':
+          return 'Only you';
+        case 'public':
+          return 'Everyone';
+        case 'invitation':
+          return `${count} users`;
+        default:
+          return '';
+      }
+    };
 
-  if (isLoading) {
+    const getDescription = () => {
+      if (title === 'Memory Visibility') {
+        switch (type) {
+          case 'private':
+            return 'Only visible to you';
+          case 'public':
+            return 'Visible to everyone';
+          case 'invitation':
+            return 'Specific users';
+          default:
+            return '';
+        }
+      }
+      if (title === 'Upload Permissions') {
+        switch (type) {
+          case 'private':
+            return 'Only you can upload';
+          case 'public':
+            return 'Everyone can upload';
+          case 'invitation':
+            return 'Specific users';
+          default:
+            return '';
+        }
+      }
+      if (title === 'Edit Permissions') {
+        switch (type) {
+          case 'private':
+            return 'Only you can edit';
+          case 'public':
+            return 'Everyone can edit';
+          case 'invitation':
+            return 'Specific users';
+          default:
+            return '';
+        }
+      }
+      return '';
+    };
+
     return (
-      <div className="fullscreen-floating mainFont backgroundColor1 color2">
-        <Head>
-          <title>Loading... | Memory Permissions</title>
-          <meta name="description" content="Loading memory permission settings" />
-        </Head>
-        <div className="loading">
-          <LoadingMemories/>
+      <section className="permission-card">
+        <div className="section-header">
+          <h2>{title}</h2>
         </div>
-      </div>
+        <button type="button" className="permission-settings" onClick={onClick}>
+          <div className="permission-icon">{icon}</div>
+          <div className="permission-details">
+            <h3>{getTypeText()}</h3>
+            <p>{getDescription()}</p>
+          </div>
+        </button>
+      </section>
     );
-  }
-
-  if (error) {
-    return <ErrorComponent error={error}/>;
-  }
-
-  // Structured data for SEO
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: `Edit Permissions: ${memoryTitle}`,
-    description: `Configure visibility and permissions for ${memoryTitle} in the Memory App`,
-    url: `https://yourdomain.com/editAccessibility/${userID}/${encodeURIComponent(memoryName)}`, // Replace with your domain
   };
 
-  return (
-    <div className="fullscreen-floating mainFont backgroundColor1 mainFont color2">
-      <Head>
-        <title>{`Edit Permissions: ${memoryTitle} | Memory App`}</title>
-        <meta name="description" content={`Configure visibility and permissions for ${memoryTitle}`} />
-        <meta name="keywords" content={`memory permissions, ${memoryTitle}, memory app, edit access`} />
-        <meta property="og:title" content={`Edit Permissions: ${memoryTitle}`} />
-        <meta property="og:description" content={`Configure visibility and permissions for ${memoryTitle}`} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={`https://yourdomain.com/editAccessibility/${userID}/${encodeURIComponent(memoryName)}`} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`Edit Permissions: ${memoryTitle}`} />
-        <meta name="twitter:description" content={`Configure visibility and permissions for ${memoryTitle}`} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
-      </Head>
+  // Funciones auxiliares para iconos
+  const getVisibilityIcon = (type) => {
+    switch (type) {
+      case 'private':
+        return '🔒';
+      case 'public':
+        return '🌍';
+      case 'invitation':
+        return '📩';
+      default:
+        return '⚙️';
+    }
+  };
 
-      <Menu
-        isOpen={isMenuOpen}
-        onClose={handleCloseMenu}
-        className="backgroundColor1"
-      />
+  const getUploadIcon = (type) => {
+    switch (type) {
+      case 'private':
+        return '📤';
+      case 'public':
+        return '📥';
+      case 'invitation':
+        return '👥';
+      default:
+        return '📁';
+    }
+  };
 
-      <div className="file-uploader">
-        <div style={{ display: 'flex' }}>
-          <div className="menu-icon-container">
-            <MenuIcon onClick={handleOpenMenu} style={{ zIndex: 10 }} aria-label="Open menu" />
-          </div>
-          <h1 className="title">Edit Permissions: {memoryTitle}</h1>
+  const getEditIcon = (type) => {
+    switch (type) {
+      case 'private':
+        return '✏️';
+      case 'public':
+        return '📝';
+      case 'invitation':
+        return '👨‍💻';
+      default:
+        return '🛠️';
+    }
+  };
+
+  // Contenido principal
+  const rightContent = (
+    <div className="permissions-editor">
+      {isLoading ? (
+        <div className="loading-container">
+          <LoadingMemories />
+          <p>Loading permission settings...</p>
         </div>
-        
-        <div className='centered'> 
-          <div className="uploader-content">
-            <div className="files-column">
-              <section className="file-section-container" aria-labelledby="visibility-section">
-                <div className="section-header">
-                  <h2 id="visibility-section">Memory Visibility</h2>
-                </div>
-                
-                <button 
-                  className="selected-settings" 
-                  onClick={() => setIsVisibilityModalOpen(true)}
-                  aria-expanded={isVisibilityModalOpen}
-                  aria-controls="visibility-modal"
-                >
-                  {visibility === 'private' && (
-                    <div className="privacy-option active">
-                      <div className="privacy-icon" aria-hidden="true">🔒</div>
-                      <div className="privacy-details">
-                        <h3>Private</h3>
-                        <p>Only visible to you</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {visibility === 'public' && (
-                    <div className="privacy-option active">
-                      <div className="privacy-icon" aria-hidden="true">🌍</div>
-                      <div className="privacy-details">
-                        <h3>Public</h3>
-                        <p>Visible to everyone</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {visibility === 'invitation' && (
-                    <div className="privacy-option active">
-                      <div className="privacy-icon" aria-hidden="true">📩</div>
-                      <div className="privacy-details">
-                        <h3>By Invitation</h3>
-                        <p>{invitedEmails.length} invited users</p>
-                      </div>
-                    </div>
-                  )}
-                </button>
-              </section>
-
-              <section className="file-section-container" aria-labelledby="upload-section">
-                <div className="section-header">
-                  <h2 id="upload-section">Upload Permissions</h2>
-                </div>
-                
-                <button 
-                  className="selected-settings" 
-                  onClick={() => setIsUploadModalOpen(true)}
-                  aria-expanded={isUploadModalOpen}
-                  aria-controls="upload-modal"
-                >
-                  {uploadVisibility === 'private' && (
-                    <div className="privacy-option active">
-                      <div className="privacy-icon" aria-hidden="true">🔒</div>
-                      <div className="privacy-details">
-                        <h3>Private</h3>
-                        <p>Only you can upload</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {uploadVisibility === 'public' && (
-                    <div className="privacy-option active">
-                      <div className="privacy-icon" aria-hidden="true">🌍</div>
-                      <div className="privacy-details">
-                        <h3>Public</h3>
-                        <p>Everyone can upload</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {uploadVisibility === 'invitation' && (
-                    <div className="privacy-option active">
-                      <div className="privacy-icon" aria-hidden="true">📩</div>
-                      <div className="privacy-details">
-                        <h3>By Invitation</h3>
-                        <p>{uploadInvitedEmails.length} users can upload</p>
-                      </div>
-                    </div>
-                  )}
-                </button>
-              </section>
-
-              <section className="file-section-container" aria-labelledby="edit-section">
-                <div className="section-header">
-                  <h2 id="edit-section">Edit Permissions</h2>
-                </div>
-                
-                <button 
-                  className="selected-settings" 
-                  onClick={() => setIsEditModalOpen(true)}
-                  aria-expanded={isEditModalOpen}
-                  aria-controls="edit-modal"
-                >
-                  {editVisibility === 'private' && (
-                    <div className="privacy-option active">
-                      <div className="privacy-icon" aria-hidden="true">🔒</div>
-                      <div className="privacy-details">
-                        <h3>Private</h3>
-                        <p>Only you can edit</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {editVisibility === 'public' && (
-                    <div className="privacy-option active">
-                      <div className="privacy-icon" aria-hidden="true">🌍</div>
-                      <div className="privacy-details">
-                        <h3>Public</h3>
-                        <p>Everyone can edit</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {editVisibility === 'invitation' && (
-                    <div className="privacy-option active">
-                      <div className="privacy-icon" aria-hidden="true">📩</div>
-                      <div className="privacy-details">
-                        <h3>By Invitation</h3>
-                        <p>{editInvitedEmails.length} users can edit</p>
-                      </div>
-                    </div>
-                  )}
-                </button>
-              </section>
+      ) : permissionError ? (
+        <ErrorComponent
+          errorMessage={permissionError}
+          onRetry={() => {
+            setPermissionError('');
+            setIsLoading(true);
+            setPermissionResult(null);
+          }}
+        />
+      ) : (
+        <>
+          <div className="header-section">
+            <h1 className="title">Edit Permissions: {memoryTitle}</h1>
+          </div>
+          <form className="permissions-form" onSubmit={handleSave}>
+            {error && <div className="error-message">{error}</div>}
+            <div className="permissions-grid">
+              <PermissionSection
+                title="Memory Visibility"
+                icon={getVisibilityIcon(visibility)}
+                type={visibility}
+                count={invitedEmails.length}
+                onClick={() => setIsVisibilityModalOpen(true)}
+              />
+              <PermissionSection
+                title="Upload Permissions"
+                icon={getUploadIcon(uploadVisibility)}
+                type={uploadVisibility}
+                count={uploadInvitedEmails.length}
+                onClick={() => setIsUploadModalOpen(true)}
+              />
+              <PermissionSection
+                title="Edit Permissions"
+                icon={getEditIcon(editVisibility)}
+                type={editVisibility}
+                count={editInvitedEmails.length}
+                onClick={() => setIsEditModalOpen(true)}
+              />
             </div>
-          </div>
-        </div>
-        <form className="memory-form" onSubmit={handleSave}>
-          {error && <div className="error-message" role="alert">{error}</div>}
-
-          <div className="actions">
-            <button 
-              type="submit" 
-              className="submit-btn" 
-              disabled={isUploadingInformation}
-              aria-busy={isUploadingInformation}
-            >
-              {isUploadingInformation ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        </form>
-      </div>
-
+            {hasChanges() && (
+              <div className="actions">
+                <button
+                  type="submit"
+                  className="save-button"
+                  disabled={isUploadingInformation}
+                >
+                  {isUploadingInformation ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            )}
+          </form>
+        </>
+      )}
       <VisibilityModal
         isOpen={isVisibilityModalOpen}
         onClose={() => setIsVisibilityModalOpen(false)}
@@ -916,7 +864,6 @@ const EditMemoryPermissions = ({ initialData, initialError }) => {
           setInvitedEmails(emails);
         }}
       />
-
       <UploadPermissionsModal
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
@@ -927,7 +874,6 @@ const EditMemoryPermissions = ({ initialData, initialError }) => {
           setUploadInvitedEmails(emails);
         }}
       />
-
       <EditPermissionsModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
@@ -940,132 +886,47 @@ const EditMemoryPermissions = ({ initialData, initialError }) => {
       />
     </div>
   );
+
+  return (
+    <GeneralMold
+      key={`${urlUserID}-${urlMemoryName}`}
+      pageTitle={`Edit Permissions: ${memoryTitle}`}
+      pageDescription="Configure visibility and permissions for your memory"
+      rightContent={rightContent}
+      visibility={rollUser}
+      owner={permissionResult?.memoryMetadata?.createdBy}
+      metaKeywords="memory permissions, edit access"
+      error={permissionError}
+      initialData={permissionResult}
+      setInitialData={setPermissionResult}
+    />
+  );
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*/ Server-Side Rendering
-export async function getServerSideProps(context) {
-  const { req, params } = context;
-  const { userID, memoryName } = params;
-
-  try {
-    // Extract ID token from Authorization header or cookie
-    let idToken = req.headers.authorization?.startsWith('Bearer ')
-      ? req.headers.authorization.split('Bearer ')[1]
-      : req.cookies.idToken; // Adjust cookie name as needed
-
-    if (!idToken) {
-      return {
-        redirect: {
-          destination: '/login',
-          permanent: false,
-        },
-      };
-    }
-
-    // Verify ID token with Firebase Admin SDK
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const uid = decodedToken.uid;
-    const userEmail = decodedToken.email;
-
-    // Fetch permission data from API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/mongoDb/queries/checkMemoryPermissionFromClient`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: userID,
-        memoryName,
-        type: 'editPermissions',
-        uid,
-        token: idToken,
-        userEmail
-      }),
-    });
-
-    if (!response.ok) {
-      return {
-        props: {
-          initialError: `Error ${response.status}: ${await response.text()}`,
-        },
-      };
-    }
-
-    const data = await response.json();
-    if (data.success && data.accessAllowed) {
-      return {
-        props: {
-          initialData: {
-            accessInformation: data.accessInformation || {},
-            memoryMetadata: data.memoryMetadata || {},
-            accessAllowed: data.accessAllowed,
-          },
-        },
-      };
-    } else {
-      return {
-        props: {
-          initialError: 'You do not have permission to edit access to this memory',
-        },
-      };
-    }
-  } catch (error) {
-    console.error('SSR Error:', error.message);
-    return {
-      props: {
-        initialError: 'Server error occurred',
-      },
-    };
-  }
-}*/
 
 export default EditMemoryPermissions;
 
-// Add this to your global CSS
-<style jsx global>{`
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-`}</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

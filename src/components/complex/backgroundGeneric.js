@@ -79,6 +79,7 @@ const BackgroundGeneric = ({
       justifyContent: "center",
       alignItems: "center",
       overflow: "hidden",
+
       ...style,
     },
     // Esta capa se posiciona detrás del contenido y su opacidad se anima
@@ -110,14 +111,16 @@ const BackgroundGeneric = ({
       width: "100%",
       maxWidth: "400px",
       display: "flex",
+      height: '100vh',
+      overflow: 'auto',
       justifyContent: "center",
       alignItems: "center",
     },
     desktopContainer: {
       display: "flex",
       alignItems: "stretch",
-      height: "512px",
-      maxWidth: "1200px",
+      height: "600px",
+      //overflow: 'auto',
       width: "100%",
       justifyContent: "center",
       gap: "40px",
@@ -133,7 +136,7 @@ const BackgroundGeneric = ({
       borderTopRightRadius: "0.7em",
       overflow: "hidden",
       backgroundColor: "white",
-      height: "488px",
+      height: "598px",
       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
       paddingLeft: "10px",
       marginLeft: "-50px",
@@ -189,7 +192,7 @@ const BackgroundGeneric = ({
               fixedEffect="random"
               timeToShow={3000}
               showControls={false}
-              style={{ height: "488px" }}
+              style={{ height: "599px" }}
               initializeAutomatically={true}
             />
           </div>

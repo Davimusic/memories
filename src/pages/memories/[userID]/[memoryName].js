@@ -1,11 +1,10 @@
-'use client'; 
-//este no està sujeto a GeneralMold, es una copia de interfaz, mas, no està servida en la plantilla padre
-// pages/memories/[id].js
+'use client';
+
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import '../../../app/globals.css'
-import '../../../estilos/general/generalMold.css'
-import styles from '../../../estilos/general/memoryDetail.module.css'; 
+import '../../../app/globals.css';
+import '../../../estilos/general/generalMold.css';
+import styles from '../../../estilos/general/memoryDetail.module.css';
 
 import MemoryLogo from '../../../components/complex/memoryLogo';
 import BackgroundGeneric from '../../../components/complex/backgroundGeneric';
@@ -14,94 +13,23 @@ import MenuIcon from '../../../components/complex/menuIcon';
 import SpinnerIcon from '@/components/complex/spinnerIcon';
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
-//import Video from '../../../components/simple/video';
-//import AudioPlayer from '@/components/complex/audioPlayer';
-//import ImageSlider from '../../../components/complex/imageSlider';
 import LoadingMemories from '@/components/complex/loading';
 import { auth } from '../../../../firebase';
 import Head from 'next/head';
 import Modal from '@/components/complex/modal';
 import InternetStatus from '@/components/complex/internetStatus';
 
-
-
 const Video = dynamic(() => import('../../../components/simple/video'), { ssr: false });
 const AudioPlayer = dynamic(() => import('../../../components/complex/audioPlayer'), { ssr: false });
 const ImageSlider = dynamic(() => import('../../../components/complex/imageSlider'), { ssr: false });
 
-export async function getServerSideProps(context) {
-  const { userID, memoryName } = context.query;
-
-  if (!userID || !memoryName) {
-    return {
-      props: {
-        error: 'Missing userID or memoryName',
-      },
-    };
-  }
-
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-    const res = await fetch(`${apiUrl}/api/mongoDb/postMemoryReferenceUser`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userID, memoryTitle: memoryName }),
-    });
-
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-
-    const mongoData = await res.json();
-
-    if (!mongoData.success) {
-      throw new Error('Failed to load memory data');
-    }
-
-    const formattedData = {
-      ...mongoData.memory,
-      ownerEmail: mongoData.ownerEmail,
-      metadata: {
-        ...mongoData.memory.metadata,
-        createdAt: mongoData.memory.metadata.createdAt
-          ? new Date(mongoData.memory.metadata.createdAt).toISOString()
-          : null,
-        lastUpdated: mongoData.memory.metadata.lastUpdated
-          ? new Date(mongoData.memory.metadata.lastUpdated).toISOString()
-          : null,
-      },
-      access: mongoData.memory.access || {},
-      media: {
-        photos: mongoData.memory.media.photos || [],
-        videos: mongoData.memory.media.videos || [],
-        audios: mongoData.memory.media.audios || [],
-        documents: mongoData.memory.media.documents || [],
-      },
-    };
-
-    return {
-      props: {
-        initialMemoryData: formattedData,
-        userID,
-        memoryName,
-      },
-    };
-  } catch (err) {
-    console.error('getServerSideProps error:', err.message);
-    return {
-      props: {
-        error: err.message || 'Failed to fetch memory data',
-      },
-    };
-  }
-}
-
-const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialError }) => {
+const MemoryDetail = () => {
   const router = useRouter();
+  const { userID, memoryName } = router.query;
   const [userEmail, setUserEmail] = useState(null);
-  const [memoryData, setMemoryData] = useState(initialMemoryData);
-  const [loading, setLoading] = useState(!initialMemoryData && !initialError);
-  const [error, setError] = useState(initialError);
+  const [memoryData, setMemoryData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [folderContents, setFolderContents] = useState({});
   const [folderLoadingStates, setFolderLoadingStates] = useState({});
   const [roll, setRoll] = useState('false');
@@ -154,6 +82,71 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
     const email = auth.currentUser?.reloadUserInfo?.providerUserInfo?.[0]?.email;
     if (email) setUserEmail(email);
   }, []);
+
+  useEffect(() => {
+    const fetchMemoryData = async () => {
+      try {
+        if (!userID || !memoryName) {
+          setError('Missing userID or memoryName');
+          setLoading(false);
+          return;
+        }
+
+        console.log('userID:', userID);
+        console.log('memoryName:', memoryName);
+        const url = `http://localhost:3000/api/mongoDb/postMemoryReferenceUser`;
+        console.log('Fetching from:', url);
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userID, memoryTitle: memoryName }),
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const mongoData = await res.json();
+        console.log('Datos recibidos:', mongoData);
+
+        if (!mongoData.success) {
+          throw new Error('Failed to load memory data');
+        }
+
+        const formattedData = {
+          ...mongoData.memory,
+          ownerEmail: mongoData.ownerEmail,
+          metadata: {
+            ...mongoData.memory.metadata,
+            createdAt: mongoData.memory.metadata.createdAt
+              ? new Date(mongoData.memory.metadata.createdAt).toISOString()
+              : null,
+            lastUpdated: mongoData.memory.metadata.lastUpdated
+              ? new Date(mongoData.memory.metadata.lastUpdated).toISOString()
+              : null,
+          },
+          access: mongoData.memory.access || {},
+          media: {
+            photos: mongoData.memory.media.photos || [],
+            videos: mongoData.memory.media.videos || [],
+            audios: mongoData.memory.media.audios || [],
+            documents: mongoData.memory.media.documents || [],
+          },
+        };
+
+        setMemoryData(formattedData);
+        setError(null);
+      } catch (err) {
+        console.error('fetchMemoryData error:', err.message);
+        setError(err.message || 'Failed to fetch memory data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMemoryData();
+  }, [userID, memoryName]);
 
   useEffect(() => {
     if (!memoryData) return;
@@ -341,7 +334,7 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
         ) : folderName === 'audios' ? (
           <div className={styles.audioPreview}>
             <div className={styles.audioIcon}>🎵</div>
-            <span style={{color: 'white'}}>{file.fileName}</span>
+            <span style={{ color: 'white' }}>{file.fileName}</span>
           </div>
         ) : (
           <div className={styles.filePreview}>
@@ -407,8 +400,8 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
             {metadata.description || 'No description available'}
           </p>
           <div className={styles.datesContainer}>
-            <p className={'folderToggle'}>Created: {new Date(metadata.createdAt).toLocaleDateString()}</p>
-            <p className={'folderToggle'}>Last modified: {new Date(metadata.lastUpdated).toLocaleDateString()}</p>
+            <p className="folderToggle">Created: {new Date(metadata.createdAt).toLocaleDateString()}</p>
+            <p className="folderToggle">Last modified: {new Date(metadata.lastUpdated).toLocaleDateString()}</p>
           </div>
         </div>
       )}
@@ -430,8 +423,8 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
                 aria-label={`Open ${folderName} folder`}
               >
                 <div className={styles.folderInfo}>
-                  <h3 className='text-secondary'>{folderName}</h3>
-                  <span className={'text-secondary'}>
+                  <h3 className="text-secondary">{folderName}</h3>
+                  <span className="text-secondary">
                     {memoryData.media[folderName].length}{' '}
                     {memoryData.media[folderName].length === 1 ? 'item' : 'items'}
                   </span>
@@ -443,7 +436,7 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
           ))}
         </ul>
       ) : (
-        <p className={`${styles.noFoldersMessage} text-muted`}>No folders available for this memory.</p>
+        <p className={{}}>No folders available for this memory.</p>
       )}
     </section>
   );
@@ -532,31 +525,33 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
           aria-label="Menú de navegación"
           isDarkMode={isDarkMode}
         />
-     
-        <div  style={{
-          position: 'fixed',
-          top: 60, // El div se posiciona a 60px desde el borde superior de la ventana.
-          left: 0,
-          right: 0,
-        }}>
-        <div  className={`content-container ${leftContent && rightContent ? 'dual-content' : 'single-content'}`}>
-          {leftContent && (
-            <section
-              className={`left-container card ${leftContent && rightContent ? '' : 'full-width'}`}
-              aria-label="Contenido izquierdo"
-            >
-              {leftContent}
-            </section>
-          )}
-          {rightContent && (
-            <section
-              className={`right-container card ${leftContent && rightContent ? '' : 'full-width'}`}
-              aria-label="Contenido derecho"
-            >
-              {rightContent}
-            </section>
-          )}
-        </div>
+
+        <div
+          style={{
+            position: 'fixed',
+            top: 60,
+            left: 0,
+            right: 0,
+          }}
+        >
+          <div className={`content-container ${leftContent && rightContent ? 'dual-content' : 'single-content'}`}>
+            {leftContent && (
+              <section
+                className={`left-container card ${leftContent && rightContent ? '' : 'full-width'}`}
+                aria-label="Contenido izquierdo"
+              >
+                {leftContent}
+              </section>
+            )}
+            {rightContent && (
+              <section
+                className={`right-container card ${leftContent && rightContent ? '' : 'full-width'}`}
+                aria-label="Contenido derecho"
+              >
+                {rightContent}
+              </section>
+            )}
+          </div>
         </div>
 
         {previewFolder && (
@@ -660,7 +655,7 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
             <div className="modal-content">
               {modalContent}
               <button
-                className='closeButton'
+                className="closeButton"
                 onClick={() => setIsModalOpen(false)}
                 aria-label="Cerrar modal"
               >
@@ -675,10 +670,6 @@ const MemoryDetail = ({ initialMemoryData, userID, memoryName, error: initialErr
 };
 
 export default MemoryDetail;
-
-
-
-
 
 
 

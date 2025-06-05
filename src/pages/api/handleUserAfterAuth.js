@@ -1,3 +1,6 @@
+//parece que este no
+
+
 /*import clientPromise from './connectToDatabase';
 import admin from 'firebase-admin';
 import crypto from 'crypto';
@@ -133,9 +136,10 @@ export default async function handleUserAfterAuth(req, res) {
 
 
 
-import clientPromise from './connectToDatabase';
+/*import clientPromise from './connectToDatabase';
 import admin from 'firebase-admin';
 import crypto from 'crypto';
+
 
 // Inicializar Firebase Admin SDK
 if (!admin.apps.length) {
@@ -159,7 +163,7 @@ export default async function handleUserAfterAuth(req, res) {
     });
   }
 
-  const { email, authType } = req.body;
+  const { email, authType  } = req.body;
 
   // 2. Validar que se envíe el correo
   if (!email) {
@@ -167,6 +171,12 @@ export default async function handleUserAfterAuth(req, res) {
       success: false,
       message: 'El correo es obligatorio',
     });
+  }
+
+  // Verify user authentication
+  const loginResult = await verifyLoginUser({ uid, token });
+    if (!loginResult.success) {
+      throw new Error('Authentication failed: ' + loginResult.error);
   }
 
   // 3. Sanitizar el email para generar la llave principal.  
@@ -252,7 +262,7 @@ export default async function handleUserAfterAuth(req, res) {
 
 
 
-
+*/
 
 
 

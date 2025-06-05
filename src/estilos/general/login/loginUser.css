@@ -1,4 +1,7 @@
 /* LOGIN CONTAINER */
+
+
+
 .login-container {
   width: 100%;
   max-width: 400px;
@@ -13,11 +16,11 @@
 
 /* FORMULARIO DEL LOGIN */
 .login-form {
+  height: 598px;
   width: 100%;
   padding: 30px;
   background-color: #ffffff;
   border-radius: 8px;
-  
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -137,30 +140,25 @@
 }
 
 /* ESTILOS PARA LOS ENLACES (alternancia y otros) */
-.toggle-auth-mode,
-.forgot-password-link,
-.back-to-login {
-  text-align: center;
-  margin-top: 1rem;
+.forgot-password-link {
   color: #4285f4;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.2s, background-color 0.2s;
+  padding: 8px 12px;
+  border-radius: 4px;
+  text-align: center;
 }
 
-.toggle-auth-mode:hover,
-.forgot-password-link:hover,
-.back-to-login:hover {
+.forgot-password-link:hover {
   color: #3367d6;
-  text-decoration: underline;
+  background-color: #f0f4ff; /* Subtle background on hover */
 }
 
-.toggle-auth-mode.disabled,
-.forgot-password-link.disabled,
-.back-to-login.disabled {
+.forgot-password-link.disabled {
   color: #999;
   cursor: not-allowed;
-  text-decoration: none;
+  background-color: transparent;
 }
 
 /* MENSAJES: error y éxito */
@@ -174,6 +172,25 @@
   border-radius: 6px;
 }
 
+.mainScroll {
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.navigation-links {
+  background-color: #ffffff;
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Space between links */
+  align-items: center; /* Center links horizontally */
+  box-sizing: border-box;
+  margin-top: 15px; /* Space from form */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+}
+
 .login-success-message {
   color: #388e3c;
   text-align: center;
@@ -184,16 +201,14 @@
   border-radius: 6px;
 }
 
-/* TERMS SECTION (Moved outside form) */
+/* TERMS SECTION */
 .terms-section {
-  
   display: flex;
   justify-content: center; /* Center the checkbox */
   padding: 15px;
   background-color: #ffffff; /* Match form background */
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
-  
 }
 
 .terms-checkbox {
@@ -297,25 +312,23 @@
 
 /* RESPONSIVE: Tablets and below */
 @media (max-width: 1023px) {
-
   .login-container {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto; /* Centers horizontally */
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Centers children horizontally */
-  justify-content: center; /* Centers children vertically */
-  min-height: 100%; /* Ensures flexibility */
-  height: 100vh;
-  overflow-y: auto;
-  box-sizing: border-box;
-}
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto; /* Centers horizontally */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers children horizontally */
+    justify-content: center; /* Centers children vertically */
+    min-height: 100%; /* Ensures flexibility */
+    height: 100vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
   .login-form {
     padding: 25px;
     background-color: rgba(255, 255, 255, 0.747);
   }
-
   .terms-section {
     background-color: rgba(255, 255, 255, 0.747); /* Match form */
   }
@@ -323,26 +336,45 @@
 
 /* RESPONSIVE: Mobile */
 @media (max-width: 480px) {
-  
-
   .login-form {
     padding: 20px;
   }
-
   .terms-section {
     padding: 10px;
     margin-top: 15px;
   }
-
   .login-title {
     font-size: 1.5rem;
   }
-
   .input-field {
     padding: 10px 12px;
   }
-
   .terms-checkbox label {
     font-size: 0.85rem; /* Slightly smaller for mobile */
+  }
+  .navigation-links {
+    padding: 12px 15px;
+    gap: 10px; /* Slightly smaller gap for mobile */
+    margin-top: 10px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent for mobile */
+  }
+  .forgot-password-link {
+    font-size: 0.85rem; /* Smaller text for mobile */
+    padding: 8px 10px;
+    width: 100%; /* Full width for better touch target */
+    text-align: center;
+    border-radius: 4px;
+    background-color: #f8f9fa; /* Light background for each link */
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .forgot-password-link:hover {
+    background-color: #e9ecef; /* Slightly darker on hover */
+    color: #3367d6;
+  }
+  .forgot-password-link.disabled {
+    background-color: #f8f9fa;
+    color: #999;
+    cursor: not-allowed;
   }
 }

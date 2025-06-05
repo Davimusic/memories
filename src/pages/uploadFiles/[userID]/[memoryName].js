@@ -14,13 +14,6 @@ import '../../../estilos/general/api/upload/filePermissionViewer.css'
 //import '../../../estilos/general/general.css'
 
 
-
-
-
-
-
-
-
 const ALLOWED_EXTENSIONS = {
   audio: ['mp3'],
   video: ['mp4'],
@@ -532,17 +525,7 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
         <h3 className="title-md">Memory Details</h3>
       </div>
       <div className="permission-details">
-        <div className="permission-item">
-          <span className="permission-label">Role:</span>
-          <span className={`permission-value ${roll === 'User not allowed' ? 'alertColor' : ''}`}>
-            {roll}
-          </span>
-        </div>
-        {roll === 'User not allowed' && (
-          <p className="alertColor">
-            If you believe this is a mistake, please contact the account owner.
-          </p>
-        )}
+        
         <div className="permission-item">
           <span className="permission-label">User:</span>
           <span className="permission-value">{userEmail || 'Loading...'}</span>
