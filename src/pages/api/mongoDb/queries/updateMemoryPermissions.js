@@ -27,6 +27,14 @@ export default async function handler(req, res) {
       uid
     } = req.body;
 
+    console.log('updateMEmoryPermissions.......check');
+    console.log(userId);
+    console.log(memoryName);
+    console.log(currentUser);
+    console.log(token);
+    console.log(uid);
+    
+
     // Validate required fields
     if (!userId || !memoryName || !currentUser || !token || !uid) {
       return res.status(400).json({

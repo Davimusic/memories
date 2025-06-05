@@ -554,6 +554,9 @@ const EditMemoryPermissions = () => {
   const [permissionResult, setPermissionResult] = useState(null);
   const [permissionError, setPermissionError] = useState('');
   const [rollUser, setRollUSer] = useState('private');
+  const [uidChild, setUidChild] = useState(null);
+  const [tokenChild, setTokenChild] = useState(null);
+  const [userEmailChild, setUserEmailChild] = useState(null);
 
   // Estado inicial para detectar cambios
   const initialStateRef = useRef({
@@ -625,25 +628,21 @@ const EditMemoryPermissions = () => {
         throw new Error('User not authenticated');
       }
 
-      const uid = currentUser.uid;
-      const token = await currentUser.getIdToken();
-      const userEmail = currentUser.email;
-
       const response = await fetch('/api/mongoDb/queries/updateMemoryPermissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: urlUserID,
           memoryName: urlMemoryName,
-          currentUser: userEmail,
+          currentUser: userEmailChild,//userEmail,
           visibility,
           invitedEmails,
           fileUploadVisibility: uploadVisibility,
           fileUploadInvitedEmails: uploadInvitedEmails,
           editVisibility,
           editInvitedEmails,
-          uid,
-          token,
+          uid: uidChild,
+          token: tokenChild,
         }),
       });
 
@@ -899,6 +898,9 @@ const EditMemoryPermissions = () => {
       error={permissionError}
       initialData={permissionResult}
       setInitialData={setPermissionResult}
+      setUidChild={setUidChild}
+      setTokenChild={setTokenChild}
+      setUserEmailChild={setUserEmailChild}
     />
   );
 };

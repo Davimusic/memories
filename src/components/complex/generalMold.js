@@ -24,7 +24,10 @@ const GeneralMold = ({
   metaAuthor = '',
   error = '',
   initialData,
-  setInitialData // Function to update child's initialData
+  setInitialData, // Function to update child's initialData
+  setUidChild,
+  setTokenChild,
+  setUserEmailChild
 }) => {
   const [isDarkMode, setIsDarkMode] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,6 +43,18 @@ const GeneralMold = ({
   const { userID, memoryName } = router.query;
 
   console.log(visibility);
+
+  useEffect(() => {
+    setUidChild(uid)
+  }, [uid]);
+
+  useEffect(() => {
+    setTokenChild(token)
+  }, [token]);
+
+  useEffect(() => {
+    setUserEmailChild(userEmail)
+  }, [userEmail]);
   
 
   // Authentication check
