@@ -1,17 +1,40 @@
-/* Contenedor principal */
-.fullscreenContainer {
-  width: 100%;
-  height: 100vh;
+
+
+
+#modal-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-primary);
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: var(--backgroundColor1);
+  align-items: center;
+  z-index: 10000;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+.modalContentMemories {
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg-primary);
+  overflow: auto;
+  position: relative;
 }
 
 .audioPlayerWrapper {
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-primary);
 }
 
 .loading {
@@ -53,7 +76,6 @@
   background: var(--backgroundColor5);
 }
 
-/* Header */
 .headerSection {
   display: flex;
   justify-content: space-between;
@@ -87,14 +109,12 @@
   box-shadow: none;
 }
 
-/* Contenido principal */
 .contentWrapper {
   flex: 1;
   display: flex;
   overflow: hidden;
 }
 
-/* Columna de información */
 .infoColumn {
   flex: 1;
   min-width: 300px;
@@ -142,13 +162,6 @@
   color: var(--text-primary);
 }
 
-
-
-
-
-
-
-/* Columna de archivos */
 .filesColumn {
   flex: 2;
   padding: 20px;
@@ -164,11 +177,9 @@
   flex-direction: column;
   gap: 10px;
   height: 90%;
-  justify-content: space-around; /* Distribuye los elementos equidistantemente en vertical */
+  justify-content: space-around;
 }
 
-
-/* Estilos de carpetas */
 .folderItem {
   background: rgba(0, 0, 0, 0.05);
   border-radius: 0.5em;
@@ -214,21 +225,6 @@
   padding: 20px;
 }
 
-/* Modal de previsualización */
-.folderPreviewModal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.95);
-  z-index: 1000;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  color: white;
-}
-
 .previewTitle {
   margin: 1rem 0;
   text-align: center;
@@ -256,7 +252,6 @@
   transform: scale(1.05);
 }
 
-/* Previews específicos */
 .imagePreview {
   width: 100%;
   height: 150px;
@@ -320,35 +315,49 @@
   border-radius: 8px;
 }
 
-
-
-/* Overlay de reproductor multimedia */
-.mediaOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.95);
-  z-index: 1000;
+.mediaContainer {
+  width: 100vw;
+  height: 100vh;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  z-index: 100;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.menuIconPosition{
-  margin-top: 90;
-  width: 50px;
+.loadingPreview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  height: 100%;
 }
 
-/* Estilos responsivos */
 @media (max-width: 768px) {
   
+  
+
+
   .containerMemories {
     flex-direction: column;
   }
-
 
   .fullscreenContainer {
     background: var(--backgroundColor5);
@@ -409,9 +418,9 @@
   }
 
   .titleContainer {
-    flex-direction: row; /* Keep menu button and title side by side */
+    flex-direction: row;
     align-items: center;
-    justify-content: flex-start; /* Align to the left */
+    justify-content: flex-start;
     gap: 10px;
     width: 100%;
   }
@@ -424,8 +433,8 @@
     justify-content: center;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
-    flex-shrink: 0; /* Prevent button from shrinking */
-    margin-top: 0; /* Remove negative margin */
+    flex-shrink: 0;
+    margin-top: 0;
     z-index: 100;
   }
 
@@ -434,8 +443,8 @@
     min-height: 2em;
     padding: 10px;
     line-height: 1.3;
-    flex-grow: 1; /* Allow title to take remaining space */
-    text-align: left; /* Align title text to the left */
+    flex-grow: 1;
+    text-align: left;
   }
 
   .memoryDescription {
@@ -462,38 +471,14 @@
     height: 120px;
   }
 
-  .folderPreviewModal {
-    padding: 0.5rem;
-    overflow-y: auto;
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  .mediaOverlay {
-    padding: 0;
-    overflow-y: auto;
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-
-
   .memoryTitle,
   .memoryDescription {
     max-height: 150px;
     overflow-y: auto;
   }
 
-   .containerMemories {
+  .containerMemories {
     flex-direction: column;
     padding: 1rem;
   }
-  .memoryTitle {
-    font-size: 1.2rem;
-    text-align: left;
-  }
-  .previewGrid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  }
 }
-

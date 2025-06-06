@@ -17,10 +17,6 @@ import GeneralMold from '@/components/complex/generalMold';
 import Modal from '@/components/complex/modal';
 import EditPermissionsIcon from '@/components/complex/icons/editPermissionsIcon';
 
-
- 
-
-
 export default function MemoriesIndex({ initialMemories, userInfo, error: initialError }) {
   const router = useRouter();
   const [userEmail, setUserEmail] = useState(null);
