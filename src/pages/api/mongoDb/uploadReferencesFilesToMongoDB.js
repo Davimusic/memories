@@ -1,3 +1,4 @@
+//se usa
 import clientPromise from '../connectToDatabase';
 import { checkMemoryPermission } from './queries/checkMemoryPermission';
 
@@ -11,7 +12,7 @@ export default async function handler(req, res) {
     const { memoryData, ownerEmail, uid, token } = req.body;
 
     const permission = await checkMemoryPermission({
-      userId: userID,
+      ownerKey: userID,
       memoryName,
       userEmail: ownerEmail,
       type: 'upload',
@@ -19,7 +20,7 @@ export default async function handler(req, res) {
       token
     });
 
-    console.log('Permiso obtenido:', permission);
+    console.log('Permiso obtenido uploadFilesReferenceseMongoDb:', permission.accessAllowed);
 
     if (!permission.accessAllowed) {
       throw new Error(`Acceso denegado para upload`);
@@ -27,6 +28,10 @@ export default async function handler(req, res) {
 
     // Validación de campos requeridos
     const requiredFields = ['memoryData', 'ownerEmail'];
+
+    
+    
+    
     const missingFields = requiredFields.filter(field => !req.body[field]);
 
     if (missingFields.length > 0) {
@@ -36,8 +41,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // Sanitize ownerEmail to match database key format (e.g., testwebmemories_gmail_com)
-    const sanitizedEmail = ownerEmail.replace(/[@.]/g, '_');
     const memoryTitle = Object.keys(memoryData)[0];
     if (!memoryTitle) {
       return res.status(400).json({
@@ -59,54 +62,38 @@ export default async function handler(req, res) {
     const db = client.db('goodMemories');
     const collection = db.collection('MemoriesCollection');
 
-    // Validar existencia del usuario
-    const userCheck = await collection.findOne(
-      { 
-        _id: 'globalMemories',
-        [sanitizedEmail]: { $exists: true }
-      },
-      { projection: { _id: 0, [sanitizedEmail]: 1 } }
-    );
-
-    if (!userCheck || !userCheck[sanitizedEmail]) {
+    // Validar existencia del usuario usando userID como _id
+    const userDoc = await collection.findOne({ _id: userID });
+    if (!userDoc) {
       return res.status(404).json({
         success: false,
-        message: `El usuario con email ${ownerEmail} no existe en la base de datos`
+        message: `El usuario con ID ${userID} no existe en la base de datos`
       });
     }
 
     // Validar existencia del recuerdo
-    const memoryCheck = await collection.findOne(
-      { 
-        _id: 'globalMemories',
-        [`${sanitizedEmail}.${memoryTitle}`]: { $exists: true }
-      },
-      { projection: { _id: 0, [`${sanitizedEmail}.${memoryTitle}`]: 1 } }
-    );
-
-    if (!memoryCheck || !memoryCheck[sanitizedEmail] || !memoryCheck[sanitizedEmail][memoryTitle]) {
+    if (!userDoc[memoryTitle]) {
       return res.status(404).json({
         success: false,
-        message: `El recuerdo '${memoryTitle}' no existe para el usuario ${ownerEmail}`
+        message: `El recuerdo '${memoryTitle}' no existe para el usuario ${userID}`
       });
     }
 
     // Construir operación de actualización
     const updateOperation = {
       $set: {
-        [`${sanitizedEmail}.${memoryTitle}.activity.last_accessed`]: now.toISOString(),
-        [`${sanitizedEmail}.${memoryTitle}.metadata.lastUpdated`]: now.toISOString(),
-        lastUpdated: now.toISOString()
+        [`${memoryTitle}.activity.last_accessed`]: now.toISOString(),
+        [`${memoryTitle}.metadata.lastUpdated`]: now.toISOString(),
       },
       $push: {
-        [`${sanitizedEmail}.${memoryTitle}.activity.edits`]: memoryContent.activity.edits[0]
+        [`${memoryTitle}.activity.edits`]: memoryContent.activity.edits[0]
       }
     };
 
     // Añadir medios (photos, videos, audios)
     ['photos', 'videos', 'audios'].forEach(type => {
       if (memoryContent.media[type]?.length > 0) {
-        updateOperation.$push[`${sanitizedEmail}.${memoryTitle}.media.${type}`] = {
+        updateOperation.$push[`${memoryTitle}.media.${type}`] = {
           $each: memoryContent.media[type].map(file => ({
             url: file.url,
             metadata: {
@@ -121,7 +108,7 @@ export default async function handler(req, res) {
 
     // Ejecutar actualización
     const result = await collection.updateOne(
-      { _id: 'globalMemories' },
+      { _id: userID },
       updateOperation
     );
 
@@ -156,23 +143,6 @@ export default async function handler(req, res) {
     });
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

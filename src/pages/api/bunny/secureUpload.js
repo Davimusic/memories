@@ -33,13 +33,17 @@ export default async function handler(req, res) {
     
 
     // Log de diagnóstico
-    console.log('Request received:', {
+    /*console.log('Request received:', {
       query: req.query,
       body: req.body,
-    });
+    });*/
 
     const { memoryName, userID } = req.query;
-    const { currentUser: rawUserEmail, type: folderName, fileType, fileName, token, uid } = req.body;
+    const { currentUser, type: folderName, fileType, fileName, token, uid } = req.body;
+
+
+    console.log('secure upload.................XD');
+    
 
 
     
@@ -48,7 +52,7 @@ export default async function handler(req, res) {
     const missingParams = [];
     if (!memoryName) missingParams.push('memoryName');
     if (!userID) missingParams.push('userID');
-    if (!rawUserEmail) missingParams.push('currentUser');
+    if (!currentUser) missingParams.push('currentUser');
     if (!folderName) missingParams.push('type');
     if (!fileType) missingParams.push('fileType');
     if (!fileName) missingParams.push('fileName');
@@ -87,9 +91,7 @@ export default async function handler(req, res) {
       throw new Error(`Extensión de archivo no permitida para el tipo ${fileType}. Extensiones permitidas: ${ALLOWED_EXTENSIONS[fileType].join(', ')}`);
     }
 
-    // Sanitizar usuario
-    const sanitizedUser = rawUserEmail.replace(/[@.]/g, '_');
-    console.log('Usuario sanitizado:', sanitizedUser);
+    
     
     
     
@@ -97,7 +99,7 @@ export default async function handler(req, res) {
     console.log({
       userId: userID,
       memoryName,
-      userEmail: sanitizedUser,
+      userEmail: currentUser,
       type: actionType,
       uid,
       token
@@ -105,15 +107,15 @@ export default async function handler(req, res) {
 
     // Verificar permisos
     const permission = await checkMemoryPermission({
-      userId: userID,
+      ownerKey: userID,
       memoryName,
-      userEmail: sanitizedUser,
+      userEmail: currentUser,
       type: actionType,
       uid,
       token
     });
 
-    console.log('Permiso obtenido:', permission);
+    //console.log('Permiso obtenido:', permission);
 
     if (!permission.accessAllowed) {
       throw new Error(`Acceso denegado para ${actionType}`);

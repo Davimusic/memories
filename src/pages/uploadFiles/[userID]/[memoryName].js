@@ -175,7 +175,7 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
   const [files, setFiles] = useState([]);
   const [uploadStatus, setUploadStatus] = useState('');
   const [uploadResults, setUploadResults] = useState([]);
-  const [folderName, setFolderName] = useState(queryFolderName || '');
+  const [folderName, setFolderName] = useState('ynOJ8y1YDWk9dFaAtPwVZFiC4LRA2aT869U8KtsQ1IU');
   const [isLoading, setIsLoading] = useState(false);
   const [existingFiles, setExistingFiles] = useState([]);
   const [totalSize, setTotalSize] = useState('0 Bytes');
@@ -381,81 +381,158 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
     }
   };
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
-    if (!files.length || !memoryName || !userEmail || !folderName) {
-      setUploadStatus('Missing parameters: file, memory, email, or folder');
-      return;
-    }
+const handleUpload = async (e) => {
+  e.preventDefault();
+  if (!files.length || !memoryName || !userEmail || !folderName) {
+    setUploadStatus('Missing parameters: file, memory, email, or folder');
+    return;
+  }
 
-    if (roll === 'User not allowed') {
-      setUploadStatus('You do not have permission to upload files.');
-      return;
-    }
+  if (roll === 'User not allowed') {
+    setUploadStatus('You do not have permission to upload files.');
+    return;
+  }
 
-    setUploadStatus('Preparing upload...');
-    setIsLoading(true);
+  setUploadStatus('Preparing upload...');
+  setIsLoading(true);
 
-    try {
-      const uploadInfo = {
-        memoryName,
-        userID,
-        folderName,
-        currentUser: userEmail,
-        uid,
-        token,
-      };
+  try {
+    const mediaTypeMap = {
+      image: 'photos',
+      video: 'videos',
+      audio: 'audios',
+    };
 
-      if (navigator.serviceWorker.controller) {
-        const taskKeys = await storeUploadTasks(files.map((f) => f.file), uploadInfo);
-        navigator.serviceWorker.controller.postMessage({
-          type: 'START_UPLOADS',
-          keys: taskKeys,
-        });
-        setUploadStatus('Upload started in background');
-      } else {
-        setUploadStatus('Service Worker not active, uploading directly...');
-        for (const file of files) {
-          const authResponse = await fetch(
-            `/api/bunny/secureUpload?memoryName=${encodeURIComponent(memoryName)}&userID=${userID}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'file-type': file.file.type },
-              body: JSON.stringify({
-                currentUser: userEmail,
-                type: folderName,
-                fileType: file.type,
-                fileName: file.file.name,
-                token,
-                uid,
-              }),
-            }
-          );
+    const uploadedFiles = [];
 
-          if (!authResponse.ok) throw new Error('Failed to get upload URL');
-          const { uploadUrl, headers } = await authResponse.json();
-
-          const uploadResponse = await fetch(uploadUrl, {
-            method: 'PUT',
-            headers: { ...headers, 'Content-Type': file.file.type },
-            body: file.file,
-          });
-
-          if (!uploadResponse.ok) throw new Error('Upload failed');
+    // Subir cada archivo y recolectar la información necesaria
+    for (const file of files) {
+      const authResponse = await fetch(
+        `/api/bunny/secureUpload?memoryName=${encodeURIComponent(memoryName)}&userID=${userID}`,
+        {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json', 
+            'file-type': file.file.type 
+          },
+          body: JSON.stringify({
+            currentUser: userEmail,
+            type: 'uploadFiles',
+            fileType: file.type,
+            fileName: file.file.name,
+            token,
+            uid,
+          }),
         }
-        setUploadStatus('Upload completed directly');
+      );
+
+      if (!authResponse.ok) {
+        throw new Error('Failed to get upload URL');
       }
 
-      setFiles([]);
-      setTotalSize('0 Bytes');
-      setIsModalOpen(true);
-    } catch (error) {
-      setUploadStatus(`Upload preparation error: ${error.message}`);
-      console.error('Upload error:', error);
-    } finally {
-      setIsLoading(false);
+      const { uploadUrl, headers } = await authResponse.json();
+
+      // Reemplazar la parte fija de la URL con la variable de entorno
+      // Dominio original del que proviene la URL de subida
+const originalDomain = 'https://ny.storage.bunnycdn.com';
+// Variables de entorno configuradas
+const envDomain = process.env.NEXT_PUBLIC_BUNNY_CDN_URL;          
+const storageZone = process.env.NEXT_PUBLIC_BUNNY_STORAGE_ZONE;    
+
+// Partiendo de un uploadUrl con esta estructura:
+// https://ny.storage.bunnycdn.com/goodmemories/<resto-de-la-ruta>
+// Extraemos la parte que sigue al dominio + zona
+const pathWithoutZone = uploadUrl.replace(`${originalDomain}/${storageZone}`, "");
+
+// Reconstruimos la URL de subida utilizando el dominio y la zona definidos en las variables de entorno
+const modifiedUploadUrl = `${envDomain}/${pathWithoutZone}`;
+
+console.log('Upload URL original:', uploadUrl);
+console.log('Upload URL modificada:', modifiedUploadUrl);
+console.log('Headers:', headers);
+
+
+      // Usar la URL modificada para la subida
+      const uploadResponse = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': file.file.type },
+        body: file.file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('Upload failed');
+      }
+
+      // Guardar la información del archivo subido usando la publicUrl
+      uploadedFiles.push({
+        type: file.type,
+        url: modifiedUploadUrl, // Se utiliza la publicUrl proporcionada por el endpoint
+        name: file.file.name,
+        size: file.file.size,
+        mimeType: file.file.type,
+      });
     }
-  };
+
+    // Preparar los datos para actualizar la base de datos
+    const memoryUpdate = {
+      memoryData: {
+        [memoryName]: {
+          activity: {
+            last_accessed: new Date().toISOString(),
+            edits: uploadedFiles.map((file) => ({
+              date: new Date().toISOString(),
+              user: userEmail,
+              changes: `Added ${file.type} file: ${file.name}`,
+            })),
+          },
+          media: uploadedFiles.reduce((acc, file) => {
+            const mediaType = mediaTypeMap[file.type];
+            if (mediaType) {
+              acc[mediaType] = acc[mediaType] || [];
+              acc[mediaType].push({
+                url: file.url,
+                metadata: {
+                  size: file.size,
+                  type: file.mimeType,
+                  upload_date: new Date().toISOString(),
+                },
+              });
+            }
+            return acc;
+          }, {}),
+        },
+      },
+      ownerEmail: userEmail,
+      uid,
+      token,
+    };
+
+    // Enviar la solicitud para actualizar la base de datos
+    const mongoResponse = await fetch(
+      `/api/mongoDb/uploadReferencesFilesToMongoDB?memoryName=${encodeURIComponent(memoryName)}&userID=${userID}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(memoryUpdate),
+      }
+    );
+
+    if (!mongoResponse.ok) {
+      throw new Error('Error updating MongoDB');
+    }
+
+    setUploadStatus('Upload completed and database updated successfully');
+    setFiles([]);
+    setTotalSize('0 Bytes');
+    setIsModalOpen(true);
+  } catch (error) {
+    setUploadStatus(`Upload preparation error: ${error.message}`);
+    console.error('Upload error:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const triggerAudioInput = () => audioInputRef.current.click();
   const triggerVideoInput = () => videoInputRef.current.click();
@@ -519,7 +596,7 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
   const leftContent = (
     <div className="file-section-containerDetails p-3">
       <div className="section-header">
-        <h3 className="title-md">{memoryData?.memoryMetadata.title}</h3>
+        <h3 className="title-md">{memoryData?.memoryMetadata?.title}</h3>
       </div>
       <div className="permission-details">
         <div className="permission-item">
