@@ -2,6 +2,7 @@
 @import url('../../../../app/globals.css');
 
 
+
 /* Main editor styles */
 .permissions-editor {
   width: 100%;
@@ -28,6 +29,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 100%; /* Centrado vertical completo */
 }
 
 /* Grid styles */
@@ -150,6 +152,8 @@
 }
 
 .privacy-option {
+  display: flex;
+  align-items: center; /* Centrado vertical en desktop */
   background: var(--bg-secondary);
   border-radius: 12px;
   padding: 1rem;
@@ -171,7 +175,7 @@
   margin-bottom: 0.5rem;
 }
 
-.privacy-details h3 {
+.prunion {
   font-size: 1.2rem;
   margin: 0 0 0.3rem;
 }
@@ -266,6 +270,12 @@
 
   .permissions-grid {
     grid-template-columns: 1fr;
+    height: auto; /* Evita desbordamiento */
+  }
+
+  .permissions-form {
+    height: auto;
+    min-height: 50vh; /* Mantiene un mínimo pero permite crecer */
   }
 
   .header-section .title {
@@ -274,6 +284,26 @@
 
   .permission-icon {
     font-size: 2rem;
-    margin-right: 1rem;
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Diseño vertical para permission-settings */
+  .permission-settings {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Diseño vertical para privacy-option */
+  .privacy-option {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .privacy-option .privacy-icon {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
   }
 }

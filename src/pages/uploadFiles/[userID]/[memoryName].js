@@ -1,18 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import MenuIcon from '@/components/complex/menuIcon';
-import Menu from '@/components/complex/menu';
 import Modal from "@/components/complex/modal";
 import ShowHide from '@/components/complex/showHide';
 import GeneralMold from '@/components/complex/generalMold';
 import { auth } from '../../../../firebase';
 import { toast } from 'react-toastify';
-//import { onAuthStateChanged } from 'firebase/auth';
-
 import '../../../app/globals.css';
 import '../../../estilos/general/api/upload/filePermissionViewer.css'
-//import '../../../estilos/general/general.css'
-
 
 const ALLOWED_EXTENSIONS = {
   audio: ['mp3'],
@@ -102,7 +96,6 @@ const formatFileSize = (bytes) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-// Add getServerSideProps to fetch memory data
 export async function getServerSideProps(context) {
   const { userID, memoryName } = context.query;
 
@@ -124,7 +117,6 @@ export async function getServerSideProps(context) {
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
-      setError(res.status)
     }
 
     const mongoData = await res.json();
@@ -192,13 +184,21 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
   const [invalidFilesError, setInvalidFilesError] = useState(null);
   const [isServiceWorkerReady, setIsServiceWorkerReady] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [roll, setRoll] = useState('false'); // Add roll state
+  const [roll, setRoll] = useState('false');
   const [error, setError] = useState(initialError);
   const [memoryData, setMemoryData] = useState(initialMemoryData);
+  const [initialData, setInitialData] = useState(initialMemoryData);
 
   const audioInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const imageInputRef = useRef(null);
+
+
+  useEffect(() => {
+    console.log(memoryData);
+  }, [memoryData]);
+
+  
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -227,7 +227,6 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
     return () => unsubscribe();
   }, [router]);
 
-  // Role-checking logic similar to MemoryDetail
   useEffect(() => {
     if (!memoryData || !userEmail) return;
 
@@ -389,7 +388,6 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
       return;
     }
 
-    // Check if user is allowed to upload
     if (roll === 'User not allowed') {
       setUploadStatus('You do not have permission to upload files.');
       return;
@@ -518,14 +516,12 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
     );
   };
 
-  // Modified leftContent to include role
   const leftContent = (
     <div className="file-section-containerDetails p-3">
       <div className="section-header">
-        <h3 className="title-md">Memory Details</h3>
+        <h3 className="title-md">{memoryData?.memoryMetadata.title}</h3>
       </div>
       <div className="permission-details">
-        
         <div className="permission-item">
           <span className="permission-label">User:</span>
           <span className="permission-value">{userEmail || 'Loading...'}</span>
@@ -538,7 +534,6 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
     </div>
   );
 
-  // Right Content remains mostly unchanged
   const rightContent = (
     <div className="uploader-content p-3">
       <form onSubmit={handleUpload} className="memory-form">
@@ -755,8 +750,6 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
     </div>
   );
 
-  
-
   return (
     <>
       <GeneralMold
@@ -764,10 +757,15 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
         pageDescription="Upload photos, videos, and audios for your memories."
         leftContent={leftContent}
         rightContent={rightContent}
-        visibility="private"
+        visibility={memoryData?.requiredVisibility || 'private'}
         metaKeywords="file upload, media, photos, videos, audios"
         metaAuthor={userEmail || 'User'}
         error={error}
+        initialData={initialData}
+        setInitialData={setMemoryData}
+        setUidChild={setUid}
+        setTokenChild={setToken}
+        setUserEmailChild={setUserEmail}
       />
 
       <Modal isOpen={!!invalidFilesError} onClose={() => setInvalidFilesError(null)}>

@@ -1,13 +1,15 @@
-import '../../estilos/general/general.css';
+'use client';
+
 import '../../estilos/general/api/payments/index.css';
 import '../../app/globals.css';
 import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
-import Menu from "@/components/complex/menu";
-import MenuIcon from "@/components/complex/menuIcon";
+import Head from 'next/head';
 import Modal from '@/components/complex/modal';
-import { auth } from '../../../firebase'
+import GeneralMold from '@/components/complex/generalMold';
+import { auth } from '../../../firebase';
 import { toast } from 'react-toastify';
+import LoadingMemories from '@/components/complex/loading';
 
 const PaymentPlans = () => {
   const notifySuccess = (message) => toast.success(message);
@@ -16,71 +18,58 @@ const PaymentPlans = () => {
   const [userEmail, setUserEmail] = useState(null);
   const [uid, setUid] = useState(null);
   const [token, setToken] = useState(null);
-
-  // Estados para el menú móvil
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
-  // Estados para el procesamiento de pagos
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState(null);
-  
-  // Estados para la selección de planes
-  const [selectedPlan, setSelectedPlan] = useState("free");
-  const [paymentFrequency, setPaymentFrequency] = useState("monthly");
-  const [customExtraGB, setCustomExtraGB] = useState(0);
-  
-  // Estados para el plan del usuario y errores
+  const [paymentFrequency, setPaymentFrequency] = useState('monthly');
+  const [fiveYearGB, setFiveYearGB] = useState(1);
+  const [monthlyGB, setMonthlyGB] = useState(10);
   const [plan, setPlan] = useState(null);
   const [error, setError] = useState(null);
-  
-  // Estado para controlar la visibilidad del modal
   const [showPlanModal, setShowPlanModal] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const router = useRouter();
 
-  // Efecto para depuración: muestra en consola cambios en plan y error
+  // Authentication handling
   useEffect(() => {
-    console.log("Plan actualizado:", plan);
-    console.log("Error actualizado:", error);
-  }, [plan, error]);
-
-  useEffect(() => {
-      const unsubscribe = auth.onAuthStateChanged(async (user) => {
-        if (user) {
-          setUid(user.uid);
-          try {
-            const idToken = await user.getIdToken();
-            setToken(idToken);
-          } catch (error) {
-            console.error('Error getting token:', error);
-            setUploadStatus('Failed to authenticate user');
-          }
-          const email = user.email || user.providerData?.[0]?.email;
-          setUserEmail(email);
-        } else {
-          const path = window.location.pathname;
-          notifyFailes('Please log in before continuing...');
-          localStorage.setItem('redirectPath', path);
-          localStorage.setItem('reason', 'userEmailValidationOnly');
-          setTimeout(() => {
-            router.push('/login');
-          }, 2000);
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setUid(user.uid);
+        try {
+          const idToken = await user.getIdToken();
+          setToken(idToken);
+        } catch (error) {
+          console.error('Error getting token:', error);
+          setError('Failed to authenticate user');
         }
-      });
-  
-      return () => unsubscribe();
-    }, [router]);
+        const email = user.email || user.providerData?.[0]?.email;
+        setUserEmail(email);
+        setIsAuthenticated(true);
+      } else {
+        const path = window.location.pathname;
+        notifyFailes('Please log in before continuing...');
+        localStorage.setItem('redirectPath', path);
+        localStorage.setItem('reason', 'userEmailValidationOnly');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      }
+    });
 
-  // Efecto principal: obtiene el plan del usuario al montar el componente
+    return () => unsubscribe();
+  }, [router]);
+
+  // Fetch user plan
   useEffect(() => {
-    if (!userEmail) return
-    
+    if (!userEmail) return;
+
     async function fetchPlan() {
       try {
         const response = await fetch('/api/mongoDb/queries/checkUserPlanExistence', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: userEmail })
+          body: JSON.stringify({ email: userEmail }),
         });
 
         if (!response.ok) {
@@ -88,11 +77,12 @@ const PaymentPlans = () => {
         }
 
         const data = await response.json();
-        
-        if (data.success && data.exists) {
-          setPlan(data.plan);
-          setSelectedPlan(data.plan.planName)
-          setShowPlanModal(true); // Mostrar modal cuando existe un plan
+        if (data.success) {
+          if (data.exists) {
+            setPlan(data.plan);
+          } else {
+            setPlan({ planName: 'free' });
+          }
         } else {
           setError(data.message || 'Usuario no encontrado o sin plan.');
         }
@@ -104,74 +94,65 @@ const PaymentPlans = () => {
     fetchPlan();
   }, [userEmail]);
 
-  // Precios base de los planes
-  const planPrices = {
-    free: 0,
-    plan2: 1.49,
-    plan3: 2.49,
+  // Cálculos de precios corregidos con márgenes exactos
+  const calculateFiveYearPrice = (gb) => {
+    // Costo base: $0.02/GB/mes × 60 meses = $1.20/GB por 5 años
+    const baseCost = gb * 0.02 * 60;
+    // Margen 700%: baseCost × 7 = ganancia
+    const profit = baseCost * 7;
+    // Precio total = costo base + ganancia
+    const totalPrice = baseCost + profit;
+    // Aproximar a x.99
+    return Math.floor(totalPrice) + 0.99;
   };
 
-  // Cálculo de precios según frecuencia de pago
-  const plan2Price = paymentFrequency === "yearly" 
-    ? (planPrices.plan2 * 12 * 0.8).toFixed(2)
-    : planPrices.plan2.toFixed(2);
-
-  const plan3Price = paymentFrequency === "yearly" 
-    ? (planPrices.plan3 * 12 * 0.8).toFixed(2)
-    : planPrices.plan3.toFixed(2);
-
-  // Precios para plan personalizado
-  const customBasePrice = 6.49;
-  const customTotalPrice = paymentFrequency === "yearly"
-    ? ((customBasePrice + Number(customExtraGB) * 0.01) * 12 * 0.8).toFixed(2)
-    : (customBasePrice + Number(customExtraGB) * 0.01).toFixed(2);
-  const totalCustomStorage = 500 + Number(customExtraGB);
-
-  // Manejo del menú móvil
-  const handleOpenMenu = () => setIsMenuOpen(true);
-  const handleCloseMenu = () => setIsMenuOpen(false);
-
-  // Obtener detalles del plan
-  const getPlanDetails = (plan) => {
-    const details = {
-      selectedPlan: plan,
-      paymentFrequency: paymentFrequency,
-      totalToPay: 0,
-      storageGB: 0,
-      planName: ""
-    };
-
-    switch(plan) {
-      case "plan2":
-        details.totalToPay = plan2Price;
-        details.storageGB = 50;
-        details.planName = "Starter";
-        break;
-      case "plan3":
-        details.totalToPay = plan3Price;
-        details.storageGB = 100;
-        details.planName = "Pro";
-        break;
-      case "custom":
-        details.totalToPay = customTotalPrice;
-        details.storageGB = totalCustomStorage;
-        details.planName = "Custom";
-        break;
-      default:
-        details.planName = "Free";
+  const calculateMonthlyPrice = (gb, frequency) => {
+    // Costo base mensual: $0.02/GB
+    const baseCostPerMonth = gb * 0.02;
+    // Margen 400%: baseCostPerMonth × 4 = ganancia
+    const profit = baseCostPerMonth * 4;
+    // Precio mensual = costo base + ganancia
+    const monthlyPrice = baseCostPerMonth + profit;
+    
+    if (frequency === 'monthly') {
+      return Math.floor(monthlyPrice * 100) / 100; // Mantener dos decimales
+    } else {
+      // Precio anual = precio mensual × 12 con 20% de descuento
+      const yearlyPrice = monthlyPrice * 12 * 0.8;
+      return Math.floor(yearlyPrice) + 0.99; // Aproximar a x.99
     }
-
-    return details;
   };
 
-  // Procesamiento del pago
-  const handlePayment = async (plan) => {
+  const fiveYearPrice = calculateFiveYearPrice(fiveYearGB).toFixed(2);
+  const monthlyPriceMonthly = calculateMonthlyPrice(monthlyGB, 'monthly').toFixed(2);
+  const monthlyPriceYearly = calculateMonthlyPrice(monthlyGB, 'yearly').toFixed(2);
+
+  // Handle payment
+  const handlePayment = async (planType, gb, frequency = null) => {
     setIsProcessing(true);
     setPaymentError(null);
-    setSelectedPlan(plan);
-    
+
     try {
-      const planDetails = getPlanDetails(plan);
+      let planDetails;
+      if (planType === 'fiveYear') {
+        planDetails = {
+          planType: 'fiveYear',
+          gb: gb,
+          totalToPay: calculateFiveYearPrice(gb).toFixed(2),
+          paymentType: 'one-time',
+        };
+      } else if (planType === 'monthly') {
+        const pricePerPeriod = frequency === 'monthly' 
+          ? calculateMonthlyPrice(gb, 'monthly').toFixed(2)
+          : calculateMonthlyPrice(gb, 'yearly').toFixed(2);
+        planDetails = {
+          planType: 'monthly',
+          gb: gb,
+          totalToPay: pricePerPeriod,
+          paymentType: frequency,
+        };
+      }
+
       localStorage.setItem('selectedPlanDetails', JSON.stringify(planDetails));
       router.push('/payment/payPlan');
     } catch (error) {
@@ -181,317 +162,220 @@ const PaymentPlans = () => {
     }
   };
 
-  return (
-    <div className="payment-page">
-      {/* Componente de menú lateral */}
-      <Menu
-        isOpen={isMenuOpen}
-        onClose={handleCloseMenu}
-        className="backgroundColor1"
-      />
+  // Left content: Plan selection grid
+  const leftContent = (
+    <div className="card-content">
+      <div className="header-section">
+        {plan && (
+          <div className="current-plan">
+            <h5>Current Plan: {plan.planName}</h5>
+            {plan.planName !== 'free' && (
+              <>
+                <p>Status: <span className="status-active">Active</span></p>
+                <button
+                  className="demo-button"
+                  onClick={() => setShowPlanModal(true)}
+                  aria-label="View Current Plan Details"
+                >
+                  View Plan Details
+                </button>
+              </>
+            )}
+          </div>
+        )}
+        <h2 className="card-title">Choose Your Plan</h2>
+      </div>
+      <div className="plans-grid">
+        {/* 5-Year Plan */}
+        <div className="plan-card">
+          <div className="plan-card-header">
+            <h3 className="plan-name">5-Year Plan</h3>
+            <p className="plan-description">One-time payment for 5 years</p>
+          </div>
+          <div className="plan-card-price">
+            ${fiveYearPrice} <span className="price-period">for 5 years</span>
+          </div>
+          <div className="storage-slider">
+            <label>Storage: {fiveYearGB} GB</label>
+            <div className="slider-container">
+              <input
+                type="range"
+                min="1"
+                max="10000"
+                value={fiveYearGB}
+                onChange={(e) => setFiveYearGB(parseInt(e.target.value))}
+                className="styled-slider"
+                aria-label="Select storage for 5-Year Plan"
+              />
+              <div className="slider-ticks">
+                <span className="tick">1GB</span>
+                <span className="tick">100GB</span>
+                <span className="tick">1TB</span>
+                <span className="tick">10TB</span>
+              </div>
+            </div>
+          </div>
+          <div className="gb-input-container">
+            <input
+              type="number"
+              min="1"
+              max="10000"
+              value={fiveYearGB}
+              onChange={(e) => setFiveYearGB(Math.min(10000, Math.max(1, parseInt(e.target.value) || 1)))}
+              className="gb-input"
+              aria-label="Enter storage amount for 5-Year Plan"
+            />
+            <span className="gb-unit">GB</span>
+          </div>
+          <button
+            onClick={() => handlePayment('fiveYear', fiveYearGB)}
+            className="button2 plan-button"
+            disabled={isProcessing}
+            aria-label="Get Started with 5-Year Plan"
+          >
+            {isProcessing ? 'Processing...' : 'Get Started'}
+          </button>
+        </div>
 
-      {/* Modal de plan existente */}
-      {plan && plan.planName !== 'free' && (
-        <Modal 
-          isOpen={showPlanModal} 
-          onClose={() => setShowPlanModal(false)}
-          className="p-2"
-        >
-          <div className="plan-details-modal">
-            <h2>Your Current Plan</h2>
+        {/* Monthly Plan */}
+        <div className="plan-card">
+          <div className="plan-card-header">
+            <h3 className="plan-name">Monthly Plan</h3>
+            <p className="plan-description">Flexible monthly or yearly billing</p>
+          </div>
+          <div className="frequency-toggle">
+            <button
+              onClick={() => setPaymentFrequency('monthly')}
+              className={`toggle-option ${paymentFrequency === 'monthly' ? 'active' : ''}`}
+              aria-label="Select monthly payment frequency"
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setPaymentFrequency('yearly')}
+              className={`toggle-option ${paymentFrequency === 'yearly' ? 'active' : ''}`}
+              aria-label="Select yearly payment frequency"
+            >
+              Yearly <span className="discount-badge">(20% off)</span>
+            </button>
+          </div>
+          <div className="plan-card-price">
+            ${paymentFrequency === 'monthly' ? monthlyPriceMonthly : monthlyPriceYearly}
+            <span className="price-period">/{paymentFrequency === 'monthly' ? 'month' : 'year'}</span>
+          </div>
+          <div className="storage-slider">
+            <label>Storage: {monthlyGB} GB</label>
+            <div className="slider-container">
+              <input
+                type="range"
+                min="10"
+                max="10000"
+                value={monthlyGB}
+                onChange={(e) => setMonthlyGB(parseInt(e.target.value))}
+                className="styled-slider"
+                aria-label="Select storage for Monthly Plan"
+              />
+              <div className="slider-ticks">
+                <span className="tick">10GB</span>
+                <span className="tick">100GB</span>
+                <span className="tick">1TB</span>
+                <span className="tick">10TB</span>
+              </div>
+            </div>
+          </div>
+          <div className="gb-input-container">
+            <input
+              type="number"
+              min="10"
+              max="10000"
+              value={monthlyGB}
+              onChange={(e) => setMonthlyGB(Math.min(10000, Math.max(10, parseInt(e.target.value)) || 10))}
+              className="gb-input"
+              aria-label="Enter storage amount for Monthly Plan"
+            />
+            <span className="gb-unit">GB</span>
+          </div>
+          <button
+            onClick={() => handlePayment('monthly', monthlyGB, paymentFrequency)}
+            className="button2 plan-button"
+            disabled={isProcessing}
+            aria-label="Get Started with Monthly Plan"
+          >
+            {isProcessing ? 'Processing...' : 'Get Started'}
+          </button>
+        </div>
+      </div>
+      {paymentError && <div className="error-message color-error">{paymentError}</div>}
+    </div>
+  );
+
+  // Modal for existing plan details
+  const planDetailsModal = (
+    <Modal isOpen={showPlanModal} onClose={() => setShowPlanModal(false)} className="p-2">
+      <div className="plan-details-modal">
+        <h2>Your Current Plan</h2>
+        {plan && plan.planName === 'free' ? (
+          <p>You are currently on the Free plan.</p>
+        ) : (
+          <>
             <div className="detail-item">
               <span className="detail-label">Plan:</span>
-              <span className="detail-value">{plan.planName || 'Not specified'}</span>
+              <span className="detail-value">{plan?.planName || 'Not specified'}</span>
             </div>
             <div className="detail-item">
               <span className="detail-label">Price:</span>
               <span className="detail-value">
-                ${plan.amountPaid || '0'}/{plan.paymentType || 'monthly'}
+                ${plan?.amountPaid || '0'}/{plan?.paymentType || 'monthly'}
               </span>
             </div>
             <div className="detail-item">
               <span className="detail-label">Storage:</span>
-              <span className="detail-value">{plan.availableGB || '0'}GB</span>
+              <span className="detail-value">{plan?.availableGB || '0'}GB</span>
             </div>
             <div className="detail-item">
               <span className="detail-label">Status:</span>
               <span className="detail-value status-active">Active</span>
             </div>
-            <p className="confirmation-message">
-              You currently have an active plan.
-            </p>
-            <button 
-              className="close-button"
-              onClick={() => setShowPlanModal(false)}
-            >
-              Close
-            </button>
-          </div>
-        </Modal>
-      )}
-
-
-
-      {/* Encabezado de la página */}
-      <header className="payment-header">
-        <div className="header-left">
-          <MenuIcon 
-            onClick={handleOpenMenu} 
-            className="mobile-menu-icon" 
-          />
-          <h1 className="page-title">Choose Your Plan</h1>
-        </div>
-        
-        <div className="header-right">
-          <div className="frequency-toggle">
-            <button
-              onClick={() => setPaymentFrequency("monthly")}
-              className={`toggle-option ${paymentFrequency === "monthly" ? "active" : ""}`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setPaymentFrequency("yearly")}
-              className={`toggle-option ${paymentFrequency === "yearly" ? "active" : ""}`}
-            >
-              Yearly <span className="discount-badge">(20% off)</span>
-            </button>
-          </div>
-          
-          <div className="price-display">
-            <span className="price-amount">
-              ${selectedPlan === "free" ? "0" : 
-               selectedPlan === "plan2" ? plan2Price :
-               selectedPlan === "plan3" ? plan3Price :
-               customTotalPrice}
-            </span>
-            <span className="price-period">
-              /{paymentFrequency === "yearly" ? "year" : 
-                selectedPlan === "free" ? "forever" : "mo"}
-            </span>
-          </div>
-        </div>
-      </header>
-
-      {/* Contenedor principal de los planes */}
-      <div className="plans-container">
-        <div className="plans-grid">
-          {/* Plan Gratis */}
-          <div
-            className={`plan-card ${selectedPlan === "free" ? "selected" : ""}`}
-            onClick={() => setSelectedPlan("free")}
-          >
-            <div className="plan-card-header">
-              <h3 className="plan-name">Free</h3>
-              <p className="plan-description">Start exploring basic features</p>
-            </div>
-            <div className="plan-card-price">$0<span className="price-period">/forever</span></div>
-            <ul className="plan-features-list">
-              <li>Up to 3GB Storage (monthly limit)</li>
-              <li>Basic Memories (monthly limit)</li>
-              <li>2 QR Codes per month</li>
-            </ul>
-            <button 
-              onClick={() => router.push('/createNewMemory')}
-              className="plan-button outline"
-            >
-              Get Started
-            </button>
-          </div>
-
-          {/* Plan Starter */}
-          <div
-            className={`plan-card ${selectedPlan === "plan2" ? "selected" : ""}`}
-            onClick={() => setSelectedPlan("plan2")}
-          >
-            <div className="plan-card-header">
-              <div className="plan-name-wrapper">
-                <h3 className="plan-name">Starter</h3>
-                <span className="popular-badge">Popular</span>
-              </div>
-              <p className="plan-description">For small teams</p>
-            </div>
-            <div className="plan-card-price">
-              ${plan2Price}
-              <span className="price-period">/{paymentFrequency === "yearly" ? "year" : "mo"}</span>
-            </div>
-            <ul className="plan-features-list">
-              <li>Up to 50GB Storage (monthly limit)</li>
-              <li>Advanced Sharing (monthly limit)</li>
-              <li>Unlimited QR Codes per month</li>
-              <li>Up to 5 Users</li>
-            </ul>
-            <button
-              onClick={() => handlePayment("plan2")}
-              className="plan-button primary"
-              disabled={isProcessing}
-            >
-              {isProcessing ? 'Processing...' : 'Get Started'}
-            </button>
-          </div>
-
-          {/* Plan Pro */}
-          <div
-            className={`plan-card ${selectedPlan === "plan3" ? "selected" : ""}`}
-            onClick={() => setSelectedPlan("plan3")}
-          >
-            <div className="plan-card-header">
-              <h3 className="plan-name">Pro</h3>
-              <p className="plan-description">For growing teams</p>
-            </div>
-            <div className="plan-card-price">
-              ${plan3Price}
-              <span className="price-period">/{paymentFrequency === "yearly" ? "year" : "mo"}</span>
-            </div>
-            <ul className="plan-features-list">
-              <li>Up to 100GB Storage (monthly limit)</li>
-              <li>Advanced Sharing (monthly limit)</li>
-              <li>Unlimited QR Codes per month</li>
-              <li>Up to 5 Users</li>
-              <li>Priority Support</li>
-            </ul>
-            <button
-              onClick={() => handlePayment("plan3")}
-              className="plan-button primary"
-              disabled={isProcessing}
-            >
-              {isProcessing ? 'Processing...' : 'Get Started'}
-            </button>
-          </div>
-
-          {/* Plan Personalizado */}
-          <div
-            className={`plan-card ${selectedPlan === "custom" ? "selected" : ""}`}
-            onClick={() => setSelectedPlan("custom")}
-          >
-            <div className="plan-card-header">
-              <h3 className="plan-name">Custom</h3>
-              <p className="plan-description">Tailored to your needs</p>
-            </div>
-            <div className="plan-card-price">
-              ${customTotalPrice}
-              <span className="price-period">/{paymentFrequency === "yearly" ? "year" : "mo"}</span>
-            </div>
-            <ul className="plan-features-list">
-              <li>{totalCustomStorage}GB Storage (monthly limit)</li>
-              <li>Advanced Sharing (monthly limit)</li>
-              <li>Unlimited QR Codes per month</li>
-              <li>Up to 5 Users</li>
-              <li>Priority Support</li>
-            </ul>
-            {selectedPlan === "custom" && (
-              <div className="custom-plan-options">
-                <div className="storage-slider-header">
-                  <span>Additional Storage</span>
-                  <span className="storage-amount">{totalCustomStorage}GB</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="500"
-                  value={customExtraGB}
-                  onChange={(e) => setCustomExtraGB(e.target.value)}
-                  className="storage-slider"
-                />
-                <div className="storage-labels">
-                  <span>500GB Base</span>
-                  <span>+ {customExtraGB}GB Extra</span>
-                </div>
-              </div>
-            )}
-            <button
-              onClick={() => handlePayment("custom")}
-              className="plan-button primary"
-              disabled={isProcessing}
-            >
-              {isProcessing ? 'Processing...' : 'Get Custom Plan'}
-            </button>
-          </div>
-        </div>
-
-        {paymentError && (
-          <div className="payment-error">
-            {paymentError}
-          </div>
+          </>
         )}
+        <button
+          className="close-button"
+          onClick={() => setShowPlanModal(false)}
+          aria-label="Close Plan Details Modal"
+        >
+          Close
+        </button>
       </div>
+    </Modal>
+  );
 
-      {/* Estilos globales */}
-      <style jsx global>{`
-        
-
-        
-
-        
-
-        /* Estilos específicos para el modal de detalle de plan */
-        .plan-details-modal {
-          padding: 20px;
-          max-width: 400px;
-          background: white;
-        }
-
-        .plan-details-modal h2 {
-          margin-bottom: 1.5rem;
-          font-size: 1.5rem;
-          color: var(--foreground);
-          text-align: center;
-        }
-
-        .detail-item {
-          display: flex;
-          justify-content: space-between;
-          margin: 15px 0;
-          padding: 12px;
-          background-color: var(--muted);
-          border-radius: var(--radius);
-          font-size: 0.95rem;
-        }
-
-        .detail-label {
-          font-weight: 600;
-          color: var(--foreground);
-        }
-
-        .detail-value {
-          color: var(--muted-foreground);
-        }
-
-        .status-active {
-          color: #38a169;
-          font-weight: 600;
-        }
-
-        .close-button {
-          margin-top: 20px;
-          width: 100%;
-          padding: 12px;
-          background-color: var(--primary);
-          color: var(--primary-foreground);
-          border: none;
-          border-radius: var(--radius);
-          cursor: pointer;
-          transition: background-color 0.3s;
-          font-weight: 500;
-        }
-
-        .close-button:hover {
-          background-color: #2563eb;
-        }
-
-        @media (max-width: 480px) {
-          .plan-details-modal {
-            padding: 15px;
-            width: 90vw;
-          }
-        }
-      `}</style>
-    </div>
+  return (
+    <>
+      <Head>
+        <title>Choose Your Plan | Memory App</title>
+        <meta name="description" content="Select a payment plan to unlock premium features in the Memory App" />
+        <meta name="keywords" content="payment plans, memory app, subscription" />
+        <meta name="robots" content="index, follow" />
+      </Head>
+      {planDetailsModal}
+      {isAuthenticated ? (
+        <GeneralMold
+          pageTitle="Choose Your Plan"
+          pageDescription="Select a payment plan to unlock premium features in the Memory App"
+          leftContent={leftContent}
+          visibility="public"
+          setUidChild={setUid}
+          setTokenChild={setToken}
+          setUserEmailChild={setUserEmail}
+        />
+      ) : (
+        <LoadingMemories />
+      )}
+    </>
   );
 };
 
 export default PaymentPlans;
-
 
 
 

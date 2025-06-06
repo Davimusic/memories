@@ -5,6 +5,7 @@ import Head from 'next/head';
 import './globals.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import InternetStatus from '@/components/complex/internetStatus';
 
 export default function RootLayout({ children }) {
   return (
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
         <title>Mi Aplicación con Fuente Global</title>
       </Head>
       <body>
+        <InternetStatus/>
         <main>
           {children}
         </main>

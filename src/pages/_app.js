@@ -78,12 +78,17 @@ export default function App({ Component, pageProps }) {
   );
 }*/
 
+
+'use client';
+
+
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { initializeApp, getApps } from 'firebase/app';
 import { ToastContainer } from 'react-toastify';
 import Head from 'next/head';
+import InternetStatus from '@/components/complex/internetStatus';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Initialize Firebase client SDK
@@ -142,6 +147,7 @@ export default function App({ Component, pageProps }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <link rel="apple-touch-icon" href="/logo.png" />
       </Head>
+      <InternetStatus/>
       <PayPalScriptProvider
         options={{
           'client-id': 'AbyHsDXyJLxKBgCHv9BAeVbt-JLALZCJ4q_Z1m-dKA58ime8dXCgHL0ycehEvOH1ceJvjCzUOmzUAADN',

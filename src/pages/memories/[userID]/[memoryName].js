@@ -17,7 +17,7 @@ import LoadingMemories from '@/components/complex/loading';
 import { auth } from '../../../../firebase';
 import Head from 'next/head';
 import Modal from '@/components/complex/modal';
-import InternetStatus from '@/components/complex/internetStatus';
+//import InternetStatus from '@/components/complex/internetStatus';
 
 const Video = dynamic(() => import('../../../components/simple/video'), { ssr: false });
 const AudioPlayer = dynamic(() => import('../../../components/complex/audioPlayer'), { ssr: false });
@@ -477,8 +477,7 @@ const MemoryDetail = () => {
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         </Head>
 
-        <InternetStatus setModalContent={setModalContent} setIsModalOpen={setIsModalOpen} />
-
+        
         <header className="header">
           <button
             className="back-button button"

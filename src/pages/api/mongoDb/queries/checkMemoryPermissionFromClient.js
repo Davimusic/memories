@@ -4,7 +4,8 @@ import { verifyLoginUser } from '../../firebase/verifyLoginUser';
 const typeTranslations = {
   memories: 'view',
   uploadFiles: 'upload',
-  editFiles: 'edit',
+  //editFiles: 'edit',
+  editMemories: 'edit',
   editAccessibility: 'editPermissions',
 };
 

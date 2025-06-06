@@ -13,8 +13,6 @@ import { toast } from 'react-toastify';
 import Head from 'next/head';
 import GeneralMold from '@/components/complex/generalMold';
 
-
-
 // Visibility Modal Component
 const VisibilityModal = ({
   isOpen,
