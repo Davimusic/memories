@@ -1,9 +1,6 @@
-
 'use client';
 
-//import '../../estilos/general/general.css';
-import '../../estilos/general/api/payments/payPlan.css';
-import '../../app/globals.css';
+import '../../estilos/general/api/payments/payPLan.css';
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
