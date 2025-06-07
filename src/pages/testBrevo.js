@@ -17,7 +17,7 @@ export default function EmailSender() {
     setStatus({ message: "Enviando...", isError: false });
     
     try {
-      const res = await fetch("/api/brevo/sendEmail", {
+      const res = await fetch("/api/brevo/sendEmailFromClient", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
