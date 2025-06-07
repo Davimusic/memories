@@ -18,7 +18,7 @@ const LoadingMemories = () => {
       </Head>
       
         <div
-        className='modal-content'
+          className='modal-content'
           //className="loading backgroundColor1"
           role="status"
           aria-live="polite"

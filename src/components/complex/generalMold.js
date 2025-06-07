@@ -245,7 +245,7 @@ useEffect(() => {
   );
 
   return (
-    <div  className={!(router.pathname === "/payment/payPlan"  ) ? "general-mold" : ""}  role="main" aria-label="Main content">
+    <div  className={!(basePath === "/payment" || basePath === "/editAccessibility" ) ? "general-mold" : ""}  role="main" aria-label="Main content">
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
@@ -278,10 +278,10 @@ useEffect(() => {
         {themeToggleButton}
         <div className="visibility">
           <span className="visibility-icon" aria-hidden="true">
-            {visibility === 'public' ? '👁️' : visibility === 'private' ? '🔒' : '👥'}
+            {visibility === 'public' ? '👁️' : visibility === 'private' ? '🔒' : ''}
           </span>
           <span className="visibility-label content-small">
-            {visibility === 'public' ? 'Public' : visibility === 'private' ? 'Private' : 'Guests Only'}
+            {visibility === 'public' ? 'Public' : visibility === 'private' ? 'Private' : ''}
           </span>
         </div>
       </header>

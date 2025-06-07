@@ -363,7 +363,7 @@ const PaymentPlans = () => {
           pageTitle="Choose Your Plan"
           pageDescription="Select a payment plan to unlock premium features in the Memory App"
           leftContent={leftContent}
-          visibility="public"
+          visibility="none"
           setUidChild={setUid}
           setTokenChild={setToken}
           setUserEmailChild={setUserEmail}

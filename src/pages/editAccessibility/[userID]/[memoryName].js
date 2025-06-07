@@ -1,8 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import Menu from '@/components/complex/menu';
-import MenuIcon from '@/components/complex/menuIcon';
-//import '../../../estilos/general/createNewMemory.css';
 import '../../../estilos/general/api/edit/editAccessibility.css';
 import '../../../app/globals.css';
 import Modal from '@/components/complex/modal';
@@ -10,7 +7,6 @@ import LoadingMemories from '@/components/complex/loading';
 import { auth } from '../../../../firebase';
 import ErrorComponent from '@/components/complex/error';
 import { toast } from 'react-toastify';
-import Head from 'next/head';
 import GeneralMold from '@/components/complex/generalMold';
 
 // Visibility Modal Component

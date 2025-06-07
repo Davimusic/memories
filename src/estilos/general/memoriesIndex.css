@@ -95,6 +95,7 @@
 .accionsContainer {
   display: flex;
   justify-content:  space-between; /* Espacio igual entre cada elemento */
+  width: 100%;
 }
 
 .no-memories {

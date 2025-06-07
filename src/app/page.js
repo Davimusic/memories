@@ -132,6 +132,14 @@ const GeneralMold = ({
           ☰
         </button>
         {themeToggleButton}
+        <div className="visibility">
+          <span className="visibility-icon" aria-hidden="true">
+            
+          </span>
+          <span className="visibility-label content-small">
+            
+          </span>
+        </div>
 
       </header>
 
