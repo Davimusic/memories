@@ -1,10 +1,6 @@
 import React from 'react';
 import '../../estilos/general/memoryLogo.css';
-
-
-
-
-
+import '../../app/globals.css';
 
 const MemoryLogo = ({ size = 100, animate = true }) => {
   const animationClass = animate ? 'animate' : '';
@@ -17,15 +13,15 @@ const MemoryLogo = ({ size = 100, animate = true }) => {
       xmlns="http://www.w3.org/2000/svg"
       style={{ cursor: 'pointer' }}
     >
-      {/* Fondo circular con tono cálido */}
-      <circle cx="50" cy="50" r="45" fill="#2c1a3a" className={`background-pulse ${animationClass}`} />
+      {/* Fondo circular con tono de fondo primario */}
+      <circle cx="50" cy="50" r="45" fill="var(--bg-primary)" className={`background-pulse ${animationClass}`} />
 
       {/* Gradiente para los elementos */}
       <defs>
         <linearGradient id="memoryGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#8a5a44" />
-          <stop offset="50%" stopColor="#d4a373" />
-          <stop offset="100%" stopColor="#f8e6d9" />
+          <stop offset="0%" stopColor="var(--gradient-color1)" />
+          <stop offset="50%" stopColor="var(--gradient-color2)" />
+          <stop offset="100%" stopColor="var(--gradient-color3)" />
         </linearGradient>
         
         {/* Filtro para suavizar las animaciones */}
@@ -58,7 +54,7 @@ const MemoryLogo = ({ size = 100, animate = true }) => {
         style={{ animationDelay: '0.5s' }}
       />
       
-      {/* Tres bolas flotantes (versión anterior mejorada) */}
+      {/* Tres bolas flotantes */}
       <circle cx="35" cy="65" r="4" fill="url(#memoryGradient)" className={`memory-dot ${animationClass}`} style={{ animationDelay: '0.1s' }} />
       <circle cx="50" cy="70" r="4" fill="url(#memoryGradient)" className={`memory-dot ${animationClass}`} style={{ animationDelay: '0.3s' }} />
       <circle cx="65" cy="65" r="4" fill="url(#memoryGradient)" className={`memory-dot ${animationClass}`} style={{ animationDelay: '0.5s' }} />

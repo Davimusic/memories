@@ -50,20 +50,20 @@ export default async function handler(req, res) {
     }
 
     // Sanitize userId
-    const sanitizedUser = userEmail.replace(/[@.]/g, '_');
+    //const sanitizedUser = userEmail.replace(/[@.]/g, '_');
 
     console.log(userId);
     console.log(memoryName);
-    console.log(sanitizedUser);
-    console.log(FOLDER_ACTIONS.editMemories);
+    
+    //console.log(FOLDER_ACTIONS.editMemories);
     
 
     // Check permissions
     const permission = await checkMemoryPermission({
-      userId,
+      ownerKey: userId,
       memoryName,
-      userEmail: sanitizedUser,
-      type: FOLDER_ACTIONS.editMemories,
+      userEmail,
+      type: 'edit',
       uid, 
       token
     });

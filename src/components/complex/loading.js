@@ -1,8 +1,6 @@
 import React from 'react';
-import Head from 'next/head'; // Assuming Next.js for <Head> component
-//import '../../estilos/general/general.css';
+import Head from 'next/head'; 
 import '../../app/globals.css';
-import BackgroundGeneric from './backgroundGeneric';
 import MemoryLogo from './memoryLogo';
 
 const LoadingMemories = () => {
@@ -18,8 +16,9 @@ const LoadingMemories = () => {
         <meta name="author" content="Your App Name" />
         <link rel="canonical" href="https://yourdomain.com/loading" /> {/* Adjust to your domain */}
       </Head>
-      <BackgroundGeneric showImageSlider={false}>
+      
         <div
+        className='modal-content'
           //className="loading backgroundColor1"
           role="status"
           aria-live="polite"
@@ -43,7 +42,7 @@ const LoadingMemories = () => {
             Loading...
           </p>
         </div>
-      </BackgroundGeneric>
+      
     </div>
   );
 };
