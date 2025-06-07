@@ -245,7 +245,7 @@ useEffect(() => {
   );
 
   return (
-    <div  className={!(router.pathname === "/payment/payPlan" || basePath === "editMemories" || basePath === "uploadFiles") ? "general-mold" : ""}  role="main" aria-label="Main content">
+    <div  className={!(router.pathname === "/payment/payPlan"  ) ? "general-mold" : ""}  role="main" aria-label="Main content">
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
