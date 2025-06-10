@@ -65,9 +65,7 @@ const MemoryDetail = () => {
 
   const qrCodeUrl =
     userID && memoryName
-      ? `${baseUrl}${currentPath}/memory/${encodeURIComponent(
-          userID
-        )}/${encodeURIComponent(memoryName)}`
+      ? `${baseUrl}${currentPath}`
       : 'https://example.com';
   
 
