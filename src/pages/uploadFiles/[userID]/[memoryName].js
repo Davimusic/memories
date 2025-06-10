@@ -200,7 +200,7 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
 
   
 
-  useEffect(() => {
+  /*useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         setUid(user.uid);
@@ -225,7 +225,7 @@ const DirectBunnyUploader = ({ initialMemoryData, userID, memoryName, error: ini
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [router]);*/
 
   useEffect(() => {
     if (!memoryData || !userEmail) return;

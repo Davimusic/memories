@@ -207,12 +207,7 @@ const PaymentPlans = () => {
                 className="styled-slider"
                 aria-label="Select storage for 5-Year Plan"
               />
-              <div className="slider-ticks">
-                <span className="tick">1GB</span>
-                <span className="tick">100GB</span>
-                <span className="tick">1TB</span>
-                <span className="tick">10TB</span>
-              </div>
+              
             </div>
           </div>
           <div className="gb-input-container">
@@ -275,12 +270,7 @@ const PaymentPlans = () => {
                 className="styled-slider"
                 aria-label="Select storage for Monthly Plan"
               />
-              <div className="slider-ticks">
-                <span className="tick">10GB</span>
-                <span className="tick">100GB</span>
-                <span className="tick">1TB</span>
-                <span className="tick">10TB</span>
-              </div>
+              
             </div>
           </div>
           <div className="gb-input-container">

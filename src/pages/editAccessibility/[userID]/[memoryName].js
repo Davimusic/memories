@@ -790,10 +790,7 @@ const EditMemoryPermissions = () => {
   const rightContent = (
     <div className="permissions-editor">
       {isLoading ? (
-        <div className="loading-container">
-          <LoadingMemories />
-          <p>Loading permission settings...</p>
-        </div>
+        null
       ) : permissionError ? (
         <ErrorComponent
           errorMessage={permissionError}

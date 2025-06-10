@@ -14,11 +14,7 @@ export const checkMemoryPermission = async ({ ownerKey, memoryName, type, uid, t
 
   let accessInformation = {};
 
-  // Verify user authentication
-  const loginResult = await verifyLoginUser({ uid, token });
-  if (!loginResult.success) {
-    throw new Error('Authentication failed: ' + loginResult.error);
-  }
+  
 
   const client = await clientPromise;
   const db = client.db('goodMemories');
@@ -55,6 +51,26 @@ export const checkMemoryPermission = async ({ ownerKey, memoryName, type, uid, t
 
   console.log('accessConfig:', accessConfig);
 
+  if(accessConfig.visibility === 'public'){
+    return {
+      status: 200,
+      requiredVisibility: accessConfig.visibility,
+      accessAllowed: true,
+      memoryMetadata: memoryConfig.metadata,
+    };
+  }
+
+  const loginResult = await verifyLoginUser({ uid, token });
+
+  if (!loginResult.success) {
+    return {
+      status: 401,
+      message: 'Authentication is mandatory',
+    };
+  }
+
+
+
   if (!accessConfig) {
     throw new Error(`Configuración de acceso para ${type} no encontrada`);
   }
@@ -84,10 +100,9 @@ export const checkMemoryPermission = async ({ ownerKey, memoryName, type, uid, t
       break;
 
     case 'invitation':
-      const sanitizedInvites = (accessConfig.invitedEmails || []).map(email =>
-        email.replace(/[@.]/g, '_')
-      );
-      hasPermission = sanitizedInvites.includes(sanitizedCurrentUser) || sanitizedCurrentUser === ownerKey;
+      const sanitizedInvites = accessConfig.invitedEmails || [];
+      hasPermission = sanitizedInvites.includes(userEmail) || sanitizedCurrentUser === ownerKey;
+      console.log('invitation check:', { userEmail, sanitizedInvites, ownerKey });
       break;
 
     default:

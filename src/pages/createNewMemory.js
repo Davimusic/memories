@@ -748,7 +748,7 @@ const CreateNewMemory = () => {
           </div>
         </div>
       ) : (
-        <LoadingMemories />
+        null
       )}
     </>
   );

@@ -93,7 +93,8 @@ body {
 
 
 
-.color1 { color: var(--color1); }
+/*.color1 { color: var(--color1); }*/
+.color1 { color: var(--text-primary); }
 .color2 { color: var(--color2); }
 .color3 { color: var(--color3); }
 .color4 { color: var(--color4); }
@@ -141,7 +142,7 @@ body {
   
   
   width: 100%;
-  height: 100%;
+  height: 100vh;
   overflow: auto;
   z-index: 1001;
    background: var(--bg-primary);

@@ -4,11 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Menu from './menu';
-//import InternetStatus from './internetStatus';
 import '../../app/globals.css';
 import '../../estilos/general/generalMold.css';
 import LoadingMemories from './loading';
-import ErrorComponent from './error';
 import { auth } from '../../../firebase'; 
 
 const GeneralMold = ({
@@ -22,7 +20,7 @@ const GeneralMold = ({
   metaAuthor = '',
   error = '',
   initialData,
-  setInitialData, // Function to update child's initialData
+  setInitialData,
   setUidChild,
   setTokenChild,
   setUserEmailChild
@@ -31,9 +29,9 @@ const GeneralMold = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState(null);
-  const [uid, setUid] = useState(null);
-  const [token, setToken] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
+  const [uid, setUid] = useState('');
+  const [token, setToken] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [permissionResult, setPermissionResult] = useState(initialData || null);
   const [isLoading, setIsLoading] = useState(true);
   const [permissionError, setPermissionError] = useState('');
@@ -41,38 +39,23 @@ const GeneralMold = ({
   const router = useRouter();
   const { userID, memoryName } = router.query;
 
-  
-  
-  
+  // Pass uid, token, userEmail to parent if provided
+  useEffect(() => {
+    if (setUidChild && uid !== undefined && uid !== null) setUidChild(uid);
+  }, [uid, setUidChild]);
 
   useEffect(() => {
-    console.log(basePath);
-    console.log(router.pathname);
+    if (setTokenChild && token !== undefined && token !== null) setTokenChild(token);
+  }, [token, setTokenChild]);
+
+  useEffect(() => {
+    if (setUserEmailChild && userEmail !== undefined && userEmail !== null) setUserEmailChild(userEmail);
+  }, [userEmail, setUserEmailChild]);
+
+  // Fetch permission data and handle authentication based on requiredVisibility
+  useEffect(() => {
+    console.log('D');
     
-  }, [basePath]);
-
-  useEffect(() => {
-  if (setUidChild && uid !== undefined && uid !== null) {
-    setUidChild(uid);
-  }
-}, [uid]);
-
-useEffect(() => {
-  if (setTokenChild && token !== undefined && token !== null) {
-    setTokenChild(token);
-  }
-}, [token]);
-
-useEffect(() => {
-  if (setUserEmailChild && userEmail !== undefined && userEmail !== null) {
-    setUserEmailChild(userEmail);
-  }
-}, [userEmail]);
-
-  
-
-  // Authentication check
-  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         setUid(user.uid);
@@ -83,114 +66,101 @@ useEffect(() => {
           console.error('Error getting token:', error);
           setPermissionError('Authentication failed: Unable to verify user credentials.');
           setIsLoading(false);
+          return;
         }
         const email = user.email || user.providerData?.[0]?.email;
         setUserEmail(email);
       } else {
-        const path = window.location.pathname;
-        localStorage.setItem('redirectPath', path);
-        localStorage.setItem('reason', 'userEmailValidationOnly');
-        router.push('/login');
-        setIsLoading(false);
+        setUid(null);
+        setToken(null);
+        setUserEmail(null);
       }
     });
 
-    return () => unsubscribe();
-  }, [router]);
-
-  // Fetch permission data
-  useEffect(() => {
-    const fetchPermissionData = async () => {
-      const publicRoutes = ['/memories', '/createNewMemory', '/payment', '/payment/payPlan'];
-      const currentPath = router.pathname;
-
-      console.log(currentPath);
+    // Fetch permission data immediately, not dependent on user auth state
+    
+    if ([uid, token, userEmail].every(value => value === null)) {
+      fetchPermissionData(); 
+    } 
+    
+    if (uid != '' && token != '' && userEmail != '' ) {
+      console.log(uid);
+      console.log(token);
+      console.log(userEmail);
       
-
-      if (publicRoutes.includes(currentPath)) {
-        console.log('entra');
-        
-        const publicData = { accessAllowed: true };
-        setPermissionResult(publicData);
-        setInitialData?.(publicData); // Update child's initialData
-        setIsLoading(false);
-        return;
-      }
-
-      
-
-      if (!uid || !token || !userEmail) {
-        setPermissionError('Authentication incomplete: Missing user ID, token, or email.');
-        setIsLoading(false);
-        return;
-      }
-
-      if (initialData && initialData.accessInformation && initialData.memoryMetadata) {
-        setPermissionResult(initialData);
-        setIsLoading(false);
-        return;
-      }
-
-      const dynamicRoute = router.pathname;
-      const basePath = dynamicRoute.split('/')[1];
-      let realRoute = dynamicRoute;
-      setBasePath(basePath)
-      console.log(basePath);
-      
-
-      if (userID && memoryName) {
-        realRoute = `/${basePath}/${userID}/${memoryName}`;
-      } else {
-        setPermissionError('Invalid URL: Missing userID or memoryName.');
-        setIsLoading(false);
-        return;
-      }
-
-      console.log({uid,
-            token,
-            userEmail,
-            path: realRoute,});
-      
-
-      try {
-        const response = await fetch('/api/mongoDb/queries/checkMemoryPermissionFromClient', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            uid,
-            token,
-            userEmail,
-            path: realRoute,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Permission data:', data);
-        setPermissionResult(data);
-        setInitialData?.(data); // Update child's initialData
-        if (!data.accessAllowed) {
-          const memoryTitle = data.memoryMetadata?.title || 'this memory';
-          setPermissionError(
-            data.accessInformation?.reason ||
-            `Access denied: You do not have permission to view ${memoryTitle}, which requires ${data.requiredVisibility} visibility.`
-          );
-        }
-        setIsLoading(false);
-      } catch (err) {
-        console.error('Fetch error:', err.message);
-        setPermissionError(`Failed to verify permissions: ${err.message}`);
-        setIsLoading(false);
-      }
-    };
-
-    if (uid && userEmail && token) {
-      fetchPermissionData();
+      fetchPermissionData(); 
     }
-  }, [uid, userEmail, token, initialData, router.pathname, userID, memoryName, setInitialData]);
+    
+
+    
+
+    return () => unsubscribe();
+  }, [router, uid, token, userEmail]);
+
+  const fetchPermissionData = async () => {
+    const dynamicRoute = router.pathname;
+    const basePath = dynamicRoute.split('/')[1];
+    let realRoute = dynamicRoute;
+    setBasePath(basePath);
+
+    if (userID && memoryName) {
+      realRoute = `/${basePath}/${userID}/${memoryName}`;
+    }/* else {
+      console.log('es aca');
+      
+      setPermissionError('Invalid URL: Missing userID or memoryName.');
+      setIsLoading(false);
+      return;
+    }*/
+
+    
+
+    try {
+      const response = await fetch('/api/mongoDb/queries/checkMemoryPermissionFromClient', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: uid || null,
+          token: token || null,
+          userEmail: userEmail || null,
+          path: realRoute,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Permission data:', data);
+      setPermissionResult(data);
+
+      if (data.requiredVisibility === 'public') {
+        // Public pages don't need authentication
+        console.log('si');
+        //setPermissionResult({accessAllowed: true})
+        setIsLoading(false);
+      } else {
+        // Private pages require authentication
+        if (!uid) {
+          const path = window.location.pathname;
+          localStorage.setItem('redirectPath', path);
+          localStorage.setItem('reason', 'userEmailValidationOnly');
+          router.push('/login');
+        } else if (data.accessAllowed) {
+          //setInitialData(data)
+          setIsLoading(false);
+        } else {
+          setPermissionError(data.accessInformation?.reason || 'Access denied');
+          setIsLoading(false);
+        }
+      }
+    } catch (err) {
+      console.error('Fetch error:', err.message);
+      setPermissionError(`Failed to verify permissions: ${err.message}`);
+      setIsLoading(false);
+    }
+  };
 
   // Toggle dark mode
   useEffect(() => {
@@ -245,7 +215,7 @@ useEffect(() => {
   );
 
   return (
-    <div  className={!(basePath === "/payment" || basePath === "/editAccessibility" ) ? "general-mold" : ""}  role="main" aria-label="Main content">
+    <div className={!(basePath === "/payment" || basePath === "/editAccessibility") ? "general-mold" : ""} role="main" aria-label="Main content">
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
@@ -255,12 +225,11 @@ useEffect(() => {
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
-        <meta name="robots" content={visibility === 'public' ? 'index, follow' : 'noindex'} />
+        <meta name="robots" content={permissionResult?.requiredVisibility === 'public' ? 'index, follow' : 'noindex'} />
         <link rel="canonical" href={typeof window !== 'unknown' ? window.location.href : ''} />
       </Head>
 
-      
-      <header className="header">
+      <header className="headerGeneralMold">
         <button
           className="back-button button"
           onClick={() => window.history.back()}
@@ -278,11 +247,15 @@ useEffect(() => {
         {themeToggleButton}
         <div className="visibility">
           <span className="visibility-icon" aria-hidden="true">
-            {visibility === 'public' ? '👁️' : visibility === 'private' ? '🔒' : ''}
-          </span>
-          <span className="visibility-label content-small">
-            {visibility === 'public' ? 'Public' : visibility === 'private' ? 'Private' : ''}
-          </span>
+  {permissionResult?.requiredVisibility === 'public' ? '👁️' : 
+   permissionResult?.requiredVisibility === 'private' ? '🔒' :
+   permissionResult?.requiredVisibility === "invitation" ? '✉️' : ''}
+</span>
+<span className="visibility-label content-small">
+  {permissionResult?.requiredVisibility === 'public' ? 'Public' : 
+   permissionResult?.requiredVisibility === 'private' ? 'Private' :
+   permissionResult?.requiredVisibility === 'invitation' ? 'By invitation' : ''}
+</span>
         </div>
       </header>
 
@@ -379,6 +352,23 @@ useEffect(() => {
 };
 
 export default GeneralMold;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

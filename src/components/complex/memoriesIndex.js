@@ -622,7 +622,7 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
 
   // Content for GeneralMold
   const leftContent = loading ? (
-    <LoadingMemories />
+    null
   ) : error ? (
     <ErrorComponent error={error} />
   ) : (

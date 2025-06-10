@@ -1,5 +1,7 @@
 import { checkMemoryPermission } from './checkMemoryPermission';
 import { verifyLoginUser } from '../../firebase/verifyLoginUser';
+import clientPromise from '../../connectToDatabase';
+import generateUserId from '../../../../functions/memories/generateUserId';
 
 const typeTranslations = {
   memories: 'view',
@@ -9,7 +11,7 @@ const typeTranslations = {
   editAccessibility: 'editPermissions',
 };
 
-const staticRoutes = ['/memories', '/createNewMemory']; // Add other static routes as needed
+const staticRoutes = ['/memories', '/createNewMemory', '/payment', '/payment/payPlan']; // Add other static routes as needed
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -20,7 +22,7 @@ export default async function handler(req, res) {
     const { path, uid, token, userEmail } = req.body;
 
     // Validate required fields
-    if (!path || !uid || !token || !userEmail) {
+    if (!path) {// || !uid || !token || !userEmail, 
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -34,11 +36,26 @@ export default async function handler(req, res) {
 
     // Check if the path is a static route
     if (staticRoutes.includes(`/${pathParts[0]}`) && pathParts.length === 1) {
+      console.log('inicio de autenticacion para rutas estaticas...................................');
+      
       // Static route: only verify login
       const loginResult = await verifyLoginUser({ uid, token });
       if (!loginResult.success) {
-        return res.status(401).json({ error: 'Authentication failed: ' + loginResult.error });
+        return res.status(401).json({ error: 'Authentication failed from static routes: ' + loginResult.error });
       }
+
+      const client = await clientPromise;
+      const db = client.db('goodMemories');
+      const sanitizedCurrentUser = generateUserId(userEmail)
+      const globalDoc = await db.collection('MemoriesCollection').findOne({
+        _id: sanitizedCurrentUser,
+      });
+
+      console.log(globalDoc);
+      
+
+
+
       return res.status(200).json({ accessAllowed: true, message: 'User is authenticated' });
     }
 

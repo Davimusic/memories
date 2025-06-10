@@ -72,6 +72,7 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
   // Fetch memories data if not provided
   useEffect(() => {
     const fetchMemories = async () => {
+      
       if (!userEmail || !uid || !token) {
         setLoading(false);
         return;
@@ -110,6 +111,8 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
         if (data.success) {
           setUserID(data.userInfoId);
           const { userInformation, ...actualMemories } = data.memories;
+          console.log(actualMemories);
+          
           setUserInformation(data.memories.userInformation);
           setMemoriesState(actualMemories);
         } else {
@@ -122,10 +125,14 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
       }
     };
 
-    if (userEmail && uid && token && !initialMemories) {
+    console.log(userEmail);
+      console.log(uid);
+      console.log(token);
+
+    if (userEmail && uid && token) {
       fetchMemories();
     }
-  }, [userEmail, uid, token, initialMemories]);
+  }, [userEmail, uid, token]);
 
   // Sort memories
   useEffect(() => {
@@ -386,17 +393,11 @@ const leftContent = loading ? (
         visibility="private"
         owner={userEmail || 'Anonymous'}
         leftContent={leftContent}
-        >
-        <Head>
-            <meta property="og:title" content="Your Memories | Memory App" />
-            <meta property="og:description" content="View, manage, and create your personal memories in the Memory App" />
-            <meta property="og:type" content="website" />
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content="Your Memories | Memory App" />
-            <meta name="twitter:description" content="View, manage, and create your personal memories in the Memory App" />
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
-        </Head>
-        </GeneralMold>
+        /*setUidChild={setUid}
+        setTokenChild={setToken}
+        setUserEmailChild={setUserEmail}*/
+        />
+        
         }
     </>
   );
