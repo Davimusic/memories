@@ -47,6 +47,10 @@ export const checkMemoryPermission = async ({ ownerKey, memoryName, type, uid, t
 
   // Get access configuration
   const memoryConfig = globalDoc[memoryName];
+  console.log('memoryConfig: ');
+  console.log(memoryConfig);
+  
+  
   const accessConfig = memoryConfig.access?.[type];
 
   console.log('accessConfig:', accessConfig);

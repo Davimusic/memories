@@ -1,465 +1,228 @@
 /* Estilos base */
-.container {
+.memories-section {
   width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding: 30px;
+  padding: 20px;
   box-sizing: border-box;
   background-color: var(--backgroundColor1);
-  gap: 20px;
-}
-
-.desktopFrame {
-  background-color: #0070f3;
-  padding: 28px;
-}
-
-/* Marco para tablet/desktop */
-.desktop-frame {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border: 20px solid #f0f0f0;
-  pointer-events: none;
-  z-index: 1000;
-}
-
-/* Contenedor principal */
-.mainContainer {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-}
-
-/* Controles superiores */
-.controlsContainer {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 0;
-  border-bottom: 1px solid rgb(0, 0, 0);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(5px);
-}
-
-.leftControls {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.filterContainer {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* Componentes interactivos */
-.appleSelect {
-  padding: 10px 35px 10px 15px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  background: #ffffff;
-  color: #2d3436;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232d3436'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 12px;
-}
-
-.appleButton {
-  background: linear-gradient(to bottom right, var(--backgroundColor1), var(--backgroundColor2));
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 25px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 112, 243, 0.15);
-  white-space: nowrap;
-}
-
-.appleButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 112, 243, 0.2);
-}
-
-.highlightButton {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-/* Tabla con scroll funcional */
-.appleTableContainer {
-  flex: 1;
-  overflow-x: auto;
-  border-radius: 14px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-  max-width: 100%;
-}
-
-.appleTableContainer::-webkit-scrollbar {
-  height: 8px;
-}
-
-.appleTableContainer::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-.appleTableContainer::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.frame {
-  height: 100%;
-  padding: 28px;
-  border-radius: 0.7em;
-}
-
-.tableHeader {
-  display: flex;
-  padding: 16px 25px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  font-weight: 600;
-  position: sticky;
-  top: 0;
-  
-  z-index: 10;
-}
-
-.tableRow {
-  display: flex;
-  padding: 16px 25px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-  transition: all 0.2s ease;
-  align-items: center;
-  min-height: 60px;
-}
-
-.tableRow:hover {
-  background: #f8faff;
-}
-
-.tableCell, .headerCell {
-  padding: 12px 15px;
-  font-size: 0.95rem;
-  color: #2d3436;
-  display: flex;
-  align-items: center;
-}
-
-.headerCell {
-  font-weight: 600;
-}
-
-.actionsCell {
-  flex-wrap: wrap;
-  max-width: 150px; /* Fixed maximum width for Actions column */
-  overflow-x: visible;
-}
-
-/* Celdas con scroll interno */
-.cellWithScroll {
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
-}
-
-.cellWithScroll::-webkit-scrollbar {
-  height: 8px;
-}
-
-.cellWithScroll::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.cellWithScroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollContent {
-  white-space: nowrap;
-  overflow-x: auto;
-  max-width: 100%;
-  padding-bottom: 5px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
-}
-
-.scrollContent::-webkit-scrollbar {
-  height: 8px;
-}
-
-.scrollContent::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.scrollContent::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* Badges con scroll */
-.typeBadges {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 8px;
-  overflow-x: auto;
-  padding-right: 5px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
-}
-
-.typeBadges::-webkit-scrollbar {
-  height: 8px;
-}
-
-.typeBadges::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.typeBadges::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.typeBadge {
-  background: #e0f2fe;
-  color: #0369a1;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-/* Estado vacío */
-.emptyState {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 30px;
-  padding: 50px;
-  text-align: center;
-}
-
-.emptyText {
-  font-size: 30px;
   color: white;
+}
+
+.scrollTable {
+  width: 100%;
+  overflow-x: auto;
   margin-top: 20px;
 }
 
-.loading {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  gap: 20px;
-  z-index: 9999;
+/* Estilos para la tabla y sus elementos */
+.memories-table-container {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.mobileLabel {
+/* Encabezados de tabla */
+.table-header {
   display: none;
+  background-color: var(--backgroundColor2);
+  color: white;
+  padding: 12px 15px;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ------------------------- */
-/* ESTILOS PARA MÓVIL (≤768px) */
-/* ------------------------- */
+.header-cell {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+/* Filas y celdas de la tabla */
+.memories-table {
+  width: 100%;
+  display: table;
+}
+
+.table-row {
+  display: table-row;
+  transition: background-color 0.2s ease;
+}
+
+.table-row:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.table-cell {
+  display: table-cell;
+  padding: 12px 15px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Estilos específicos para celdas */
+.actions-cell {
+  min-width: 120px;
+}
+
+.name-cell {
+  min-width: 200px;
+}
+
+.description-cell {
+  min-width: 250px;
+}
+
+.types-cell {
+  min-width: 150px;
+}
+
+.date-cell {
+  min-width: 120px;
+}
+
+/* Estilos para móvil */
 @media (max-width: 768px) {
-  .container {
-    padding: 15px;
-  }
-
-  .mobileLabel {
-    display: flex;
-    padding-right: 10px;
-  }
-
-  .mainContainer {
-    padding: 15px;
-    height: auto;
-    min-height: calc(100vh - 30px);
-  }
-
-  .controlsContainer {
-    position: static;
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px 0;
-    background: transparent;
-    backdrop-filter: none;
-  }
-
-  .frame {
-    max-height: 100vh;
-    padding: 0;
-    border-radius: 0;
-    background-color: var(--backgroundColor5);
-  }
-
-  .container {
-    background-color: var(--backgroundColor5);
-  }
-
-  .leftControls {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .filterContainer {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .appleSelect {
-    width: auto;
-    min-width: 150px;
-  }
-
-  .appleButton {
-    width: 100%;
-  }
-
-  .tableHeader {
+  .table-header {
     display: none;
   }
-
-  .tableRow {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 15px;
-    gap: 10px;
-    position: relative;
+  
+  .memories-table {
+    display: block;
   }
-
-  .tableCell {
+  
+  .table-row {
+    display: block;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+  }
+  
+  .table-cell {
+    display: block;
     width: 100%;
     padding: 8px 0;
-    border-bottom: 1px solid #eee;
-    flex: none !important;
-    overflow: visible !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
-
-  .actionsCell {
-    flex-wrap: wrap;
-    max-width: 100%; /* Full width on mobile */
-    justify-content: flex-start;
-  }
-
-  .tableCell::before {
+  
+  .table-cell::before {
     content: attr(data-label);
     font-weight: 600;
-    color: #0070f3;
+    color: var(--color2);
     display: block;
     margin-bottom: 5px;
   }
-
-  .scrollContent {
-    max-height: 100px;
-    overflow-x: auto;
-    width: 100%;
-    padding-right: 5px;
-    white-space: nowrap;
+  
+  .mobile-only {
+    display: inline;
   }
-
-  .typeBadges {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    width: 100%;
-    padding-bottom: 5px;
-  }
-
-  .emptyState {
-    padding: 30px 15px;
-  }
-
-  .emptyText {
-    font-size: 24px;
+  
+  .desktop-only {
+    display: none;
   }
 }
 
-/* ------------------------- */
-/* ESTILOS PARA TABLET/DESKTOP (≥769px) */
-/* ------------------------- */
+/* Estilos para tablet/desktop */
 @media (min-width: 769px) {
-  .desktop-frame {
-    display: block;
+  .table-header {
+    display: flex;
   }
-
-  .mainContainer {
-    position: relative;
-    z-index: 1;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) inset,
-                0 20px 50px rgba(0, 0, 0, 0.1);
+  
+  .memories-table {
+    display: table;
   }
-
-  /* Asignación de anchos para desktop */
-  .headerCell:nth-child(1),
-  .tableCell:nth-child(1) { flex: 1; max-width: 150px; }
-
-  .headerCell:nth-child(2),
-  .tableCell:nth-child(2) { flex: 3; }
-
-  .headerCell:nth-child(3),
-  .tableCell:nth-child(3) { flex: 2; }
-
-  .headerCell:nth-child(4),
-  .tableCell:nth-child(4) { flex: 2; }
-
-  .headerCell:nth-child(5),
-  .tableCell:nth-child(5),
-  .headerCell:nth-child(6),
-  .tableCell:nth-child(6) { flex: 1; }
+  
+  .table-row {
+    display: table-row;
+  }
+  
+  .table-cell {
+    display: table-cell;
+  }
+  
+  .table-cell::before {
+    display: none;
+  }
+  
+  .mobile-only {
+    display: none;
+  }
+  
+  /* Distribución de anchos para desktop */
+  .actions-header, .actions-cell { width: 15%; }
+  .name-header, .name-cell { width: 20%; }
+  .description-header, .description-cell { width: 25%; }
+  .types-header, .types-cell { width: 20%; }
+  .date-header, .date-cell { width: 10%; }
 }
 
-/* Animaciones */
-.fadeIn {
-  animation: fadeIn 0.5s ease-out;
+/* Estilos para el estado vacío */
+.no-memories {
+  padding: 40px 20px;
+  text-align: center;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Estilos para los botones de acción */
+.action-button {
+  background-color: var(--color2);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.titleText {
-  font-weight: 600;
-  color: #0070f3;
+.action-button:hover {
+  background-color: var(--color1);
+}
+
+/* Estilos para el modal de acciones */
+.actions-modal {
+  background-color: var(--backgroundColor1);
+  color: white;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.accionsContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+/* Clases utilitarias */
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.centrar-completo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* Tipografía */
+.title-md {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 10px 0;
+}
+
+.content-small {
+  font-size: 0.8rem;
+  opacity: 0.8;
 }

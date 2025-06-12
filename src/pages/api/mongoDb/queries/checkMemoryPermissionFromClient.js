@@ -9,6 +9,8 @@ const typeTranslations = {
   //editFiles: 'edit',
   editMemories: 'edit',
   editAccessibility: 'editPermissions',
+  editTitleNameUser: 'editTitleNameUser',
+  createNewTopicMemory: 'createMemoryTopics'
 };
 
 const staticRoutes = ['/memories', '/createNewMemory', '/payment', '/payment/payPlan']; // Add other static routes as needed

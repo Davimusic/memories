@@ -1,0 +1,169 @@
+/* EditMemoryMetadata Component Styles */
+.metadata-editor {
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  
+  border-radius: 0.75rem;
+  
+}
+
+/* Header Section */
+.header-section {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.header-section .title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Form Styles */
+.metadata-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Form Group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.form-label .required {
+  color: var(--error);
+  font-size: 0.875rem;
+}
+
+/* Input and Textarea */
+.text-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--text-muted);
+  border-radius: 0.5rem;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  transition: var(--transition);
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+  max-height: 300px;
+}
+
+/* Error Message */
+.error-message {
+  color: var(--error);
+  font-size: clamp(0.75rem, 1.25vw, 0.875rem);
+  margin-top: 0.25rem;
+  text-align: center;
+}
+
+/* Actions Section */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.save-button {
+  padding: 0.75rem 1.5rem;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  font-weight: 500;
+  background: var(--accent);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.save-button:hover,
+.save-button:focus {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+.save-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.save-button:disabled {
+  background: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .metadata-editor {
+    padding: 1.5rem 0.75rem;
+    margin: 0 0.5rem;
+  }
+
+  .header-section .title {
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
+  }
+
+  .form-group {
+    gap: 0.25rem;
+  }
+
+  .text-input {
+    padding: 0.5rem;
+  }
+
+  .save-button {
+    padding: 0.5rem 1rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 576px) {
+  .metadata-editor {
+    padding: 1rem 0.5rem;
+    margin: 0 0.25rem;
+  }
+
+  .header-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    font-size: clamp(0.75rem, 2vw, 0.875rem);
+  }
+
+  .text-input {
+    font-size: clamp(0.75rem, 2vw, 0.875rem);
+  }
+
+  .error-message {
+    font-size: clamp(0.625rem, 1.75vw, 0.75rem);
+  }
+}

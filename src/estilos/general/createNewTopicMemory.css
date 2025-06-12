@@ -1,0 +1,144 @@
+/* createNewTopicMemory.css */
+
+/* Container for the entire form and content */
+.memory-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Form group styling */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Label styling */
+.form-group label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Input and textarea styling */
+.text-input {
+  background: var(--card-bg);
+  border: 1px solid var(--text-muted);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.text-input:disabled {
+  background: var(--bg-secondary);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Button styling */
+.demo-button {
+  background: var(--accent);
+  color: var(--text-primary);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.demo-button:hover {
+  background: var(--accent-hover);
+}
+
+.demo-button:disabled {
+  background: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Error message styling */
+.error-message {
+  color: var(--error);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+/* Card content container */
+.card-content {
+  display: flex;
+  flex-direction: column;
+ width: 100%;
+ height: 100%;
+}
+
+/* Card title styling */
+.card-title {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Existing topics list */
+ul.flex-column {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+ul.flex-column li.card {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+ul.flex-column li.card:hover {
+  background: var(--accent-hover);
+  color: var(--text-primary);
+}
+
+/* Error container for full-page errors */
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .memory-form {
+    padding: 0.5rem;
+  }
+
+  .card-content {
+    padding: 1rem;
+  }
+
+  .demo-button {
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .memory-form {
+    max-width: 100%;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+  }
+}

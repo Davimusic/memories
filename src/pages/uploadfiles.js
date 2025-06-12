@@ -409,7 +409,7 @@ const App = () => {
               </button>
             </div>
             
-            <div className="modal-content">
+            <div className="">
               <div className="preview-grid">
                 {files[activeFileType]?.map((file, index) => (
                   <div key={index} className="preview-item">

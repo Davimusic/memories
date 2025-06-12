@@ -75,6 +75,58 @@ body {
   z-index: 9999;
 }
 
+/* Estilo para selects */
+select {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
+  color: var(--text-primary);
+  background: var(--card-bg);
+  border: 2px solid var(--text-muted);
+  border-radius: 0.5rem;
+  /*box-shadow: var(--shadow);*/
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+/* Efecto hover */
+select:hover,
+select:focus {
+  background: var(--bg-secondary);
+  border-color: var(--accent);
+  outline: none;
+}
+
+/* Select en modo oscuro */
+.dark select {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-color: var(--text-muted);
+}
+
+/* Opciones dentro del select */
+select option {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  padding: 0.5rem;
+}
+
+/* Opciones en modo oscuro */
+.dark select option {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+/* Ajuste para tamaños responsivos */
+@media (max-width: 768px) {
+  select {
+    font-size: 0.875rem;
+    padding: 0.4rem;
+  }
+}
+
+
 .centrar-horizontal {
   display: flex;
   justify-content: center;

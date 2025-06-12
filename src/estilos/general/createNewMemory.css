@@ -44,7 +44,7 @@
   flex-direction: column;
   justify-content: space-around; /* Distribuye los elementos equitativamente en el eje vertical */
   height: 100%;
-  
+  overflow-y: auto;
 }
 
 .memory-form{

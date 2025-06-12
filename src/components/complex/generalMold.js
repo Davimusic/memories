@@ -133,6 +133,7 @@ const GeneralMold = ({
 
       const data = await response.json();
       console.log('Permission data:', data);
+      setInitialData(data)
       setPermissionResult(data);
 
       if (data.requiredVisibility === 'public') {
@@ -318,7 +319,7 @@ const GeneralMold = ({
           }}
         >
           <div
-            className="modal-content"
+            className=""//modal-content
             style={{
               backgroundColor: isDarkMode ? '#333' : '#fff',
               padding: '20px',
