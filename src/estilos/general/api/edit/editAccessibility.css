@@ -187,8 +187,11 @@
 }
 
 .email-section {
+  display: flex;
+  flex-wrap: wrap; /* Permite el salto de línea si no hay espacio */
   margin-top: 1rem;
 }
+
 
 .file-input-group {
   display: flex;

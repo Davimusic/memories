@@ -29,18 +29,9 @@ export const checkMemoryPermission = async ({ ownerKey, memoryName, type, uid, t
 
   if (!globalDoc) throw new Error('Documento global no encontrado');
 
-  //console.log('db....................');
-  //console.log(globalDoc);
+  console.log('db................................x.x.x.x.');
+  console.log(globalDoc);
   
-  
-
-  /*/ Verify owner exists
-  if (!globalDoc[ownerKey]) {
-    throw new Error(`Usuario propietario '${ownerKey}' no encontrado`);
-  }*/
-
-  // Verify memory exists
-  //const userMemories = globalDoc[ownerKey];
   if (!globalDoc[memoryName]) {
     throw new Error(`Memory '${memoryName}' no existe en el usuario ${ownerKey}`);
   }
@@ -55,14 +46,29 @@ export const checkMemoryPermission = async ({ ownerKey, memoryName, type, uid, t
 
   console.log('accessConfig:', accessConfig);
 
-  if(accessConfig.visibility === 'public'){
+
+  console.log('topics.......del recuerdo.....');
+  console.log(memoryConfig.topics);
+
+  if (accessConfig.visibility === 'public') {
     return {
       status: 200,
       requiredVisibility: accessConfig.visibility,
       accessAllowed: true,
       memoryMetadata: memoryConfig.metadata,
+      topics: memoryConfig.topics || {},
     };
   }
+
+  /*if(accessConfig.visibility === 'public'){
+    return {
+      status: 200,
+      requiredVisibility: accessConfig.visibility,
+      accessAllowed: true,
+      memoryMetadata: memoryConfig.metadata,
+      topics: globalDoc.topics
+    };
+  }*/
 
   const loginResult = await verifyLoginUser({ uid, token });
 
@@ -129,6 +135,7 @@ export const checkMemoryPermission = async ({ ownerKey, memoryName, type, uid, t
     requiredVisibility: accessConfig.visibility,
     currentUser: sanitizedCurrentUser,
     memoryMetadata: memoryConfig.metadata,
+    topics: memoryConfig.topics || {},
   };
 };
 

@@ -79,7 +79,7 @@ const VisibilityModal = ({
               {tempVisibility === 'invitation' && (
                 <div className="email-section">
                   <div className="file-input-group">
-                    <label htmlFor="visibility-email-input" className="visually-hidden">Enter email addresses</label>
+                    {/*<label htmlFor="visibility-email-input" className="visually-hidden">Enter email addresses</label>*/}
                     <input
                       id="visibility-email-input"
                       type="email"
@@ -251,7 +251,7 @@ const UploadPermissionsModal = ({
               {tempUploadVisibility === 'invitation' && (
                 <div className="email-section">
                   <div className="file-input-group">
-                    <label htmlFor="upload-email-input" className="visually-hidden">Enter email addresses</label>
+                    {/*<label htmlFor="visibility-email-input" className="visually-hidden">Enter email addresses</label>*/}
                     <input
                       id="upload-email-input"
                       type="email"
@@ -405,7 +405,6 @@ const CreateTopicsPermissionsModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h1 className="visually-hidden">Create Topics Permissions Settings</h1>
-        <h2 className="modal-title">Create Topics Permissions</h2>
         <div className="privacy-options" role="radiogroup" aria-labelledby="create-topics-heading">
           <div 
             className={`privacy-option ${tempCreateTopicsVisibility === 'invitation' ? 'active' : ''}`}
@@ -424,7 +423,7 @@ const CreateTopicsPermissionsModal = ({
               {tempCreateTopicsVisibility === 'invitation' && (
                 <div className="email-section">
                   <div className="file-input-group">
-                    <label htmlFor="create-topics-email-input" className="visually-hidden">Enter email addresses</label>
+                    {/*<label htmlFor="visibility-email-input" className="visually-hidden">Enter email addresses</label>*/}
                     <input
                       id="create-topics-email-input"
                       type="email"
@@ -526,8 +525,6 @@ const CreateTopicsPermissionsModal = ({
   );
 };
 
-
-
 // Edit Permissions Modal Component
 const EditPermissionsModal = ({
   isOpen,
@@ -599,7 +596,7 @@ const EditPermissionsModal = ({
               {tempEditVisibility === 'invitation' && (
                 <div className="email-section">
                   <div className="file-input-group">
-                    <label htmlFor="edit-email-input" className="visually-hidden">Enter email addresses</label>
+                    {/*<label htmlFor="visibility-email-input" className="visually-hidden">Enter email addresses</label>*/}
                     <input
                       id="edit-email-input"
                       type="email"
@@ -700,8 +697,6 @@ const EditPermissionsModal = ({
     </Modal>
   );
 };
-
-
 
 const EditMemoryPermissions = () => {
   const router = useRouter();

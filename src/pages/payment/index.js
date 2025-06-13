@@ -28,6 +28,7 @@ const PaymentPlans = () => {
   const [error, setError] = useState(null);
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [initialData, setInitialData] = useState('');
 
   const router = useRouter();
 
@@ -95,33 +96,31 @@ const PaymentPlans = () => {
   }, [userEmail]);
 
   // Cálculos de precios corregidos con márgenes exactos
-  const calculateFiveYearPrice = (gb) => {
-    // Costo base: $0.02/GB/mes × 60 meses = $1.20/GB por 5 años
-    const baseCost = gb * 0.02 * 60;
-    // Margen 700%: baseCost × 7 = ganancia
-    const profit = baseCost * 7;
-    // Precio total = costo base + ganancia
-    const totalPrice = baseCost + profit;
-    // Aproximar a x.99
-    return Math.floor(totalPrice) + 0.99;
-  };
+  // Calculate price for 5-year plan
+const calculateFiveYearPrice = (gb) => {
+  // Base cost: $0.02/GB/month × 60 months = $1.20/GB for 5 years
+  const baseCost = gb * 0.02 * 60;
+  const totalPrice = baseCost * 5;
+  // Round to 2 decimal places
+  return Number(totalPrice.toFixed(2));
+};
 
-  const calculateMonthlyPrice = (gb, frequency) => {
-    // Costo base mensual: $0.02/GB
-    const baseCostPerMonth = gb * 0.02;
-    // Margen 400%: baseCostPerMonth × 4 = ganancia
-    const profit = baseCostPerMonth * 4;
-    // Precio mensual = costo base + ganancia
-    const monthlyPrice = baseCostPerMonth + profit;
-    
-    if (frequency === 'monthly') {
-      return Math.floor(monthlyPrice * 100) / 100; // Mantener dos decimales
-    } else {
-      // Precio anual = precio mensual × 12 con 20% de descuento
-      const yearlyPrice = monthlyPrice * 12 * 0.8;
-      return Math.floor(yearlyPrice) + 0.99; // Aproximar a x.99
-    }
-  };
+// Calculate price for monthly or yearly plan
+const calculateMonthlyPrice = (gb, frequency) => {
+  // Base cost: $0.02/GB/month
+  const baseCostPerMonth = gb * 0.02;
+  const monthlyPrice = baseCostPerMonth * 7;
+  
+  if (frequency === 'monthly') {
+    // Round to 2 decimal places
+    return Number(monthlyPrice.toFixed(2));
+  } else {
+    // Yearly price: monthlyPrice × 12 × 0.8 (20% discount)
+    const yearlyPrice = monthlyPrice * 12 * 0.8;
+    // Round to 2 decimal places
+    return Number(yearlyPrice.toFixed(2));
+  }
+};
 
   const fiveYearPrice = calculateFiveYearPrice(fiveYearGB).toFixed(2);
   const monthlyPriceMonthly = calculateMonthlyPrice(monthlyGB, 'monthly').toFixed(2);
@@ -185,12 +184,12 @@ const PaymentPlans = () => {
         )}
         <h2 className="card-title">Choose Your Plan</h2>
       </div>
-      <div className="plans-grid">
+      <div className='cardContent'>
+      <div className="plans-grid cardPlans">
         {/* 5-Year Plan */}
         <div className="plan-card">
           <div className="plan-card-header">
-            <h3 className="plan-name">5-Year Plan</h3>
-            <p className="plan-description">One-time payment for 5 years</p>
+            <h3 >One-time payment for 5 years</h3>
           </div>
           <div className="plan-card-price">
             ${fiveYearPrice} <span className="price-period">for 5 years</span>
@@ -199,9 +198,10 @@ const PaymentPlans = () => {
             <label>Storage: {fiveYearGB} GB</label>
             <div className="slider-container">
               <input
+                style={{width: '100%'}}
                 type="range"
                 min="1"
-                max="10000"
+                max="1000"
                 value={fiveYearGB}
                 onChange={(e) => setFiveYearGB(parseInt(e.target.value))}
                 className="styled-slider"
@@ -214,7 +214,7 @@ const PaymentPlans = () => {
             <input
               type="number"
               min="1"
-              max="10000"
+              max="1000"
               value={fiveYearGB}
               onChange={(e) => setFiveYearGB(Math.min(10000, Math.max(1, parseInt(e.target.value) || 1)))}
               className="gb-input"
@@ -235,8 +235,7 @@ const PaymentPlans = () => {
         {/* Monthly Plan */}
         <div className="plan-card">
           <div className="plan-card-header">
-            <h3 className="plan-name">Monthly Plan</h3>
-            <p className="plan-description">Flexible monthly or yearly billing</p>
+            <h3>Flexible monthly or yearly billing</h3>
           </div>
           <div className="frequency-toggle">
             <button
@@ -262,6 +261,7 @@ const PaymentPlans = () => {
             <label>Storage: {monthlyGB} GB</label>
             <div className="slider-container">
               <input
+                style={{width: '100%'}}
                 type="range"
                 min="10"
                 max="10000"
@@ -294,6 +294,7 @@ const PaymentPlans = () => {
             {isProcessing ? 'Processing...' : 'Get Started'}
           </button>
         </div>
+      </div>
       </div>
       {paymentError && <div className="error-message color-error">{paymentError}</div>}
     </div>
@@ -357,6 +358,7 @@ const PaymentPlans = () => {
           setUidChild={setUid}
           setTokenChild={setToken}
           setUserEmailChild={setUserEmail}
+          setInitialData={setInitialData}
         />
       ) : (
         <LoadingMemories />

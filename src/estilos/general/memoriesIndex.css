@@ -79,6 +79,15 @@
   display: none;
 }
 
+.actions-modal {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border-radius: none;
+  padding: 1rem;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
 /* Modal-specific styles */
 .actions-modal .button {
   justify-content: flex-start;

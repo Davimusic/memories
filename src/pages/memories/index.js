@@ -310,7 +310,7 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
         style={{ maxWidth: '400px', width: '90vw' }}
       >
         {selectedMemory && (
-          <div className="flex-column p-3">
+          <div className="actions-modal flex-column p-3">
             <h2 className="title-md color2">{selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}</h2>
             <button
               className={`button2 rounded p-2 m-1 accionsContainer`}
@@ -322,6 +322,17 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
               aria-label={`View ${selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}`}
             >
               <ShowHide size={24} /> View
+            </button>
+            <button
+              className="button2 rounded p-2 m-1 accionsContainer"
+              onClick={() =>
+                handleAction(
+                  `/createNewTopicMemory/${userID}/${encodeURIComponent(selectedMemory.memoryTitle)}`
+                )
+              }
+              aria-label={`Edit title and name memory ${selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}`}
+            >
+              <EditPermissionsIcon size={24} /> Create new topic
             </button>
             <button
               className="button2 rounded p-2 m-1 accionsContainer"
@@ -354,7 +365,7 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
               }
               aria-label={`Edit accessibility ${selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}`}
             >
-              <EditPermissionsIcon size={24} /> Edit Accessibility
+              <EditToggleIcon size={24} /> Edit Accessibility
             </button>
             <button
               className="button2 rounded p-2 m-1 accionsContainer"
@@ -367,17 +378,7 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
             >
               <EditToggleIcon size={24} /> Edit title and description memory
             </button>
-            <button
-              className="button2 rounded p-2 m-1 accionsContainer"
-              onClick={() =>
-                handleAction(
-                  `/createNewTopicMemory/${userID}/${encodeURIComponent(selectedMemory.memoryTitle)}`
-                )
-              }
-              aria-label={`Edit title and name memory ${selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}`}
-            >
-              <EditToggleIcon size={24} /> Create new topic
-            </button>
+           
           </div>
         )}
       </Modal>
