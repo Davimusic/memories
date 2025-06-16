@@ -58,11 +58,18 @@ const PaypalSubscriptionPlanner = () => {
   }, [router]);
 
   useEffect(() => {
+    console.log(planDetails);
+    
+  }, [planDetails]);
+
+  useEffect(() => {
     if (!userEmail) return;
 
     const loadLocalStorageData = () => {
       try {
         const storedPlan = localStorage.getItem('selectedPlanDetails');
+        console.log(storedPlan);
+        
         if (!storedPlan) {
           setError('No plan selected. Please choose a plan.');
           setShowErrorModal(true);
@@ -73,7 +80,7 @@ const PaypalSubscriptionPlanner = () => {
         const parsedPlan = JSON.parse(storedPlan);
         setPlanDetails({
           ...parsedPlan,
-          paymentType: parsedPlan.paymentFrequency,
+          //paymentType: parsedPlan.paymentFrequency,
           userEmail: userEmail,
         });
 
@@ -235,19 +242,19 @@ const PaypalSubscriptionPlanner = () => {
             <div className="summary-details flex-column">
               <div className="detail-item p-2">
                 <span className="content-small">Plan Name</span>
-                <span className="content-small">{planDetails.planName}</span>
+                <span className="content-small">{planDetails.paymentType}</span>
               </div>
               <div className="detail-item p-2">
                 <span className="content-small">Storage</span>
-                <span className="content-small">{planDetails.storageGB} GB</span>
+                <span className="content-small">{planDetails.gb} GB</span>
               </div>
               <div className="detail-item p-2">
                 <span className="content-small">Billing Cycle</span>
-                <span className="content-small">{planDetails.paymentFrequency === 'monthly' ? 'Monthly' : 'Yearly'}</span>
+                <span className="content-small">{planDetails.planType}</span>
               </div>
               <div className="detail-item total p-2">
-                <span className="content-small">Total Amount</span>
-                <span className="content-small">${planDetails.totalToPay} USD</span>
+                <span className="content-small">Total Amount </span>
+                <span className="content-small">  ${planDetails.totalToPay}  USD</span>
               </div>
             </div>
           )}
@@ -374,13 +381,7 @@ const PaypalSubscriptionPlanner = () => {
           padding-top: 1rem;
         }
 
-        .secure-payment-notice {
-          text-align: center;
-          font-size: 0.8rem;
-          margin: 1rem 0 0;
-          color: var(--text-muted);
-        }
-
+        
         .paypal-button-container {
           margin-top: 1rem;
         }

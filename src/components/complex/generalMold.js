@@ -1,4 +1,4 @@
-'use client'; // Ensure this is a Client Component
+/*'use client'; // Ensure this is a Client Component
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -105,13 +105,7 @@ const GeneralMold = ({
 
     if (userID && memoryName) {
       realRoute = `/${basePath}/${userID}/${memoryName}`;
-    }/* else {
-      console.log('es aca');
-      
-      setPermissionError('Invalid URL: Missing userID or memoryName.');
-      setIsLoading(false);
-      return;
-    }*/
+    }
 
     
 
@@ -352,7 +346,7 @@ const GeneralMold = ({
   );
 };
 
-export default GeneralMold;
+export default GeneralMold;*/
 
 
 
@@ -361,8 +355,7 @@ export default GeneralMold;
 
 
 //solo de test
-/**
- * 'use client'; 
+'use client'; 
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -695,7 +688,7 @@ const GeneralMold = ({
 };
 
 export default GeneralMold;
- */
+
 
 
 
