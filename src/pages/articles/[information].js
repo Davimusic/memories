@@ -1249,51 +1249,51 @@ const ContentBlockRenderer = ({ block }) => {
 };
 
 const articlesData = {
-  "slug": "memory-formation2XD",
-  "title": "Cómo se crean los recuerdos según la ciencia: Un viaje fascinante por la memoria",
+  "slug": "memory-formation",
+  "title": "How Memories Are Formed According to Science: A Fascinating Journey Through Memory",
   "seo": {
-    "description": "Explora cómo se forman los recuerdos en el cerebro, los tipos de memoria, casos fascinantes como Henry Molaison y Solomon Shereshevsky, y técnicas para mejorar el aprendizaje.",
-    "keywords": "memoria, recuerdos, neurociencia, hipocampo, plasticidad sináptica, Henry Molaison, Solomon Shereshevsky",
-    "tags": "memoria, ciencia, neurociencia, aprendizaje, psicología"
+    "description": "Discover how memories are formed in the brain, the types of memory, fascinating cases like Henry Molaison and Solomon Shereshevsky, and techniques to enhance learning. Learn how our cloud-based platform helps preserve these memories.",
+    "keywords": "memory, memories, neuroscience, hippocampus, synaptic plasticity, Henry Molaison, Solomon Shereshevsky, cloud memory storage",
+    "tags": "memory, science, neuroscience, learning, psychology, digital memories"
   },
   "breadcrumbs": [
     { "label": "Home", "path": "/" },
-    { "label": "Artículos", "path": "/articles" },
-    { "label": "Cómo se crean los recuerdos", "path": "/articles/memory-formation" }
+    { "label": "Articles", "path": "/articles" },
+    { "label": "How Memories Are Formed", "path": "/articles/memory-formation" }
   ],
   "content": [
     {
       "type": "tableOfContents",
       "props": {
-        "title": "¿Qué encontrarás en este artículo?",
-        "content": "1. [Introducción: La magia de la memoria](#introduccion)\n2. [La ciencia detrás de la formación de los recuerdos](#ciencia-formacion)\n   - [¿Qué es la memoria?](#que-es-memoria)\n   - [Las etapas de la memoria](#etapas-memoria)\n   - [El cerebro y la memoria](#cerebro-memoria)\n   - [Plasticidad sináptica](#plasticidad-sinaptica)\n   - [Consolidación y reconsolidación](#consolidacion)\n3. [Tipos de memoria](#tipos-memoria)\n4. [Distorsiones y recuerdos falsos](#distorsiones)\n5. [Casos notables](#casos-notables)\n   - [Henry Molaison (H.M.)](#henry-molaison)\n   - [Solomon Shereshevsky](#solomon-shereshevsky)\n6. [Técnicas de memoria](#tecnicas-memoria)\n7. [Memoria y aprendizaje](#memoria-aprendizaje)\n8. [Perspectivas culturales](#perspectivas-culturales)\n9. [Conclusión](#conclusion)"
+        "title": "What’s in This Article?",
+        "content": "1. [Introduction: The Magic of Memory](#introduction)\n2. [The Science Behind Memory Formation](#science-formation)\n   - [What is Memory?](#what-is-memory)\n   - [Stages of Memory](#stages-memory)\n   - [The Brain and Memory](#brain-memory)\n   - [Synaptic Plasticity](#synaptic-plasticity)\n   - [Consolidation and Reconsolidation](#consolidation)\n3. [Types of Memory](#types-memory)\n4. [Distortions and False Memories](#distortions)\n5. [Notable Cases](#notable-cases)\n   - [Henry Molaison (H.M.)](#henry-molaison)\n   - [Solomon Shereshevsky](#solomon-shereshevsky)\n6. [Memory Techniques](#memory-techniques)\n7. [Memory and Learning](#memory-learning)\n8. [Cultural Perspectives](#cultural-perspectives)\n9. [Explore More: Memory Resources](#external-resources)\n10. [Conclusion](#conclusion)"
       }
     },
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "introduccion",
+        "referenceId": "introduction",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Introducción: La magia de la memoria",
+              "title": "Introduction: The Magic of Memory",
               "content": [
                 {
-                  "text": "Imagina que estás caminando por una calle conocida y, de repente, el aroma de un pan recién horneado te transporta a la cocina de tu abuela. En un instante, puedes recordar su risa, el calor del horno y hasta el sabor de ese pan. ¿Cómo logra tu cerebro revivir un momento que ocurrió hace años? La memoria es como un mago que saca recuerdos del sombrero, pero su truco no es magia: es ciencia.",
-                  "highlight": "La memoria es un proceso dinámico",
-                  "continueText": " que involucra cambios físicos y químicos en el cerebro. Cada vez que aprendes algo nuevo o vives una experiencia, tu cerebro reconfigura sus conexiones para guardar esa información. En este artículo, exploraremos cómo ocurre este proceso, los diferentes tipos de memoria y casos fascinantes que han cambiado nuestra comprensión de la mente humana."
+                  "text": "Imagine walking down a familiar street when the scent of freshly baked bread transports you to your grandmother’s kitchen. In an instant, you recall her laughter, the warmth of the oven, and the taste of that bread. How does your brain revive a moment from years ago? ",
+                  "highlight": "Memory is a dynamic process",
+                  "continueText": " that involves physical and chemical changes in the brain. Each time you learn something new or live an experience, your brain rewires its connections to store that information. With our cloud-based platform, you can capture and preserve these moments forever, ensuring they’re accessible anytime, anywhere."
                 },
                 {
-                  "text": "Consideremos dos historias que han marcado la neurociencia: ",
+                  "text": "Let’s consider two stories that have shaped neuroscience: ",
                   "highlight": "Henry Molaison (H.M.)",
                   "link": { "text": "Simply Psychology", "url": "https://www.simplypsychology.org/henry-molaison-patient-hm.html" },
-                  "continueText": ", quien perdió la capacidad de formar nuevos recuerdos tras una cirugía, y "
+                  "continueText": ", who lost the ability to form new memories after surgery, and "
                 },
                 {
                   "highlight": "Solomon Shereshevsky",
                   "link": { "text": "Psychology Today", "url": "https://www.psychologytoday.com/us/blog/the-memory-factory/202106/the-curious-case-mr-s-and-his-memory" },
-                  "continueText": ", un periodista con una memoria prodigiosa pero abrumadora. Acompáñanos en este viaje para descubrir los secretos de tu mente."
+                  "continueText": ", a journalist with an overwhelming, prodigious memory. Join us on this journey to uncover the secrets of your mind and learn how our platform can help you store these memories in the cloud."
                 }
               ]
             }
@@ -1302,8 +1302,8 @@ const articlesData = {
             "type": "imageText",
             "props": {
               "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250618_142235.png",
-              "imageAlt": "",
-              "text": "Las conexiones neuronales en el cerebro se fortalecen con cada nuevo recuerdo, un proceso fascinante que exploraremos a fondo.",
+              "imageAlt": "Neural connections in the brain",
+              "text": "Neural connections in the brain strengthen with each new memory, a fascinating process we’ll explore in depth. With our platform, you can save these neural snapshots digitally.",
               "layout": "right",
               "imageSize": "medium"
             }
@@ -1314,15 +1314,15 @@ const articlesData = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "ciencia-formacion",
+        "referenceId": "science-formation",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "La ciencia detrás de la formación de los recuerdos",
+              "title": "The Science Behind Memory Formation",
               "content": [
                 {
-                  "text": "La formación de recuerdos es un proceso complejo que ocurre en múltiples niveles dentro del cerebro. Desde la activación de neuronas hasta la creación de conexiones sinápticas, la memoria es el resultado de una danza intrincada entre células y moléculas."
+                  "text": "Memory formation is a complex process occurring on multiple levels within the brain. From neuron activation to synaptic connections, memory results from an intricate dance between cells and molecules."
                 }
               ]
             }
@@ -1330,7 +1330,7 @@ const articlesData = {
           {
             "type": "accordion",
             "props": {
-              "title": "¿Qué es la memoria?",
+              "title": "What is Memory?",
               "defaultOpen": true,
               "children": [
                 {
@@ -1338,11 +1338,11 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "La memoria es la capacidad del cerebro para codificar, almacenar y recuperar información. No es un proceso único, sino un sistema complejo con varias etapas:",
-                        "highlight": "Codificación, almacenamiento y recuperación."
+                        "text": "Memory is the brain’s ability to encode, store, and retrieve information. It’s not a single process but a complex system with stages: ",
+                        "highlight": "Encoding, storage, and retrieval."
                       },
                       {
-                        "text": "- **Codificación**: Transformar la información en un formato que el cerebro pueda procesar, como cuando memorizas un nombre.\n- **Almacenamiento**: Guardar esa información para usarla más tarde, ya sea por segundos o por décadas.\n- **Recuperación**: Acceder a la información almacenada cuando la necesitas, como recordar dónde estacionaste tu coche."
+                        "text": "- **Encoding**: Transforming information into a format the brain can process, like memorizing a name.\n- **Storage**: Saving that information for later use, from seconds to decades.\n- **Retrieval**: Accessing stored information when needed, like recalling where you parked your car."
                       }
                     ]
                   }
@@ -1353,7 +1353,7 @@ const articlesData = {
           {
             "type": "accordion",
             "props": {
-              "title": "Las etapas de la memoria",
+              "title": "Stages of Memory",
               "defaultOpen": true,
               "children": [
                 {
@@ -1361,11 +1361,11 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "La memoria se divide en tres etapas principales, cada una con un propósito específico:",
-                        "highlight": "Memoria sensorial, a corto plazo y a largo plazo."
+                        "text": "Memory is divided into three main stages, each with a specific purpose: ",
+                        "highlight": "Sensory memory, short-term memory, and long-term memory."
                       },
                       {
-                        "text": "- **Memoria sensorial**: Es la más breve, dura solo unos segundos y captura información de los sentidos. Por ejemplo, la memoria icónica te permite 'ver' una imagen fugaz después de que desaparece, como un relámpago ([Lesley University](https://lesley.edu/article/stages-of-memory)).\n- **Memoria a corto plazo (MCP)**: Retiene información por 20-30 segundos y tiene una capacidad limitada (unos 7 elementos). Es lo que usas para mantener un número de teléfono en tu mente mientras lo marcas.\n- **Memoria a largo plazo (MLP)**: Almacena información por períodos prolongados, desde horas hasta toda la vida. Incluye recuerdos de eventos personales, conocimientos generales y habilidades."
+                        "text": "- **Sensory memory**: Lasts only seconds, capturing sensory input. For example, iconic memory lets you 'see' a fleeting image, like a lightning bolt ([Lesley University](https://lesley.edu/article/stages-of-memory)).\n- **Short-term memory (STM)**: Holds information for 20-30 seconds with limited capacity (about 7 items). It’s used to keep a phone number in mind while dialing.\n- **Long-term memory (LTM)**: Stores information for extended periods, from hours to a lifetime. It includes personal events, general knowledge, and skills."
                       }
                     ]
                   }
@@ -1376,7 +1376,7 @@ const articlesData = {
           {
             "type": "accordion",
             "props": {
-              "title": "El cerebro y la memoria",
+              "title": "The Brain and Memory",
               "defaultOpen": true,
               "children": [
                 {
@@ -1384,11 +1384,11 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "El cerebro es el escenario donde se forman los recuerdos, y varias regiones trabajan juntas:",
-                        "highlight": "Hipocampo, corteza cerebral y amígdala."
+                        "text": "The brain is the stage where memories are formed, with regions working together: ",
+                        "highlight": "Hippocampus, cerebral cortex, and amygdala."
                       },
                       {
-                        "text": "- **Hipocampo**: Ubicado en el lóbulo temporal medial, es esencial para codificar nuevos recuerdos explícitos. Actúa como un 'índice' que organiza la información antes de transferirla a otras áreas ([Queensland Brain Institute](https://qbi.uq.edu.au/memory/where-are-memories-stored)).\n- **Corteza cerebral**: Almacena los recuerdos a largo plazo. Diferentes tipos de recuerdos se guardan en áreas específicas, como los visuales en la corteza occipital.\n- **Amígdala**: Modula la memoria emocional, haciendo que los eventos intensos, como un susto, sean más memorables ([Live Science](https://www.livescience.com/how-the-brain-stores-memories))."
+                        "text": "- **Hippocampus**: Located in the medial temporal lobe, it’s crucial for encoding explicit memories, acting as an 'index' to organize information ([Queensland Brain Institute](https://qbi.uq.edu.au/memory/where-are-memories-stored)).\n- **Cerebral cortex**: Stores long-term memories. Different types of memories are saved in specific areas, like visual memories in the occipital cortex.\n- **Amygdala**: Modulates emotional memory, making intense events, like a scare, more memorable ([Live Science](https://www.livescience.com/how-the-brain-stores-memories))."
                       }
                     ]
                   }
@@ -1399,7 +1399,7 @@ const articlesData = {
           {
             "type": "accordion",
             "props": {
-              "title": "Plasticidad sináptica",
+              "title": "Synaptic Plasticity",
               "defaultOpen": true,
               "children": [
                 {
@@ -1407,17 +1407,17 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "Los recuerdos se forman cuando las neuronas fortalecen o debilitan sus conexiones, un proceso llamado ",
-                        "highlight": "plasticidad sináptica",
-                        "continueText": ". Según el [Queensland Brain Institute](https://qbi.uq.edu.au/memory/how-are-memories-formed), esto ocurre a través de:"
+                        "text": "Memories form when neurons strengthen or weaken connections, a process called ",
+                        "highlight": "synaptic plasticity",
+                        "continueText": ". According to the [Queensland Brain Institute](https://qbi.uq.edu.au/memory/how-are-memories-formed), this occurs through:"
                       },
                       {
-                        "text": "- **Potenciación a largo plazo (LTP)**: Cuando dos neuronas se activan juntas repetidamente, su conexión se fortalece, facilitando la transmisión de señales. Es como pavimentar un camino que usas a menudo.\n- **Depresión a largo plazo (LTD)**: Las conexiones poco usadas se debilitan, permitiendo al cerebro 'limpiar' información irrelevante."
+                        "text": "- **Long-term potentiation (LTP)**: Repeated activation strengthens connections, like paving a frequently used path.\n- **Long-term depression (LTD)**: Unused connections weaken, allowing the brain to 'clear' irrelevant information."
                       },
                       {
-                        "text": "Eric Kandel, en su libro ",
+                        "text": "Eric Kandel’s ",
                         "highlight": "In Search of Memory",
-                        "continueText": " (2006), explica cómo estos cambios moleculares son la base de la memoria a largo plazo."
+                        "continueText": " (2006) explains how these molecular changes underpin long-term memory."
                       }
                     ]
                   }
@@ -1428,7 +1428,7 @@ const articlesData = {
           {
             "type": "accordion",
             "props": {
-              "title": "Consolidación y reconsolidación",
+              "title": "Consolidation and Reconsolidation",
               "defaultOpen": true,
               "children": [
                 {
@@ -1436,17 +1436,17 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "La ",
-                        "highlight": "consolidación",
-                        "continueText": " estabiliza los recuerdos para que no se pierdan. Hay dos tipos:"
+                        "text": "",
+                        "highlight": "Consolidation",
+                        "continueText": " stabilizes memories to prevent loss. There are two types:"
                       },
                       {
-                        "text": "- **Consolidación inicial**: Ocurre horas o días después de un evento y depende del hipocampo. Requiere la síntesis de proteínas ([PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC4246028/)).\n- **Consolidación sistémica**: Transfiere los recuerdos a la corteza cerebral, un proceso que puede tomar años."
+                        "text": "- **Initial consolidation**: Occurs hours or days after an event, relying on the hippocampus and protein synthesis ([PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC4246028/)).\n- **Systemic consolidation**: Transfers memories to the cortex, a process that can take years."
                       },
                       {
-                        "text": "La ",
-                        "highlight": "reconsolidación",
-                        "continueText": " ocurre cuando un recuerdo se reactiva y se vuelve temporalmente inestable, permitiendo modificaciones. Esto tiene aplicaciones en el tratamiento de trastornos como el TEPT ([Smithsonian Magazine](https://www.smithsonianmag.com/science-nature/how-our-brains-make-memories-14466850/))."
+                        "text": "",
+                        "highlight": "Reconsolidation",
+                        "continueText": " occurs when a memory is reactivated, becoming temporarily unstable and allowing modifications. This has applications in treating disorders like PTSD ([Smithsonian Magazine](https://www.smithsonianmag.com/science-nature/how-our-brains-make-memories-14466850/))."
                       }
                     ]
                   }
@@ -1460,15 +1460,15 @@ const articlesData = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "tipos-memoria",
+        "referenceId": "types-memory",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Tipos de memoria",
+              "title": "Types of Memory",
               "content": [
                 {
-                  "text": "La memoria no es un sistema único; se divide en varios tipos, cada uno con funciones específicas. La siguiente tabla resume los principales tipos de memoria y sus características."
+                  "text": "Memory isn’t a single system; it’s divided into types with specific functions. The table below summarizes the main types and their characteristics."
                 }
               ]
             }
@@ -1476,7 +1476,7 @@ const articlesData = {
           {
             "type": "table",
             "props": {
-              "content": "| Tipo | Descripción | Ejemplo |\n|------|-------------|---------|\n| **Memoria sensorial** | Retiene información sensorial por segundos. | Ver un relámpago y 'recordar' su imagen. |\n| **Memoria a corto plazo** | Almacena información temporalmente (20-30 segundos). | Recordar un número de teléfono. |\n| **Memoria a largo plazo** | Guarda información por períodos prolongados. | Saber montar en bicicleta. |\n| - **Explícita** | Recuerdos conscientes (episódica: eventos; semántica: hechos). | Recordar tu boda o la capital de Francia. |\n| - **Implícita** | Recuerdos inconscientes (procedimental: habilidades; priming: influencias). | Conducir un coche automáticamente. |"
+              "content": "| Type | Description | Example |\n|------|-------------|---------|\n| **Sensory Memory** | Retains sensory information for seconds. | Seeing a lightning bolt and 'recalling' its image. |\n| **Short-term Memory** | Temporarily stores information (20-30 seconds). | Remembering a phone number. |\n| **Long-term Memory** | Stores information for extended periods. | Knowing how to ride a bicycle. |\n| - **Explicit** | Conscious memories (episodic: events; semantic: facts). | Recalling your wedding or France’s capital. |\n| - **Implicit** | Unconscious memories (procedural: skills; priming: influences). | Driving a car automatically. |"
             }
           }
         ]
@@ -1485,22 +1485,22 @@ const articlesData = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "distorsiones",
+        "referenceId": "distortions",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Distorsiones y recuerdos falsos",
+              "title": "Distortions and False Memories",
               "content": [
                 {
-                  "text": "La memoria no es un video perfecto del pasado; es una reconstrucción que puede fallar. Elizabeth Loftus, en ",
+                  "text": "Memory isn’t a perfect video of the past; it’s a reconstruction that can fail. Elizabeth Loftus’s ",
                   "highlight": "The Myth of Repressed Memory",
-                  "continueText": " (1994), demostró que las sugestiones pueden crear recuerdos falsos. Por ejemplo, al preguntar a testigos si vieron un 'semáforo' en un accidente, muchos lo 'recordaron' aunque no existía."
+                  "continueText": " (1994) showed that suggestions can create false memories. For example, asking witnesses if they saw a 'traffic light' in an accident led many to 'recall' one, even if it wasn’t there."
                 },
                 {
-                  "text": "Las emociones también distorsionan la memoria. Eventos traumáticos pueden parecer más intensos de lo que fueron, un fenómeno explorado por Julia Shaw en ",
+                  "text": "Emotions also distort memory, making traumatic events seem more intense, as explored by Julia Shaw in ",
                   "highlight": "The Memory Illusion",
-                  "continueText": " (2016)."
+                  "continueText": " (2016). Our platform helps preserve accurate memories by storing them as they happen, reducing distortion over time."
                 }
               ]
             }
@@ -1511,15 +1511,15 @@ const articlesData = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "casos-notables",
+        "referenceId": "notable-cases",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Casos notables",
+              "title": "Notable Cases",
               "content": [
                 {
-                  "text": "Algunos casos extraordinarios han ayudado a los científicos a entender mejor cómo funciona la memoria. A continuación, exploramos dos ejemplos emblemáticos."
+                  "text": "Extraordinary cases have helped scientists understand memory better. Below, we explore two iconic examples."
                 }
               ]
             }
@@ -1535,9 +1535,9 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "En 1953, Henry Molaison se sometió a una cirugía que removió su hipocampo para tratar su epilepsia. Aunque sus convulsiones disminuyeron, perdió la capacidad de formar nuevos recuerdos explícitos. Su caso, descrito en ",
+                        "text": "In 1953, Henry Molaison underwent surgery to remove his hippocampus to treat epilepsy. While his seizures decreased, he lost the ability to form new explicit memories. His case, detailed in Suzanne Corkin’s ",
                         "highlight": "Permanent Present Tense",
-                        "continueText": " de Suzanne Corkin (2013), mostró que el hipocampo es crucial para la memoria declarativa, pero no para la procedimental ([The Guardian](https://www.theguardian.com/science/2013/may/05/henry-molaison-amnesiac-corkin-book-feature))."
+                        "continueText": " (2013), showed the hippocampus’s critical role in declarative memory, not procedural memory ([The Guardian](https://www.theguardian.com/science/2013/may/05/henry-molaison-amnesiac-corkin-book-feature)). With our platform, memories can be stored externally, offering a digital backup for such cases."
                       }
                     ]
                   }
@@ -1556,9 +1556,9 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "Solomon Shereshevsky tenía una memoria extraordinaria debido a su sinestesia, que le permitía asociar números y palabras con colores y texturas. Sin embargo, su incapacidad para olvidar lo abrumaba. Alexander Luria documentó su caso en ",
+                        "text": "Solomon Shereshevsky had an extraordinary memory due to synesthesia, associating numbers and words with colors and textures. However, his inability to forget overwhelmed him. Alexander Luria documented his case in ",
                         "highlight": "The Mind of a Mnemonist",
-                        "continueText": " (1968) ([The New Yorker](https://www.newyorker.com/books/page-turner/the-mystery-of-s-the-man-with-an-impossible-memory))."
+                        "continueText": " (1968) ([The New Yorker](https://www.newyorker.com/books/page-turner/the-mystery-of-s-the-man-with-an-impossible-memory)). Our cloud platform allows users to organize and selectively access memories, preventing such overload."
                       }
                     ]
                   }
@@ -1572,19 +1572,19 @@ const articlesData = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "tecnicas-memoria",
+        "referenceId": "memory-techniques",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Técnicas de memoria",
+              "title": "Memory Techniques",
               "content": [
                 {
-                  "text": "Las técnicas mnemotécnicas, como el método de los loci, han sido usadas desde la antigüedad. Frances Yates, en ",
+                  "text": "Mnemonics, like the method of loci, have been used since antiquity. Frances Yates’s ",
                   "highlight": "The Art of Memory",
-                  "continueText": " (1966), describe cómo los oradores griegos imaginaban 'palacios' mentales para recordar discursos. Joshua Foer, en ",
+                  "continueText": " (1966) describes how Greek orators used mental 'palaces' to recall speeches. Joshua Foer’s ",
                   "highlight": "Moonwalking with Einstein",
-                  "continueText": " (2011), muestra cómo estas técnicas pueden transformar una memoria promedio en una excepcional ([Five Books](https://fivebooks.com/best-books/joshua-foer-on-memory/))."
+                  "continueText": " (2011) shows how these techniques can transform average memory ([Five Books](https://fivebooks.com/best-books/joshua-foer-on-memory/)). Our platform enhances these techniques by allowing users to store visual and auditory cues in the cloud, creating digital memory palaces."
                 }
               ]
             }
@@ -1592,9 +1592,9 @@ const articlesData = {
           {
             "type": "cta",
             "props": {
-              "title": "¿Deseas tener tus recuerdos de manera especial?",
-              "description": "Mira estos ejemplos",
-              "buttonText": "Ver",
+              "title": "Want to preserve your memories in a unique way?",
+              "description": "Check out these examples",
+              "buttonText": "View",
               "href": "/",
               "variant": "primary"
             }
@@ -1605,20 +1605,23 @@ const articlesData = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "memoria-aprendizaje",
+        "referenceId": "memory-learning",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Memoria y aprendizaje",
+              "title": "Memory and Learning",
               "content": [
                 {
-                  "text": "Entender la memoria mejora el aprendizaje. En ",
+                  "text": "Understanding memory improves learning. Brown, Roediger, and McDaniel’s ",
                   "highlight": "Make It Stick",
-                  "continueText": " (2014), Brown, Roediger y McDaniel recomiendan:"
+                  "continueText": " (2014) recommends:"
                 },
                 {
-                  "text": "- **Práctica de recuperación**: Probarte a ti mismo fortalece los recuerdos.\n- **Espaciado**: Estudiar a lo largo del tiempo es más efectivo que cramming.\n- **Intercalación**: Mezclar temas mejora la retención."
+                  "text": "- **Retrieval practice**: Testing yourself strengthens memories.\n- **Spaced repetition**: Studying over time is more effective than cramming.\n- **Interleaving**: Mixing topics improves retention."
+                },
+                {
+                  "text": "Our platform supports these methods by allowing users to create and revisit digital memory flashcards stored in the cloud."
                 }
               ]
             }
@@ -1629,19 +1632,44 @@ const articlesData = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "perspectivas-culturales",
+        "referenceId": "cultural-perspectives",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Perspectivas culturales",
+              "title": "Cultural Perspectives",
               "content": [
                 {
-                  "text": "La memoria tiene un significado cultural profundo. David Rubin, en ",
+                  "text": "Memory holds deep cultural significance. David Rubin’s ",
                   "highlight": "Memory in Oral Traditions",
-                  "continueText": " (1995), explica cómo las sociedades orales usaban rimas y narrativas para preservar conocimientos. En la literatura, Marcel Proust, en ",
+                  "continueText": " (1995) explains how oral societies used rhymes and narratives to preserve knowledge. Marcel Proust’s ",
                   "highlight": "In Search of Lost Time",
-                  "continueText": " (1913-1927), explora cómo los recuerdos involuntarios dan sentido a la vida."
+                  "continueText": " (1913-1927) explores how involuntary memories shape life’s meaning. Our platform celebrates cultural memory by enabling users to share and archive stories for future generations."
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "external-resources",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Explore More: Memory Resources",
+              "content": [
+                {
+                  "text": "Dive deeper into these reputable platforms offering valuable insights into memory and neuroscience, complementing our cloud-based memory storage solution:"
+                },
+                {
+                  "text": "- [National Institute of Neurological Disorders and Stroke](https://www.ninds.nih.gov/health-information/disorders/memory): Provides an overview of memory disorders and brain health.\n- [Scientific American Mind](https://www.scientificamerican.com/mind/): Features articles on memory, cognition, and neuroscience.\n- [MIT OpenCourseWare – Brain and Cognitive Sciences](https://ocw.mit.edu/courses/brain-and-cognitive-sciences/): Free access to MIT’s neuroscience courses, including memory formation.\n- [TED Talks on Memory](https://www.ted.com/topics/memory): Inspiring talks on memory, from scientific breakthroughs to personal stories.\n- [Memory Lab at Cambridge University](https://www.memory.psychol.cam.ac.uk): Research and resources on memory processes and their applications."
+                },
+                {
+                  "text": "These resources deepen your understanding of memory, while our platform lets you store your personal memories securely in the cloud for creative and practical uses."
                 }
               ]
             }
@@ -1657,10 +1685,10 @@ const articlesData = {
           {
             "type": "text",
             "props": {
-              "title": "Conclusión",
+              "title": "Conclusion",
               "content": [
                 {
-                  "text": "La memoria es un proceso complejo que define nuestra identidad. Desde los cambios sinápticos hasta las técnicas culturales, la ciencia de la memoria nos ayuda a entender quiénes somos y cómo aprendemos. Casos como los de H.M. y Shereshevsky nos recuerdan que la memoria es tanto una herramienta poderosa como un desafío. Al comprenderla, podemos mejorar nuestra vida y enfrentar el futuro con mayor claridad."
+                  "text": "Memory is a complex process that defines our identity. From synaptic changes to cultural techniques, the science of memory helps us understand who we are and how we learn. Cases like H.M. and Shereshevsky remind us that memory is both powerful and challenging. With our cloud-based platform, you can preserve your memories digitally, ensuring they remain vivid and accessible for years to come."
                 }
               ]
             }
@@ -1668,7 +1696,7 @@ const articlesData = {
           {
             "type": "customQuote",
             "props": {
-              "quote": "La memoria es el diario que todos llevamos con nosotros.",
+              "quote": "Memory is the diary we all carry about with us.",
               "author": "Oscar Wilde"
             }
           }
@@ -1683,7 +1711,7 @@ const articlesData = {
             "type": "image",
             "props": {
               "url": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/openart-image_KPf_LYiD_1750275030272_raw.jpg",
-              "alt": "Imagen del cerebro humano"
+              "alt": "Human brain image"
             }
           },
           {
@@ -1691,7 +1719,7 @@ const articlesData = {
             "props": {
               "content": [
                 {
-                  "text": "Explora más sobre la neurociencia de la memoria en nuestra galería interactiva."
+                  "text": "Explore more about the neuroscience of memory in our interactive gallery."
                 }
               ]
             }
@@ -1705,8 +1733,8 @@ const articlesData = {
     {
       "type": "feedbackForm",
       "props": {
-        "title": "Deja tu opinión",
-        "submitText": "Enviar retroalimentación",
+        "title": "Share Your Thoughts",
+        "submitText": "Submit Feedback",
         "showRatings": true
       }
     }
@@ -1787,18 +1815,22 @@ export default function ArticlePage({ article }) {
   );
 };
 
+
 export async function getServerSideProps(context) {
   const { information } = context.params; // Captura el parámetro dinámico, ej. "upload-article"
 
-
   console.log('information');
   console.log(information);
-  
 
+  // Determinar la URL base según el entorno
+  const isLocal = process.env.NODE_ENV === 'development';
+  const baseUrl = isLocal 
+    ? 'http://localhost:3000'
+    : process.env.NEXT_PUBLIC_API_URL;
 
   try {
     // Construir la URL de la API dinámicamente usando el parámetro `information`
-    const response = await fetch(`http://localhost:3000/api/mongoDb/dinamicArticles/articles/${information}`, {
+    const response = await fetch(`${baseUrl}/api/mongoDb/dinamicArticles/articles/${information}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -1834,22 +1866,6 @@ export async function getServerSideProps(context) {
     };
   }
 }
-
-/*export async function getServerSideProps(context) {
-  const { information } = context.params;
-  if (information === 'memory-formation') {
-    return {
-      props: {
-        article: articlesData,
-      },
-    };
-  } else {
-    return {
-      notFound: true,
-    };
-  }
-}*/
-
 
 
 
