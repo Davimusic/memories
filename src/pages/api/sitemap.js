@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     .map(
       (page) => `
     <url>
-      <loc>https://goodmemories.com${page.loc}</loc>
+      <loc>https://goodmemories.live${page.loc}</loc>
       <lastmod>${page.lastModified}</lastmod>
       <changefreq>${page.changefreq}</changefreq>
       <priority>${page.priority}</priority>
