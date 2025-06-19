@@ -603,7 +603,7 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
     '@type': 'CollectionPage',
     name: 'Your Memories',
     description: 'View and manage your personal memories in the Memory App',
-    url: typeof window !== 'undefined' ? window.location.href : 'https://yourdomain.com/memories',
+    url: typeof window !== 'undefined' ? window.location.href : `https://${process.env.NEXT_PUBLIC_DOMAINAPI_URL}/memories`,
     mainEntity: {
       '@type': 'ItemList',
       itemListElement: filteredMemories.map(([memoryTitle, details], index) => ({

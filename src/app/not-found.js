@@ -19,7 +19,7 @@ const NotFound = () => {
 
     // Redirect to homepage after 3 seconds
     const timer = setTimeout(() => {
-      //router.push('/');
+      router.push('/');
     }, 3000);
 
     return () => clearTimeout(timer); // Cleanup timer on unmount
@@ -28,7 +28,7 @@ const NotFound = () => {
   return (
     <div className="fullscreen-floating">
       <Head>
-        <title>404 - Page Not Found | Your App Name</title>
+        <title>404 - Page Not Found | GoodMemories</title>
         <meta
           name="description"
           content="The page you are looking for could not be found. You will be redirected to the homepage shortly."
@@ -36,9 +36,9 @@ const NotFound = () => {
         <meta name="robots" content="noindex, nofollow" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta charSet="UTF-8" />
-        <meta name="keywords" content="404, not found, memories, your app name" />
-        <meta name="author" content="Your App Name" />
-        <link rel="canonical" href="https://yourdomain.com/404" />
+        <meta name="keywords" content="404, not found, memories, goodmemories" />
+        <meta name="author" content="GoodMemories" />
+        <link rel="canonical" href={`https://${process.env.NEXT_PUBLIC_DOMAINAPI_URL}/404`} />
       </Head>
 
       <div

@@ -29,7 +29,7 @@ const LoadingMemories = () => {
         <meta charSet="UTF-8" />
         <meta name="keywords" content="memories, loading, your app name" />
         <meta name="author" content="Your App Name" />
-        <link rel="canonical" href="https://yourdomain.com/loading" />
+        <link rel="canonical" href= {`https://${process.env.NEXT_PUBLIC_DOMAINAPI_URL}.com/loading`}/>
       </Head>
 
       <div

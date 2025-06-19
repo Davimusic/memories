@@ -28,6 +28,14 @@ module.exports = withPWA({
       'lh3.googleusercontent.com',
       'f005.backblazeb2.com',
     ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'goodmemoriesapp.b-cdn.net',
+        port: '',
+        pathname: '/mediaDinamicWeb/images/**',
+      },
+    ],
   },
   async rewrites() {
     return [

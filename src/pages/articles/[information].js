@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import '../../estilos/general/information.css';
 import MemoryLogo from '@/components/complex/memoryLogo';
 import { marked } from 'marked';
+import Image from 'next/image';
 
 const TableOfContents = ({ content }) => {
   const htmlContent = marked(content, {
@@ -79,6 +80,7 @@ const Paragraphs = ({ data }) => {
               <a
                 key={`${match.index}-link-${match[2]}`}
                 href={match[3]}
+                title={`Visit ${match[2]} for more information`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#3b82f6', textDecoration: 'underline' }}
@@ -228,10 +230,13 @@ const ContentSlider = ({
     embed: EmbedBlock,
     image: ({ url, alt }) => (
       <div className="slide-content-image">
-        <img 
+        <Image 
           src={url} 
           alt={alt} 
           className="slider-image"
+          width={600}
+          height={400}
+          loading="lazy"
         />
       </div>
     ),
@@ -467,7 +472,7 @@ const LinksRenderer = ({ text, url }) => {
       <h3>Additional Resource</h3>
       <ul className="additional-links">
         <li>
-          <a href={url} target="_blank" rel="noopener noreferrer">
+          <a href={url} title={`Visit ${text} for more information`} target="_blank" rel="noopener noreferrer">
             {text}
           </a>
         </li>
@@ -517,9 +522,11 @@ const ImagesRenderer = ({ images }) => {
               boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
             }}
           >
-            <img
+            <Image
               src={image.url}
               alt={image.alt || `Image ${index}`}
+              width={600}
+              height={400}
               style={{
                 width: '100%',
                 height: '100%',
@@ -656,7 +663,7 @@ const CTABlock = ({ title, description, buttonText, onClick, href, variant = 'pr
         {title && <h3 className="cta-title">{title}</h3>}
         {description && <p className="cta-description">{description}</p>}
       </div>
-      <a href={href || '#'} className={`cta-button ${variant}`} onClick={handleClick}>
+      <a href={href || '#'} title={buttonText} className={`cta-button ${variant}`} onClick={handleClick}>
         {icon && <span className="cta-icon" dangerouslySetInnerHTML={{ __html: icon }} />}
         {buttonText}
       </a>
@@ -758,7 +765,7 @@ const Breadcrumb = ({ items, separator = '/', color = 'primary' }) => {
               <span aria-current="page" className="breadcrumb-current">{item.label}</span>
             ) : (
               <>
-                <a href={item.path} className="breadcrumb-link">{item.label}</a>
+                <a href={item.path} title={`Go to ${item.label}`} className="breadcrumb-link">{item.label}</a>
                 {index < items.length - 1 && (
                   <span className="breadcrumb-separator" aria-hidden="true">{separator}</span>
                 )}
@@ -1022,9 +1029,9 @@ const Layout = ({ children }) => {
   return (
     <Fragment>
       <Head>
-        <title>Good Memories - Memory Platform</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <nav className={`navbar ${darkMode ? 'dark' : ''}`}>
         <div className="navbar-container">
@@ -1040,10 +1047,10 @@ const Layout = ({ children }) => {
             id="mobile-menu"
             aria-hidden={!mobileMenuOpen}
           >
-            <a href="#"><i className="fas fa-home"></i> Home</a>
-            <a href="#"><i className="fas fa-book"></i> Articles</a>
-            <a href="#"><i className="fas fa-images"></i> Gallery</a>
-            <a href="#"><i className="fas fa-user-friends"></i> Community</a>
+            <a href="#" title="Go to Home page"><i className="fas fa-home"></i> Home</a>
+            <a href="#" title="View Articles"><i className="fas fa-book"></i> Articles</a>
+            <a href="#" title="Explore Gallery"><i className="fas fa-images"></i> Gallery</a>
+            <a href="#" title="Join Community"><i className="fas fa-user-friends"></i> Community</a>
             <button 
               className="theme-toggle" 
               onClick={toggleDarkMode} 
@@ -1071,28 +1078,28 @@ const Layout = ({ children }) => {
             <h3>Good Memories</h3>
             <p>Preserving your most cherished moments for future generations.</p>
             <div className="social-icons">
-              <a href="#" aria-label="Facebook"><i className="fab fa-facebook"></i></a>
-              <a href="#" aria-label="Twitter"><i className="fab fa-twitter"></i></a>
-              <a href="#" aria-label="Instagram"><i className="fab fa-instagram"></i></a>
-              <a href="#" aria-label="Pinterest"><i className="fab fa-pinterest"></i></a>
+              <a href="#" title="Follow us on Facebook" aria-label="Facebook"><i className="fab fa-facebook"></i></a>
+              <a href="#" title="Follow us on Twitter" aria-label="Twitter"><i className="fab fa-twitter"></i></a>
+              <a href="#" title="Follow us on Instagram" aria-label="Instagram"><i className="fab fa-instagram"></i></a>
+              <a href="#" title="Follow us on Pinterest" aria-label="Pinterest"><i className="fab fa-pinterest"></i></a>
             </div>
           </div>
           <div className="footer-section">
             <h3>Quick Links</h3>
             <ul>
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Our Services</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms and Conditions</a></li>
+              <li><a href="#" title="Learn About Us">About Us</a></li>
+              <li><a href="#" title="Explore Our Services">Our Services</a></li>
+              <li><a href="#" title="Read Privacy Policy">Privacy Policy</a></li>
+              <li><a href="#" title="Read Terms and Conditions">Terms and Conditions</a></li>
             </ul>
           </div>
           <div className="footer-section">
             <h3>Resources</h3>
             <ul>
-              <li><a href="#">Blog</a></li>
-              <li><a href="#">Tutorials</a></li>
-              <li><a href="#">FAQ</a></li>
-              <li><a href="#">Technical Support</a></li>
+              <li><a href="#" title="Read our Blog">Blog</a></li>
+              <li><a href="#" title="View Tutorials">Tutorials</a></li>
+              <li><a href="#" title="Access FAQ">FAQ</a></li>
+              <li><a href="#" title="Get Technical Support">Technical Support</a></li>
             </ul>
           </div>
           <div className="footer-section">
@@ -1129,7 +1136,15 @@ const ImageTextBlock = ({ imageUrl, imageAlt, text, layout = 'left', imageSize =
     <div className={containerClass}>
       {layout === 'left' || layout === 'top' ? (
         <>
-          <img style={{ borderRadius: '20px' }} src={imageUrl} alt={imageAlt} className={imageClass} />
+          <Image 
+            src={imageUrl} 
+            alt={imageAlt} 
+            className={imageClass}
+            width={600}
+            height={400}
+            style={{ borderRadius: '20px' }}
+            loading="lazy"
+          />
           <div className="text-content">
             <Paragraphs data={paragraphData} />
           </div>
@@ -1139,7 +1154,14 @@ const ImageTextBlock = ({ imageUrl, imageAlt, text, layout = 'left', imageSize =
           <div className="text-content">
             <Paragraphs data={paragraphData} />
           </div>
-          <img src={imageUrl} alt={imageAlt} className={imageClass} />
+          <Image 
+            src={imageUrl} 
+            alt={imageAlt} 
+            className={imageClass}
+            width={600}
+            height={400}
+            loading="lazy"
+          />
         </>
       )}
     </div>
@@ -1210,7 +1232,7 @@ const ContentBlockRenderer = ({ block }) => {
     case 'images':
       return <ImagesRenderer {...props} />;
     case 'image':
-      return <img src={props.url} alt={props.alt} className="w-full-image h-auto" />;
+      return <Image src={props.url} alt={props.alt} className="w-full-image h-auto" width={600} height={400} loading="lazy" />;
     case 'audios':
       return <AudiosRenderer {...props} />;
     case 'contentSlider':
@@ -1249,24 +1271,25 @@ const ContentBlockRenderer = ({ block }) => {
 };
 
 const articlesData = {
-  "slug": "memory-formation",
-  "title": "How Memories Are Formed According to Science: A Fascinating Journey Through Memory",
+  "slug": "memory-formation-science",
+  "title": "Memory Formation: Science and Techniques",
   "seo": {
-    "description": "Discover how memories are formed in the brain, the types of memory, fascinating cases like Henry Molaison and Solomon Shereshevsky, and techniques to enhance learning. Learn how our cloud-based platform helps preserve these memories.",
+    "description": "Learn how memories form in the brain, explore types, cases like H.M., and boost learning with our cloud platform.",
     "keywords": "memory, memories, neuroscience, hippocampus, synaptic plasticity, Henry Molaison, Solomon Shereshevsky, cloud memory storage",
-    "tags": "memory, science, neuroscience, learning, psychology, digital memories"
+    "tags": "memory, science, neuroscience, learning, psychology, digital memories",
+    "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250618_142235.png"
   },
   "breadcrumbs": [
     { "label": "Home", "path": "/" },
     { "label": "Articles", "path": "/articles" },
-    { "label": "How Memories Are Formed", "path": "/articles/memory-formation" }
+    { "label": "Memory Formation", "path": "/articles/memory-formation-science" }
   ],
   "content": [
     {
       "type": "tableOfContents",
       "props": {
         "title": "What’s in This Article?",
-        "content": "1. [Introduction: The Magic of Memory](#introduction)\n2. [The Science Behind Memory Formation](#science-formation)\n   - [What is Memory?](#what-is-memory)\n   - [Stages of Memory](#stages-memory)\n   - [The Brain and Memory](#brain-memory)\n   - [Synaptic Plasticity](#synaptic-plasticity)\n   - [Consolidation and Reconsolidation](#consolidation)\n3. [Types of Memory](#types-memory)\n4. [Distortions and False Memories](#distortions)\n5. [Notable Cases](#notable-cases)\n   - [Henry Molaison (H.M.)](#henry-molaison)\n   - [Solomon Shereshevsky](#solomon-shereshevsky)\n6. [Memory Techniques](#memory-techniques)\n7. [Memory and Learning](#memory-learning)\n8. [Cultural Perspectives](#cultural-perspectives)\n9. [Explore More: Memory Resources](#external-resources)\n10. [Conclusion](#conclusion)"
+        "content": "1. [Introduction: The Magic of Memory Formation](#introduction)\n2. [The Science Behind Memory Formation](#science-formation)\n   - [What is Memory?](#what-is-memory)\n   - [Stages of Memory](#stages-memory)\n   - [The Brain and Memory](#brain-memory)\n   - [Synaptic Plasticity](#synaptic-plasticity)\n   - [Consolidation and Reconsolidation](#consolidation)\n3. [Types of Memory](#types-memory)\n4. [Distortions and False Memories](#distortions)\n5. [Notable Cases](#notable-cases)\n   - [Henry Molaison (H.M.)](#henry-molaison)\n   - [Solomon Shereshevsky](#solomon-shereshevsky)\n6. [Memory Techniques](#memory-techniques)\n7. [Memory and Learning](#memory-learning)\n8. [Cultural Perspectives](#cultural-perspectives)\n9. [Explore More: Memory Resources](#external-resources)\n10. [Conclusion](#conclusion)"
       }
     },
     {
@@ -1277,23 +1300,23 @@ const articlesData = {
           {
             "type": "text",
             "props": {
-              "title": "Introduction: The Magic of Memory",
+              "title": "Introduction: The Magic of Memory Formation",
               "content": [
                 {
-                  "text": "Imagine walking down a familiar street when the scent of freshly baked bread transports you to your grandmother’s kitchen. In an instant, you recall her laughter, the warmth of the oven, and the taste of that bread. How does your brain revive a moment from years ago? ",
+                  "text": "How do memories form? Imagine a journey through the science of memory formation, where the scent of freshly baked bread transports you to your grandmother’s kitchen.",
                   "highlight": "Memory is a dynamic process",
-                  "continueText": " that involves physical and chemical changes in the brain. Each time you learn something new or live an experience, your brain rewires its connections to store that information. With our cloud-based platform, you can capture and preserve these moments forever, ensuring they’re accessible anytime, anywhere."
+                  "continueText": " involving brain changes. Our cloud platform preserves these moments."
                 },
                 {
-                  "text": "Let’s consider two stories that have shaped neuroscience: ",
+                  "text": "Let’s explore two stories that shaped neuroscience: ",
                   "highlight": "Henry Molaison (H.M.)",
                   "link": { "text": "Simply Psychology", "url": "https://www.simplypsychology.org/henry-molaison-patient-hm.html" },
-                  "continueText": ", who lost the ability to form new memories after surgery, and "
+                  "continueText": ", who lost the ability to form new memories, and "
                 },
                 {
                   "highlight": "Solomon Shereshevsky",
                   "link": { "text": "Psychology Today", "url": "https://www.psychologytoday.com/us/blog/the-memory-factory/202106/the-curious-case-mr-s-and-his-memory" },
-                  "continueText": ", a journalist with an overwhelming, prodigious memory. Join us on this journey to uncover the secrets of your mind and learn how our platform can help you store these memories in the cloud."
+                  "continueText": ", a journalist with a prodigious memory. Discover how our platform helps store memories."
                 }
               ]
             }
@@ -1303,7 +1326,7 @@ const articlesData = {
             "props": {
               "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250618_142235.png",
               "imageAlt": "Neural connections in the brain",
-              "text": "Neural connections in the brain strengthen with each new memory, a fascinating process we’ll explore in depth. With our platform, you can save these neural snapshots digitally.",
+              "text": "Neural connections strengthen with each memory formation, a fascinating process we explore. Save these moments digitally with our platform.",
               "layout": "right",
               "imageSize": "medium"
             }
@@ -1322,7 +1345,7 @@ const articlesData = {
               "title": "The Science Behind Memory Formation",
               "content": [
                 {
-                  "text": "Memory formation is a complex process occurring on multiple levels within the brain. From neuron activation to synaptic connections, memory results from an intricate dance between cells and molecules."
+                  "text": "Memory formation is a complex process occurring within the brain. From neuron activation to synaptic connections, it’s an intricate dance of cells and molecules."
                 }
               ]
             }
@@ -1338,11 +1361,11 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "Memory is the brain’s ability to encode, store, and retrieve information. It’s not a single process but a complex system with stages: ",
+                        "text": "Memory is the brain’s ability to encode, store, and retrieve information. It’s a complex system with stages: ",
                         "highlight": "Encoding, storage, and retrieval."
                       },
                       {
-                        "text": "- **Encoding**: Transforming information into a format the brain can process, like memorizing a name.\n- **Storage**: Saving that information for later use, from seconds to decades.\n- **Retrieval**: Accessing stored information when needed, like recalling where you parked your car."
+                        "text": "- **Encoding**: Transforming information into a brain-readable format, like a name.\n- **Storage**: Saving information for later, from seconds to decades.\n- **Retrieval**: Accessing stored information, like recalling a parking spot."
                       }
                     ]
                   }
@@ -1361,11 +1384,11 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "Memory is divided into three main stages, each with a specific purpose: ",
+                        "text": "Memory formation involves three stages: ",
                         "highlight": "Sensory memory, short-term memory, and long-term memory."
                       },
                       {
-                        "text": "- **Sensory memory**: Lasts only seconds, capturing sensory input. For example, iconic memory lets you 'see' a fleeting image, like a lightning bolt ([Lesley University](https://lesley.edu/article/stages-of-memory)).\n- **Short-term memory (STM)**: Holds information for 20-30 seconds with limited capacity (about 7 items). It’s used to keep a phone number in mind while dialing.\n- **Long-term memory (LTM)**: Stores information for extended periods, from hours to a lifetime. It includes personal events, general knowledge, and skills."
+                        "text": "- **Sensory memory**: Captures sensory input for seconds, like iconic memory of a lightning bolt ([Lesley University](https://lesley.edu/article/stages-of-memory)).\n- **Short-term memory (STM)**: Holds about 7 items for 20-30 seconds, like a phone number.\n- **Long-term memory (LTM)**: Stores information for hours to a lifetime, including events and skills."
                       }
                     ]
                   }
@@ -1384,11 +1407,11 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "The brain is the stage where memories are formed, with regions working together: ",
+                        "text": "The brain orchestrates memory formation with key regions: ",
                         "highlight": "Hippocampus, cerebral cortex, and amygdala."
                       },
                       {
-                        "text": "- **Hippocampus**: Located in the medial temporal lobe, it’s crucial for encoding explicit memories, acting as an 'index' to organize information ([Queensland Brain Institute](https://qbi.uq.edu.au/memory/where-are-memories-stored)).\n- **Cerebral cortex**: Stores long-term memories. Different types of memories are saved in specific areas, like visual memories in the occipital cortex.\n- **Amygdala**: Modulates emotional memory, making intense events, like a scare, more memorable ([Live Science](https://www.livescience.com/how-the-brain-stores-memories))."
+                        "text": "- **Hippocampus**: Encodes explicit memories, acting as an 'index' ([Queensland Brain Institute](https://qbi.uq.edu.au/memory/where-are-memories-stored)).\n- **Cerebral cortex**: Stores long-term memories, with visual memories in the occipital cortex.\n- **Amygdala**: Enhances emotional memories, like a scary event ([Live Science](https://www.livescience.com/how-the-brain-stores-memories))."
                       }
                     ]
                   }
@@ -1407,17 +1430,17 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "Memories form when neurons strengthen or weaken connections, a process called ",
+                        "text": "Memories form through ",
                         "highlight": "synaptic plasticity",
-                        "continueText": ". According to the [Queensland Brain Institute](https://qbi.uq.edu.au/memory/how-are-memories-formed), this occurs through:"
+                        "continueText": ", where neurons adjust connections ([Queensland Brain Institute](https://qbi.uq.edu.au/memory/how-are-memories-formed))."
                       },
                       {
-                        "text": "- **Long-term potentiation (LTP)**: Repeated activation strengthens connections, like paving a frequently used path.\n- **Long-term depression (LTD)**: Unused connections weaken, allowing the brain to 'clear' irrelevant information."
+                        "text": "- **Long-term potentiation (LTP)**: Strengthens connections with repeated use.\n- **Long-term depression (LTD)**: Weakens unused connections."
                       },
                       {
                         "text": "Eric Kandel’s ",
                         "highlight": "In Search of Memory",
-                        "continueText": " (2006) explains how these molecular changes underpin long-term memory."
+                        "continueText": " (2006) details these molecular changes."
                       }
                     ]
                   }
@@ -1438,15 +1461,15 @@ const articlesData = {
                       {
                         "text": "",
                         "highlight": "Consolidation",
-                        "continueText": " stabilizes memories to prevent loss. There are two types:"
+                        "continueText": " stabilizes memories:"
                       },
                       {
-                        "text": "- **Initial consolidation**: Occurs hours or days after an event, relying on the hippocampus and protein synthesis ([PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC4246028/)).\n- **Systemic consolidation**: Transfers memories to the cortex, a process that can take years."
+                        "text": "- **Initial consolidation**: Stabilizes memories hours or days after an event ([PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC4246028/)).\n- **Systemic consolidation**: Transfers memories to the cortex over years."
                       },
                       {
                         "text": "",
                         "highlight": "Reconsolidation",
-                        "continueText": " occurs when a memory is reactivated, becoming temporarily unstable and allowing modifications. This has applications in treating disorders like PTSD ([Smithsonian Magazine](https://www.smithsonianmag.com/science-nature/how-our-brains-make-memories-14466850/))."
+                        "continueText": " allows memory modification upon recall, aiding PTSD treatment ([Smithsonian Magazine](https://www.smithsonianmag.com/science-nature/how-our-brains-make-memories-14466850/))."
                       }
                     ]
                   }
@@ -1468,7 +1491,7 @@ const articlesData = {
               "title": "Types of Memory",
               "content": [
                 {
-                  "text": "Memory isn’t a single system; it’s divided into types with specific functions. The table below summarizes the main types and their characteristics."
+                  "text": "Memory formation involves multiple types, each with unique functions. See the table below."
                 }
               ]
             }
@@ -1476,7 +1499,7 @@ const articlesData = {
           {
             "type": "table",
             "props": {
-              "content": "| Type | Description | Example |\n|------|-------------|---------|\n| **Sensory Memory** | Retains sensory information for seconds. | Seeing a lightning bolt and 'recalling' its image. |\n| **Short-term Memory** | Temporarily stores information (20-30 seconds). | Remembering a phone number. |\n| **Long-term Memory** | Stores information for extended periods. | Knowing how to ride a bicycle. |\n| - **Explicit** | Conscious memories (episodic: events; semantic: facts). | Recalling your wedding or France’s capital. |\n| - **Implicit** | Unconscious memories (procedural: skills; priming: influences). | Driving a car automatically. |"
+              "content": "| Type | Description | Example |\n|------|-------------|---------|\n| **Sensory Memory** | Retains sensory data for seconds. | Recalling a lightning bolt’s image. |\n| **Short-term Memory** | Stores data for 20-30 seconds. | Memorizing a phone number. |\n| **Long-term Memory** | Holds data for hours to a lifetime. | Knowing how to cycle. |\n| - **Explicit** | Conscious memories (episodic, semantic). | Your wedding or France’s capital. |\n| - **Implicit** | Unconscious memories (procedural, priming). | Driving automatically. |"
             }
           }
         ]
@@ -1493,14 +1516,14 @@ const articlesData = {
               "title": "Distortions and False Memories",
               "content": [
                 {
-                  "text": "Memory isn’t a perfect video of the past; it’s a reconstruction that can fail. Elizabeth Loftus’s ",
+                  "text": "Memory formation isn’t perfect; it’s a reconstruction. Elizabeth Loftus’s ",
                   "highlight": "The Myth of Repressed Memory",
-                  "continueText": " (1994) showed that suggestions can create false memories. For example, asking witnesses if they saw a 'traffic light' in an accident led many to 'recall' one, even if it wasn’t there."
+                  "continueText": " (1994) shows suggestions create false memories, like ‘recalling’ a nonexistent traffic light."
                 },
                 {
-                  "text": "Emotions also distort memory, making traumatic events seem more intense, as explored by Julia Shaw in ",
+                  "text": "Emotions distort memory, per Julia Shaw’s ",
                   "highlight": "The Memory Illusion",
-                  "continueText": " (2016). Our platform helps preserve accurate memories by storing them as they happen, reducing distortion over time."
+                  "continueText": " (2016). Our platform preserves accurate memories."
                 }
               ]
             }
@@ -1519,7 +1542,7 @@ const articlesData = {
               "title": "Notable Cases",
               "content": [
                 {
-                  "text": "Extraordinary cases have helped scientists understand memory better. Below, we explore two iconic examples."
+                  "text": "Key cases illuminate memory formation science."
                 }
               ]
             }
@@ -1535,9 +1558,9 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "In 1953, Henry Molaison underwent surgery to remove his hippocampus to treat epilepsy. While his seizures decreased, he lost the ability to form new explicit memories. His case, detailed in Suzanne Corkin’s ",
+                        "text": "In 1953, Henry Molaison’s hippocampus removal for epilepsy eliminated new explicit memory formation. Suzanne Corkin’s ",
                         "highlight": "Permanent Present Tense",
-                        "continueText": " (2013), showed the hippocampus’s critical role in declarative memory, not procedural memory ([The Guardian](https://www.theguardian.com/science/2013/may/05/henry-molaison-amnesiac-corkin-book-feature)). With our platform, memories can be stored externally, offering a digital backup for such cases."
+                        "continueText": " (2013) highlights the hippocampus’s role ([The Guardian](https://www.theguardian.com/science/2013/may/05/henry-molaison-amnesiac-corkin-book-feature)). Our platform offers digital memory backups."
                       }
                     ]
                   }
@@ -1556,9 +1579,9 @@ const articlesData = {
                   "props": {
                     "content": [
                       {
-                        "text": "Solomon Shereshevsky had an extraordinary memory due to synesthesia, associating numbers and words with colors and textures. However, his inability to forget overwhelmed him. Alexander Luria documented his case in ",
+                        "text": "Solomon Shereshevsky’s synesthetic memory overwhelmed him. Alexander Luria’s ",
                         "highlight": "The Mind of a Mnemonist",
-                        "continueText": " (1968) ([The New Yorker](https://www.newyorker.com/books/page-turner/the-mystery-of-s-the-man-with-an-impossible-memory)). Our cloud platform allows users to organize and selectively access memories, preventing such overload."
+                        "continueText": " (1968) documents this ([The New Yorker](https://www.newyorker.com/books/page-turner/the-mystery-of-s-the-man-with-an-impossible-memory)). Our platform organizes memories."
                       }
                     ]
                   }
@@ -1580,11 +1603,11 @@ const articlesData = {
               "title": "Memory Techniques",
               "content": [
                 {
-                  "text": "Mnemonics, like the method of loci, have been used since antiquity. Frances Yates’s ",
+                  "text": "Mnemonics, like the method of loci, aid memory formation. Frances Yates’s ",
                   "highlight": "The Art of Memory",
-                  "continueText": " (1966) describes how Greek orators used mental 'palaces' to recall speeches. Joshua Foer’s ",
+                  "continueText": " (1966) and Joshua Foer’s ",
                   "highlight": "Moonwalking with Einstein",
-                  "continueText": " (2011) shows how these techniques can transform average memory ([Five Books](https://fivebooks.com/best-books/joshua-foer-on-memory/)). Our platform enhances these techniques by allowing users to store visual and auditory cues in the cloud, creating digital memory palaces."
+                  "continueText": " (2011) explore these ([Five Books](https://fivebooks.com/best-books/joshua-foer-on-memory/)). Our platform enhances digital memory palaces."
                 }
               ]
             }
@@ -1592,8 +1615,8 @@ const articlesData = {
           {
             "type": "cta",
             "props": {
-              "title": "Want to preserve your memories in a unique way?",
-              "description": "Check out these examples",
+              "title": "Want to preserve your memories uniquely?",
+              "description": "Check out our platform’s features",
               "buttonText": "View",
               "href": "/",
               "variant": "primary"
@@ -1613,15 +1636,15 @@ const articlesData = {
               "title": "Memory and Learning",
               "content": [
                 {
-                  "text": "Understanding memory improves learning. Brown, Roediger, and McDaniel’s ",
+                  "text": "Understanding memory formation boosts learning. Brown, Roediger, and McDaniel’s ",
                   "highlight": "Make It Stick",
                   "continueText": " (2014) recommends:"
                 },
                 {
-                  "text": "- **Retrieval practice**: Testing yourself strengthens memories.\n- **Spaced repetition**: Studying over time is more effective than cramming.\n- **Interleaving**: Mixing topics improves retention."
+                  "text": "- **Retrieval practice**: Testing strengthens memories.\n- **Spaced repetition**: Studying over time beats cramming.\n- **Interleaving**: Mixing topics improves retention."
                 },
                 {
-                  "text": "Our platform supports these methods by allowing users to create and revisit digital memory flashcards stored in the cloud."
+                  "text": "Our platform supports these with digital flashcards."
                 }
               ]
             }
@@ -1640,11 +1663,11 @@ const articlesData = {
               "title": "Cultural Perspectives",
               "content": [
                 {
-                  "text": "Memory holds deep cultural significance. David Rubin’s ",
+                  "text": "Memory formation has cultural significance. David Rubin’s ",
                   "highlight": "Memory in Oral Traditions",
-                  "continueText": " (1995) explains how oral societies used rhymes and narratives to preserve knowledge. Marcel Proust’s ",
+                  "continueText": " (1995) and Marcel Proust’s ",
                   "highlight": "In Search of Lost Time",
-                  "continueText": " (1913-1927) explores how involuntary memories shape life’s meaning. Our platform celebrates cultural memory by enabling users to share and archive stories for future generations."
+                  "continueText": " (1913-1927) explore this. Our platform archives cultural stories."
                 }
               ]
             }
@@ -1663,13 +1686,13 @@ const articlesData = {
               "title": "Explore More: Memory Resources",
               "content": [
                 {
-                  "text": "Dive deeper into these reputable platforms offering valuable insights into memory and neuroscience, complementing our cloud-based memory storage solution:"
+                  "text": "Explore memory formation with these platforms:"
                 },
                 {
-                  "text": "- [National Institute of Neurological Disorders and Stroke](https://www.ninds.nih.gov/health-information/disorders/memory): Provides an overview of memory disorders and brain health.\n- [Scientific American Mind](https://www.scientificamerican.com/mind/): Features articles on memory, cognition, and neuroscience.\n- [MIT OpenCourseWare – Brain and Cognitive Sciences](https://ocw.mit.edu/courses/brain-and-cognitive-sciences/): Free access to MIT’s neuroscience courses, including memory formation.\n- [TED Talks on Memory](https://www.ted.com/topics/memory): Inspiring talks on memory, from scientific breakthroughs to personal stories.\n- [Memory Lab at Cambridge University](https://www.memory.psychol.cam.ac.uk): Research and resources on memory processes and their applications."
+                  "text": "- [National Institute of Neurological Disorders and Stroke](https://www.ninds.nih.gov/health-information/disorders/memory): Memory disorders and brain health.\n- [Scientific American Mind](https://www.scientificamerican.com/mind/): Memory and neuroscience articles.\n- [MIT OpenCourseWare](https://ocw.mit.edu/courses/brain-and-cognitive-sciences/): Free neuroscience courses.\n- [TED Talks on Memory](https://www.ted.com/topics/memory): Inspiring memory talks.\n- [Memory Lab at Cambridge](https://www.memory.psychol.cam.ac.uk): Memory research."
                 },
                 {
-                  "text": "These resources deepen your understanding of memory, while our platform lets you store your personal memories securely in the cloud for creative and practical uses."
+                  "text": "Our platform complements these by storing personal memories."
                 }
               ]
             }
@@ -1688,7 +1711,7 @@ const articlesData = {
               "title": "Conclusion",
               "content": [
                 {
-                  "text": "Memory is a complex process that defines our identity. From synaptic changes to cultural techniques, the science of memory helps us understand who we are and how we learn. Cases like H.M. and Shereshevsky remind us that memory is both powerful and challenging. With our cloud-based platform, you can preserve your memories digitally, ensuring they remain vivid and accessible for years to come."
+                  "text": "Memory formation defines identity through synaptic changes and cultural techniques. Cases like H.M. and Shereshevsky highlight its complexity. Preserve memories with our cloud platform."
                 }
               ]
             }
@@ -1719,7 +1742,7 @@ const articlesData = {
             "props": {
               "content": [
                 {
-                  "text": "Explore more about the neuroscience of memory in our interactive gallery."
+                  "text": "Explore memory formation in our interactive gallery."
                 }
               ]
             }
@@ -1740,11 +1763,11 @@ const articlesData = {
     }
   ],
   "updatedAt": "2025-06-18T12:00:00Z"
-}
+};
 
 const ArticleRenderer = ({ article }) => {
   const router = useRouter();
-  const canonicalUrl = `https://yourdomain.com${router.asPath}`;
+  const canonicalUrl = `https://www.goodmemories.live${router.asPath}`;
 
   if (!article) return <div>Loading article...</div>;
 
@@ -1758,12 +1781,12 @@ const ArticleRenderer = ({ article }) => {
         <meta property="og:title" content={article.title} />
         <meta property="og:description" content={article.seo.description} />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content={article.seo.image || 'https://yourdomain.com/default-image.jpg'} />
+        <meta property="og:image" content={article.seo.image} />
         <meta property="og:type" content="article" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={article.title} />
         <meta name="twitter:description" content={article.seo.description} />
-        <meta name="twitter:image" content={article.seo.image || 'https://yourdomain.com/default-image.jpg'} />
+        <meta name="twitter:image" content={article.seo.image} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -1776,8 +1799,8 @@ const ArticleRenderer = ({ article }) => {
                 "@type": "Person",
                 "name": article.author || "Good Memories",
               },
-              "datePublished": article.datePublished || new Date().toISOString(),
-              "image": article.seo.image || 'https://yourdomain.com/default-image.jpg',
+              "datePublished": article.datePublished || "2025-06-18T12:00:00Z",
+              "image": article.seo.image
             }),
           }}
         />
@@ -1815,21 +1838,18 @@ export default function ArticlePage({ article }) {
   );
 };
 
-
 export async function getServerSideProps(context) {
-  const { information } = context.params; // Captura el parámetro dinámico, ej. "upload-article"
+  const { information } = context.params;
 
   console.log('information');
   console.log(information);
 
-  // Determinar la URL base según el entorno
   const isLocal = process.env.NODE_ENV === 'development';
   const baseUrl = isLocal 
     ? 'http://localhost:3000'
     : process.env.NEXT_PUBLIC_API_URL;
 
   try {
-    // Construir la URL de la API dinámicamente usando el parámetro `information`
     const response = await fetch(`${baseUrl}/api/mongoDb/dinamicArticles/articles/${information}`, {
       method: 'GET',
       headers: {
@@ -1837,22 +1857,21 @@ export async function getServerSideProps(context) {
       },
     });
 
-    // Verificar si la respuesta es exitosa
     if (!response.ok) {
       const errorResult = await response.json();
       console.error('Error fetching article:', errorResult.message);
       return {
-        notFound: true, // Devuelve 404 si no se encuentra el artículo
+        notFound: true,
       };
     }
 
     const result = await response.json();
 
-    console.log(result); // Para depuración
+    console.log(result);
 
     return {
       props: {
-        article: result.data, // Pasa los datos del artículo a la página
+        article: result.data,
       },
     };
   } catch (error) {
@@ -1862,11 +1881,10 @@ export async function getServerSideProps(context) {
       slug: information,
     });
     return {
-      notFound: true, // Devuelve 404 en caso de error
+      notFound: true,
     };
   }
 }
-
 
 
 
