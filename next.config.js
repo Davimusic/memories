@@ -39,6 +39,10 @@ module.exports = withPWA({
         source: '/api/blackBlaze/:path*',
         destination: `https://f005.backblazeb2.com/file/${process.env.BACKBLAZE_BUCKET_NAME}/:path*`,
       },
+      {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+      }
     ];
   },
   async headers() {
