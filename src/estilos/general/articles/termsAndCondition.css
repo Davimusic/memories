@@ -1,0 +1,41 @@
+.terms-content {
+  padding-top: calc(var(--spacing-unit) * 2);
+}
+
+.terms-details h2 {
+  margin-top: calc(var(--spacing-unit) * 2);
+}
+
+.terms-details h3 {
+  margin-top: calc(var(--spacing-unit) * 1.5);
+}
+
+.prohibitions-list {
+  list-style: none;
+  padding-left: 0;
+  margin: calc(var(--spacing-unit) * 1.5) 0;
+}
+
+.prohibitions-list li {
+  margin-bottom: calc(var(--spacing-unit) * 0.75);
+  padding-left: calc(var(--spacing-unit) * 1.5);
+  position: relative;
+}
+
+.prohibitions-list li::before {
+  content: '•';
+  color: var(--primary);
+  font-size: 1.5rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+@media (max-width: 768px) {
+  .terms-details h2 {
+    font-size: 1.5rem;
+  }
+  .terms-details h3 {
+    font-size: 1.25rem;
+  }
+}

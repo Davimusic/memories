@@ -5,6 +5,7 @@ import MemoryLogo from '../memoryLogo';
 import ProgressBar from './progressBar';
 import Modal from './modal';
 import FeedbackForm from './feedbackForm';
+import '../../../estilos/general/information.css'
 
 const Layout = ({ children }) => {
   const [darkMode, setDarkMode] = useState(false);
@@ -150,7 +151,7 @@ const Layout = ({ children }) => {
             <h3>Quick Links</h3>
             <ul>
               <li>
-                <a href="#" title="Learn About Us">
+                <a href="/aboutUs" title="Learn About Us">
                   About Us
                 </a>
               </li>
@@ -165,7 +166,7 @@ const Layout = ({ children }) => {
                 </a>
               </li>
               <li>
-                <a href="#" title="Read Terms and Conditions">
+                <a href="/termsAndConditions" title="Read Terms and Conditions">
                   Terms and Conditions
                 </a>
               </li>
@@ -190,7 +191,7 @@ const Layout = ({ children }) => {
                 </a>
               </li>
               <li>
-                <a href="#" title="Get Technical Support">
+                <a href="/tecnicalSupport" title="Get Technical Support">
                   Technical Support
                 </a>
               </li>

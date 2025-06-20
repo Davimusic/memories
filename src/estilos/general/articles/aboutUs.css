@@ -1,0 +1,34 @@
+.about-page {
+  padding-top: calc(var(--spacing-unit) * 2);
+}
+
+.values-list, .goals-list {
+  list-style: none;
+  padding-left: 0;
+  margin: calc(var(--spacing-unit) * 1.5) 0;
+}
+
+.values-list li, .goals-list li {
+  margin-bottom: calc(var(--spacing-unit) * 0.75);
+  padding-left: calc(var(--spacing-unit) * 1.5);
+  position: relative;
+}
+
+.values-list li::before, .goals-list li::before {
+  content: '•';
+  color: var(--primary);
+  font-size: 1.5rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.about-content h2 {
+  margin-top: calc(var(--spacing-unit) * 2);
+}
+
+@media (max-width: 768px) {
+  .about-content h2 {
+    font-size: 1.5rem;
+  }
+}
