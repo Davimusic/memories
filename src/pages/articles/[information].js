@@ -5,8 +5,32 @@ import '../../estilos/general/information.css';
 import MemoryLogo from '@/components/complex/memoryLogo';
 import { marked } from 'marked';
 import Image from 'next/image';
+import TableOfContents from '@/components/complex/articles/tableOfContents';
+import Paragraphs from '@/components/complex/articles/paragraphs';
+import CreateSectionWrapper from '@/components/complex/articles/createSectionWrapper';
+import CodeBlock from '@/components/complex/articles/codeBlock';
+import ContentSlider from '@/components/complex/articles/contentSlider';
+import CustomQuote from '@/components/complex/articles/customQuote';
+import TableRenderer from '@/components/complex/articles/tableRenderer';
+import LinksRenderer from '@/components/complex/articles/linksRenderer';
+import VideosRenderer from '@/components/complex/articles/videosRenderer';
+import ImagesRenderer from '@/components/complex/articles/imagesRenderer';
+import Accordion from '@/components/complex/articles/accordion';
+import Modal from '@/components/complex/articles/modal';
+import CTABlock from '@/components/complex/articles/CTABlock';
+import SocialShare from '@/components/complex/articles/socialShare';
+import Breadcrumb from '@/components/complex/articles/breadcrumb';
+import FeedbackForm from '@/components/complex/articles/feedbackForm';
+import Tooltip from '@/components/complex/articles/tooltip';
+import AudiosRenderer from '@/components/complex/articles/audiosRenderer';
+import Layout from '@/components/complex/articles/layout';
+import ImageTextBlock from '@/components/complex/articles/imageTextBlock';
+import EmbedBlock from '@/components/complex/articles/embedBlock';
+import ContentBlockRenderer from '@/components/complex/articles/contentBlockRenderer';
+import ArticleRenderer from '@/components/complex/articles/articleRenderer';
 
-const TableOfContents = ({ content }) => {
+
+/*const TableOfContents = ({ content }) => {
   const htmlContent = marked(content, {
     renderer: new marked.Renderer(),
     gfm: true,
@@ -36,9 +60,9 @@ const TableOfContents = ({ content }) => {
       />
     </div>
   );
-};
+};*/
 
-const Paragraphs = ({ data }) => {
+/*const Paragraphs = ({ data }) => {
   console.log('Paragraphs data:', data);
   const { title = '', content = [] } = data || {};
   if (!title && content.length === 0) {
@@ -165,9 +189,9 @@ const Paragraphs = ({ data }) => {
       })}
     </div>
   );
-};
+};*/
 
-const CreateSectionWrapper = ({ referenceId, children }) => {
+/*const CreateSectionWrapper = ({ referenceId, children }) => {
   if (!referenceId || typeof referenceId !== 'string') {
     throw new Error('referenceId is required and must be a string');
   }
@@ -183,9 +207,9 @@ const CreateSectionWrapper = ({ referenceId, children }) => {
       </div>
     </section>
   );
-};
+};*/
 
-const CodeBlock = ({ content }) => {
+/*const CodeBlock = ({ content }) => {
   const codeLines = content.split('\n');
   if (codeLines.length < 3) return null;
   const language = codeLines[0].replace(/```(\w+)?/, '$1') || 'jsx';
@@ -198,9 +222,9 @@ const CodeBlock = ({ content }) => {
       </div>
     </div>
   );
-};
+};*/
 
-const ContentSlider = ({ 
+/*const ContentSlider = ({ 
   contents, 
   autoSlide = false, 
   slideInterval = 5000,
@@ -336,9 +360,9 @@ const ContentSlider = ({
       )}
     </div>
   );
-};
+};*/
 
-const CustomQuote = ({ quote, author }) => {
+/*const CustomQuote = ({ quote, author }) => {
   return (
     <div className='CustomQuoteText'>
       <div className={'CustomQuoteAutor'} style={{ borderRadius: '20px'}}>
@@ -347,125 +371,9 @@ const CustomQuote = ({ quote, author }) => {
       {author}
     </div>
   );
-};
+};*/
 
-const TableRenderer = ({ content, headers, rows }) => {
-  const parseCellContent = (cell) => {
-    if (!cell || typeof cell !== 'string') return cell;
-
-    const cleanCell = cell.replace(/^\s*-\s*/, '').trim();
-
-    const parts = [];
-    let lastIndex = 0;
-    const regex = /\*\*(.+?)\*\*/g;
-    let match;
-    while ((match = regex.exec(cleanCell)) !== null) {
-      const before = cleanCell.slice(lastIndex, match.index);
-      if (before) parts.push(before);
-      parts.push(
-        <span key={`${match.index}-${match[1]}`} className="font-bold text-blue-600" style={{ fontWeight: 700 }}>
-          {match[1]}
-        </span>
-      );
-      lastIndex = match.index + match[0].length;
-    }
-    if (lastIndex < cleanCell.length) parts.push(cleanCell.slice(lastIndex));
-
-    return parts.length > 0 ? parts : cleanCell;
-  };
-
-  if (content) {
-    const rows = content.split('\n').filter((row) => row.trim().startsWith('|'));
-    if (rows.length < 2) return null;
-    const parsedHeaders = rows[0].split('|').filter(Boolean).map((h) => h.trim());
-    const dataRows = rows.slice(2).map((row) =>
-      row
-        .split('|')
-        .filter(Boolean)
-        .map((c) => parseCellContent(c.trim()))
-    );
-
-    return (
-      <div className="table-container">
-        <table>
-          <thead className="tableTitle">
-            <tr>
-              {parsedHeaders.map((header, i) => (
-                <th key={i}>{header}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {dataRows.map((cells, rowIndex) => (
-              <tr key={rowIndex} className={rowIndex % 2 === 1 ? 'alternate-row' : ''}>
-                {cells.map((cell, cellIndex) => (
-                  <td key={cellIndex}>{cell}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  if (headers && rows) {
-    return (
-      <div className="table-container">
-        <table>
-          <thead>
-            <tr>
-              {headers.map((header, i) => (
-                <th className="tableTitle" key={i}>
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((cells, rowIndex) => (
-              <tr key={rowIndex} className={rowIndex % 2 === 1 ? 'alternate-row' : ''}>
-                {cells.map((cell, cellIndex) => (
-                  <td key={cellIndex}>{parseCellContent(cell)}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <style jsx>{`
-          .table-container {
-            overflow-x: auto;
-            margin: 1rem 0;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          th,
-          td {
-            border: 1px solid #e5e7eb;
-            padding: 0.5rem;
-            text-align: left;
-          }
-          .tableTitle {
-            background-color: #f3f4f6;
-            font-weight: bold;
-          }
-          .alternate-row {
-            background-color: #f9fafb;
-          }
-          .font-bold {
-            font-weight: 700 !important;
-          }
-        `}</style>
-      </div>
-    );
-  }
-
-  return null;
-};
-
-const LinksRenderer = ({ text, url }) => {
+/*const LinksRenderer = ({ text, url }) => {
   if (!text || !url) return null;
   return (
     <div className="additional-resource">
@@ -479,9 +387,9 @@ const LinksRenderer = ({ text, url }) => {
       </ul>
     </div>
   );
-};
+};*/
 
-const VideosRenderer = ({ videos }) => {
+/*const VideosRenderer = ({ videos }) => {
   if (!videos || videos.length === 0) return null;
   return (
     <div className="related-videos py-8">
@@ -503,9 +411,9 @@ const VideosRenderer = ({ videos }) => {
       </div>
     </div>
   );
-};
+};*/
 
-const ImagesRenderer = ({ images }) => {
+/*const ImagesRenderer = ({ images }) => {
   if (!images || images.length === 0) return null;
   return (
     <div style={{ padding: '2rem 0' }}>
@@ -542,9 +450,9 @@ const ImagesRenderer = ({ images }) => {
       </div>
     </div>
   );
-};
+};*/
 
-const Accordion = ({ title, children, defaultOpen = false }) => {
+/*const Accordion = ({ title, children, defaultOpen = false }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const contentRef = useRef(null);
   const [contentHeight, setContentHeight] = useState(0);
@@ -593,9 +501,9 @@ const Accordion = ({ title, children, defaultOpen = false }) => {
       </div>
     </div>
   );
-};
+};*/
 
-const Modal = ({ trigger, title, children, onClose }) => {
+/*const Modal = ({ trigger, title, children, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef(null);
   const openModal = () => {
@@ -648,9 +556,9 @@ const Modal = ({ trigger, title, children, onClose }) => {
       )}
     </>
   );
-};
+};*/
 
-const CTABlock = ({ title, description, buttonText, onClick, href, variant = 'primary', icon = null }) => {
+/*const CTABlock = ({ title, description, buttonText, onClick, href, variant = 'primary', icon = null }) => {
   const handleClick = (e) => {
     if (!href) {
       e.preventDefault();
@@ -669,50 +577,11 @@ const CTABlock = ({ title, description, buttonText, onClick, href, variant = 'pr
       </a>
     </div>
   );
-};
+};*/
 
-const ProgressBar = ({ percentage, type = 'linear', message, color = 'primary', size = 'medium' }) => {
-  if (type === 'circular') {
-    const strokeWidth = 8;
-    const radius = 50 - strokeWidth / 2;
-    const circumference = 2 * Math.PI * radius;
-    const strokeDashoffset = circumference - (percentage / 100) * circumference;
-    return (
-      <div className={`progress-circular ${size}`}>
-        <svg className="circular-svg" viewBox="0 0 100 100" aria-valuenow={percentage} aria-valuemin="0" aria-valuemax="100">
-          <circle className="circular-bg" cx="50" cy="50" r={radius} strokeWidth={strokeWidth} />
-          <circle
-            className={`circular-progress ${color}`}
-            cx="50"
-            cy="50"
-            r={radius}
-            strokeWidth={strokeWidth}
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            transform="rotate(-90 50 50)"
-          />
-        </svg>
-        <div className="circular-text">
-          {percentage}%
-          {message && <span className="circular-message">{message}</span>}
-        </div>
-      </div>
-    );
-  }
-  return (
-    <div className={`progress-linear ${size}`} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-      <div className="progress-info" style={{ whiteSpace: 'nowrap' }}>
-        {message && <span className="progress-message">{message}</span>}
-      </div>
-      <div className="progress-track" style={{ flex: 1 }} role="progressbar" aria-valuenow={percentage} aria-valuemin="0" aria-valuemax="100">
-        <div className={`progress-bar ${color}`} style={{ width: `${percentage}%` }}></div>
-      </div>
-      <span className="progress-percentage">{percentage}%</span>
-    </div>
-  );
-};
 
-const SocialShare = ({ url, title, description, platforms = ['facebook', 'twitter', 'linkedin', 'whatsapp'], size = 'medium', color = 'brand' }) => {
+
+/*const SocialShare = ({ url, title, description, platforms = ['facebook', 'twitter', 'linkedin', 'whatsapp'], size = 'medium', color = 'brand' }) => {
   const shareOn = (platform) => {
     const shareUrls = {
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
@@ -753,9 +622,9 @@ const SocialShare = ({ url, title, description, platforms = ['facebook', 'twitte
       ))}
     </div>
   );
-};
+};*/
 
-const Breadcrumb = ({ items, separator = '/', color = 'primary' }) => {
+/*const Breadcrumb = ({ items, separator = '/', color = 'primary' }) => {
   return (
     <nav className={`breadcrumb ${color}`} aria-label="Breadcrumb">
       <ol>
@@ -776,9 +645,9 @@ const Breadcrumb = ({ items, separator = '/', color = 'primary' }) => {
       </ol>
     </nav>
   );
-};
+};*/
 
-const FeedbackForm = ({ onSubmit, title = "Send Your Feedback", submitText = "Submit Feedback", showRatings = true }) => {
+/*const FeedbackForm = ({ onSubmit, title = "Send Your Feedback", submitText = "Submit Feedback", showRatings = true }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -886,9 +755,9 @@ const FeedbackForm = ({ onSubmit, title = "Send Your Feedback", submitText = "Su
       </button>
     </div>
   );
-};
+};*/
 
-const Tooltip = ({ content, position = 'top', children, delay = 300, disabled = false }) => {
+/*const Tooltip = ({ content, position = 'top', children, delay = 300, disabled = false }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [coords, setCoords] = useState({});
   const tooltipRef = useRef(null);
@@ -963,9 +832,9 @@ const Tooltip = ({ content, position = 'top', children, delay = 300, disabled = 
       )}
     </div>
   );
-};
+};*/
 
-const AudiosRenderer = ({ audios }) => {
+/*const AudiosRenderer = ({ audios }) => {
   if (!audios || audios.length === 0) return null;
   return (
     <div className="related-audios py-8">
@@ -987,9 +856,9 @@ const AudiosRenderer = ({ audios }) => {
       </div>
     </div>
   );
-};
+};*/
 
-const Layout = ({ children }) => {
+/*const Layout = ({ children }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollPercentage, setScrollPercentage] = useState(0);
@@ -1048,7 +917,7 @@ const Layout = ({ children }) => {
             aria-hidden={!mobileMenuOpen}
           >
             <a href="#" title="Go to Home page"><i className="fas fa-home"></i> Home</a>
-            <a href="#" title="View Articles"><i className="fas fa-book"></i> Articles</a>
+            <a href="/articles" title="View Articles"><i className="fas fa-book"></i> Articles</a>
             <a href="#" title="Explore Gallery"><i className="fas fa-images"></i> Gallery</a>
             <a href="#" title="Join Community"><i className="fas fa-user-friends"></i> Community</a>
             <button 
@@ -1123,9 +992,9 @@ const Layout = ({ children }) => {
       </footer>
     </Fragment>
   );
-};
+};*/
 
-const ImageTextBlock = ({ imageUrl, imageAlt, text, layout = 'left', imageSize = 'medium' }) => {
+/*const ImageTextBlock = ({ imageUrl, imageAlt, text, layout = 'left', imageSize = 'medium' }) => {
   console.log('ImageTextBlock props:', { imageUrl, imageAlt, text, layout, imageSize });
   const imageClass = `image-${imageSize}`;
   const containerClass = `image-text-container ${layout}`;
@@ -1166,9 +1035,9 @@ const ImageTextBlock = ({ imageUrl, imageAlt, text, layout = 'left', imageSize =
       )}
     </div>
   );
-};
+};*/
 
-const EmbedBlock = ({ src, type, width = '100%', height = 'auto', allowFullScreen = true }) => {
+/*const EmbedBlock = ({ src, type, width = '100%', height = 'auto', allowFullScreen = true }) => {
   if (type === 'video') {
     return (
       <video
@@ -1194,9 +1063,9 @@ const EmbedBlock = ({ src, type, width = '100%', height = 'auto', allowFullScree
   } else {
     return <div>Unsupported embed type: {type}</div>;
   }
-};
+};*/
 
-const ContentBlockRenderer = ({ block }) => {
+/*const ContentBlockRenderer = ({ block }) => {
   console.log('ContentBlockRenderer block:', block);
   if (!block || !block.type) {
     console.warn('ContentBlockRenderer: Invalid block provided');
@@ -1268,7 +1137,7 @@ const ContentBlockRenderer = ({ block }) => {
       console.warn(`Unsupported block type: ${type}`);
       return null;
   }
-};
+};*/
 
 const articlesData = {
   "slug": "memory-formation-science",
@@ -1765,7 +1634,7 @@ const articlesData = {
   "updatedAt": "2025-06-18T12:00:00Z"
 };
 
-const ArticleRenderer = ({ article }) => {
+/*const ArticleRenderer = ({ article }) => {
   const router = useRouter();
   const canonicalUrl = `https://www.goodmemories.live${router.asPath}`;
 
@@ -1828,7 +1697,7 @@ const ArticleRenderer = ({ article }) => {
       </div>
     </Fragment>
   );
-};
+};*/
 
 export default function ArticlePage({ article }) {
   return (

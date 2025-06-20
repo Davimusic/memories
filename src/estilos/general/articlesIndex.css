@@ -1,0 +1,164 @@
+/* File: estilos/general/articles-list.css */
+
+.articles-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.articles-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1f2937; /* Dark gray for light mode */
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.dark .articles-title {
+  color: #e5e7eb; /* Light gray for dark mode */
+}
+
+.no-articles {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}
+
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.article-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark .article-card {
+  background-color: #1f2937;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.article-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.article-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.article-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.article-card:hover .article-thumbnail {
+  transform: scale(1.05);
+}
+
+.article-content {
+  padding: 1.5rem;
+}
+
+.article-card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2563eb; /* Blue for light mode */
+  margin-bottom: 0.5rem;
+}
+
+.dark .article-card-title {
+  color: #60a5fa; /* Lighter blue for dark mode */
+}
+
+.article-description {
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.dark .article-description {
+  color: #d1d5db;
+}
+
+.article-link {
+  display: inline-block;
+  color: #3b82f6;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.article-link:hover {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.dark .article-link {
+  color: #93c5fd;
+}
+
+.dark .article-link:hover {
+  background-color: #2563eb;
+}
+
+.article-meta {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.dark .article-meta {
+  color: #9ca3af;
+}
+
+.article-date {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.article-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  background-color: #e5e7eb;
+  color: #1f2937;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.dark .tag {
+  background-color: #4b5563;
+  color: red;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .articles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .articles-title {
+    font-size: 2rem;
+  }
+}

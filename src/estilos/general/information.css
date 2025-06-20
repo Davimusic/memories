@@ -69,6 +69,7 @@ h4 { font-size: 1.25rem; font-weight: 500; margin-bottom: calc(var(--spacing-uni
   background: var(--background);
   border-bottom: 1px solid var(--border);
   padding: var(--spacing-unit);
+  padding-bottom: 0;
   z-index: 1000;
 }
 
@@ -488,6 +489,7 @@ th.tableTitle {
   align-items: center;
   gap: 0.75rem;
   margin: var(--spacing-unit) 0;
+  margin-bottom: 0;
 }
 
 .progress-track {
@@ -575,7 +577,7 @@ th.tableTitle {
 .feedback-form {
   margin: calc(var(--spacing-unit) * 2) 0;
   padding: var(--spacing-unit);
-  background: var(--accent);
+  background: var(--primary);
   border-radius: 0.5rem;
 }
 
