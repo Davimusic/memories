@@ -1,4 +1,8 @@
 import { useEffect } from 'react';
+import Layout from '@/components/complex/articles/layout';
+import Head from 'next/head';
+import Link from 'next/link';
+
 
 const ourServices = () => {
   useEffect(() => {
