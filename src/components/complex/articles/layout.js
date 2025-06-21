@@ -67,8 +67,12 @@ const Layout = ({ children }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const toggleDarkMode = () => setDarkMode((prev) => !prev);
-  const toggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
+  const toggleDarkMode = () => {
+    setMobileMenuOpen(false);
+    setDarkMode((prev) => !prev);};
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(false);
+    setMobileMenuOpen((prev) => !prev);};
 
   return (
     <Fragment>

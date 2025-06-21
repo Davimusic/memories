@@ -150,7 +150,7 @@ const GeneralMold = ({
         isDarkMode={isDarkMode}
       />
 
-      <div className={`content-container ${hasBothContent ? 'dual-content' : 'single-content'}`}>
+      <div style={{marginTop: '80px'}} className={`content-container ${hasBothContent ? 'dual-content' : 'single-content'}`}>
         
           <>
             {leftContent && (
