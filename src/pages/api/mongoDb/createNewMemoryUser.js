@@ -141,6 +141,10 @@ export default async function handler(req, res) {
           visibility: editVisibility || 'private',
           invitedEmails: editInvitedEmails || [],
         },
+        dynamicCreator: {
+          visibility: editVisibility || 'private',
+          invitedEmails: editInvitedEmails || [],
+        },
       },
       topics: {
         general: {

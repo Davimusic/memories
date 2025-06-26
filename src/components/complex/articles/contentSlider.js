@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
+import Image from 'next/image';
 import TableRenderer from './tableRenderer';
 import Accordion from './accordion';
 import CTABlock from './CTABlock';
@@ -15,19 +16,31 @@ import CustomQuote from './customQuote';
 import CodeBlock from './codeBlock';
 import ImageTextBlock from './imageTextBlock';
 import EmbedBlock from './embedBlock';
-import Image from 'next/image';
 import Paragraphs from './paragraphs';
 
-const ContentSlider = ({ 
-  contents, 
-  autoSlide = false, 
-  slideInterval = 5000,
-  size = 'medium' 
+const ContentSlider = ({
+  contents: rawContents,
+  autoSlide = false,
+  slideInterval = 1000,
+  size = 'medium'
 }) => {
+  // Memoize contents to prevent unnecessary updates
+  const contents = useMemo(() => rawContents, [JSON.stringify(rawContents)]);
+
+  // Log para verificar contents (descomentar para depurar)
+  // console.log('Contents:', contents);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const timerRef = useRef(null);
 
+  // Ref para rastrear el estado de pausa
+  const pausedRef = useRef(paused);
+  useEffect(() => { pausedRef.current = paused }, [paused]);
+
+  // Ref para almacenar el ID del intervalo
+  const intervalRef = useRef(null);
+
+  // Component map para renderizar diferentes tipos de contenido
   const componentMap = {
     text: ({ content }) => <Paragraphs data={{ content }} />,
     table: TableRenderer,
@@ -48,19 +61,25 @@ const ContentSlider = ({
     embed: EmbedBlock,
     image: ({ url, alt }) => (
       <div className="slide-content-image">
-        <Image 
-          src={url} 
-          alt={alt} 
-          className="slider-image"
+        <Image
+          src={url}
+          alt={alt}
           width={600}
           height={400}
+          className="slider-image"
           loading="lazy"
         />
       </div>
     ),
-    video: ({ url, controls = true, autoPlay = false, muted = true, loop = true }) => (
-      <video 
-        src={url} 
+    video: ({
+      url,
+      controls = true,
+      autoPlay = false,
+      muted = true,
+      loop = true
+    }) => (
+      <video
+        src={url}
         controls={controls}
         autoPlay={autoPlay}
         muted={muted}
@@ -78,76 +97,91 @@ const ContentSlider = ({
     }
   };
 
+  /*/ Manejo del autoSlide con un único intervalo
   useEffect(() => {
-    if (autoSlide && !paused && contents.length > 1) {
-      timerRef.current = setTimeout(() => {
-        goToNext();
+    // Log para verificar ejecución del efecto (descomentar para depurar)
+    // console.log('useEffect ejecutado', { autoSlide, slideInterval, contentsLength: contents.length });
+
+    if (!autoSlide || contents.length < 2) {
+      // Limpiar intervalo si existe
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
+
+    // Establecer intervalo solo si no existe uno activo
+    if (!intervalRef.current) {
+      intervalRef.current = setInterval(() => {
+        // Log para verificar disparo del intervalo (descomentar para depurar)
+        // console.log('Intervalo disparado, paused:', pausedRef.current);
+        if (!pausedRef.current) {
+          setCurrentIndex(i => (i + 1) % contents.length);
+        }
       }, slideInterval);
     }
-    return () => clearTimeout(timerRef.current);
-  }, [currentIndex, autoSlide, paused, slideInterval, contents.length]);
 
-  const goToNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % contents.length);
-  };
+    // Limpieza al desmontar o cuando cambian las dependencias
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [autoSlide, slideInterval, contents.length]);*/
 
-  const goToPrev = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? contents.length - 1 : prevIndex - 1
-    );
-  };
+  const goToNext = () =>
+    setCurrentIndex(i => (i + 1) % contents.length);
 
-  const goToSlide = (index) => {
-    setCurrentIndex(index);
-  };
+  const goToPrev = () =>
+    setCurrentIndex(i => (i === 0 ? contents.length - 1 : i - 1));
+
+  const goToSlide = idx => setCurrentIndex(idx);
 
   const handleMouseEnter = () => setPaused(true);
   const handleMouseLeave = () => setPaused(false);
 
   if (!contents || contents.length === 0) return null;
 
-  const currentContent = contents[currentIndex];
-  const Component = componentMap[currentContent.type] || (() => (
-    <div className="text-center p-8">Tipo de componente no soportado: {currentContent.type}</div>
+  const { type, props } = contents[currentIndex];
+  const Slide = componentMap[type] || (() => (
+    <div className="text-center p-8">
+      Tipo no soportado: {type}
+    </div>
   ));
 
   return (
-    <div 
+    <div
       className={`content-slider ${size}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div className="slider-container relative">
         <div className="slide-content">
-          <Component {...currentContent.props} />
+          <Slide {...props} />
         </div>
+
         {contents.length > 1 && (
           <>
-            <button 
-              className="slider-nav prev"
-              onClick={goToPrev}
-              aria-label="Slide anterior"
-            >
+            <button className="slider-nav prev" onClick={goToPrev} aria-label="Anterior">
               👈
             </button>
-            <button 
-              className="slider-nav next"
-              onClick={goToNext}
-              aria-label="Slide siguiente"
-            >
+            <button className="slider-nav next" onClick={goToNext} aria-label="Siguiente">
               👉
             </button>
           </>
         )}
       </div>
+
       {contents.length > 1 && (
         <div className="slider-dots">
-          {contents.map((_, index) => (
+          {contents.map((_, i) => (
             <button
-              key={index}
-              className={`dot ${index === currentIndex ? 'active' : ''}`}
-              onClick={() => goToSlide(index)}
-              aria-label={`Ir al slide ${index + 1}`}
+              key={i}
+              className={`dot ${i === currentIndex ? 'active' : ''}`}
+              onClick={() => goToSlide(i)}
+              aria-label={`Ir al slide ${i + 1}`}
             />
           ))}
         </div>
@@ -156,4 +190,5 @@ const ContentSlider = ({
   );
 };
 
-export default ContentSlider
+// Memoize el componente para evitar re-renders innecesarios
+export default memo(ContentSlider);

@@ -348,12 +348,6 @@ const GeneralMold = ({
 
 export default GeneralMold;*/
 
-
-
-
-
-
-
 //solo de test
 'use client'; 
 
@@ -468,7 +462,14 @@ const GeneralMold = ({
 
       const data = await response.json();
       console.log('Permission data:', data);
+      //setInitialData(data);
+      if (typeof setInitialData === 'function') {
+        console.log('setInitialData es una funcion');
+        
       setInitialData(data);
+      } else {
+        console.log('setInitialData NO es una funcion');
+      }
       setPermissionResult(data);
 
       if (data.requiredVisibility === 'public') {

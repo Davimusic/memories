@@ -52,7 +52,7 @@ export default function EmailSender() {
 
   return (
     <Layout>
-      <div className="feedback-form">
+      <div style={{padding: '50px'}} className="feedback-form">
         <h2 className="feedback-title">Send Email</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">

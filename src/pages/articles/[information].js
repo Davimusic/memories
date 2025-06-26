@@ -3,6 +3,553 @@ import '../../estilos/general/information.css';
 import Layout from '@/components/complex/articles/layout';
 import ArticleRenderer from '@/components/complex/articles/articleRenderer';
 
+
+
+const test = {
+ 
+  "slug": "digital-legacy-planning-prueba4",
+  "title": "Digital Legacy Planning: How to Preserve Memories for Future Generations",
+  "seo": {
+    "description": "Learn how to preserve your digital memories, including photos, videos, and social media, with our comprehensive guide to digital legacy planning.",
+    "keywords": "digital legacy, memory preservation, digital assets, cloud storage, social media legacy, digital estate planning",
+    "tags": "digital legacy, memory preservation, digital memories, estate planning, technology, cloud platforms",
+    "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2021%20jun%202025%2C%2011_36_10%20a.m..png"
+  },
+  "breadcrumbs": [
+    {
+      "label": "Home",
+      "path": "/"
+    },
+    {
+      "label": "Articles",
+      "path": "/articles"
+    },
+    {
+      "label": "Digital Legacy Planning",
+      "path": "/articles/digital-legacy-planning"
+    }
+  ],
+  "content": [
+    {
+      "type": "tableOfContents",
+      "props": {
+        "title": "What’s in This Article?",
+        "content": "1. [Introduction: Why Digital Legacy Planning Matters](#introduction)\n2. [What Is a Digital Legacy?](#digital-legacy)\n   - [Types of Digital Assets](#types-assets)\n   - [The Evolution of Memory Preservation](#evolution-memory)\n3. [Why Plan Your Digital Legacy?](#why-plan)\n4. [Steps to Create a Digital Legacy Plan](#steps-plan)\n   - [Inventory Your Digital Assets](#inventory-assets)\n   - [Provide Access](#provide-access)\n   - [Decide Asset Fate](#decide-fate)\n   - [Document Instructions](#document-instructions)\n   - [Secure Storage](#secure-storage)\n5. [Tools and Platforms for Digital Legacy Planning](#tools-platforms)\n6. [Legal and Ethical Considerations](#legal-ethical)\n7. [Challenges in Digital Legacy Planning](#challenges)\n8. [Case Studies: Real-Life Examples](#case-studies)\n9. [Future Trends in Digital Legacy](#future-trends)\n10. [Explore More: Digital Legacy Resources](#external-resources)\n11. [Conclusion](#conclusion)"
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "introduction",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Introduction: Why Digital Legacy Planning Matters",
+              "content": [
+                {
+                  "text": "In the digital era, our lives are captured online—through photos, social media posts, and emails that tell our stories. These digital assets are precious memories, but without a plan, they could be lost forever. ",
+                  "highlight": "Digital legacy planning",
+                  "continueText": " ensures these memories are preserved for future generations."
+                },
+                {
+                  "text": "According to a 2021 Pew Research Center survey, 81% of adults value their digital content, yet only 34% have a plan to preserve it ([Pew Research Center](https://www.pewresearch.org)). This guide provides practical steps and tools, like Good Memories, to safeguard your digital legacy."
+                }
+              ]
+            }
+          },
+          {
+            "type": "imageText",
+            "props": {
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2021%20jun%202025%2C%2011_36_10%20a.m..png",
+              "imageAlt": "Cloud illustration of digital memories",
+              "imageTitle": "Visualizing a secure digital legacy in the cloud",
+              "text": "Preserve your digital memories securely in the cloud to ensure access for future generations. Tools like Good Memories can simplify this process ([Good Memories](https://goodmemories.live)).",
+              "layout": "left",
+              "imageSize": "medium"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "digital-legacy",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "What Is a Digital Legacy?",
+              "content": [
+                {
+                  "text": "A digital legacy includes all digital content and accounts left behind after your passing, such as social media profiles, photos, and financial accounts, each holding emotional or practical value."
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "Types of Digital Assets",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "table",
+                  "props": {
+                    "content": "| Asset Type | Description | Example |\n|------------|-------------|---------|\n| **Photos** | Digital images from devices | Family vacation photos |\n| **Videos** | Recorded content | Wedding video |\n| **Social Media** | Online profiles and posts | Instagram feed |\n| **Emails** | Digital correspondence | Gmail archives |\n| **Financial Accounts** | Online banking, crypto | PayPal, Bitcoin wallet |\n| **Creative Works** | Digital art, music | Photoshop designs |"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "The Evolution of Memory Preservation",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "Memory preservation has evolved significantly: ",
+                        "highlight": "Physical artifacts",
+                        "continueText": " like letters and photo albums have been replaced by digital formats. Today, individuals create over 1,000 photos annually ([Statista](https://www.statista.com))."
+                      },
+                      {
+                        "text": "Digital formats offer scalability but face risks like data loss, as seen in MySpace’s 2019 server failure, and obsolescence ([The Verge](https://www.theverge.com/2019/3/18/18271023/myspace-music-lost-server-migration))."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "imageText",
+            "props": {
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250618_143012.png",
+              "imageAlt": "Collage of digital memories",
+              "imageTitle": "A collage of cherished digital memories",
+              "text": "Your life’s moments can be preserved as a digital collage, ensuring your story endures for future generations.",
+              "layout": "right",
+              "imageSize": "medium"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "why-plan",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Why Plan Your Digital Legacy?",
+              "content": [
+                {
+                  "text": "Without a digital legacy plan, your assets could become inaccessible or lost. Planning ensures: ",
+                  "highlight": "Emotional preservation",
+                  "continueText": " of memories, legal transfer of financial assets, and clear instructions for loved ones."
+                },
+                {
+                  "text": "A 2018 German court case, where a deceased teen’s Facebook account was granted to her parents, underscores the legal complexities of digital assets ([BBC](https://www.bbc.com/news/world-europe-44804534))."
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "steps-plan",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Steps to Create a Digital Legacy Plan",
+              "content": [
+                {
+                  "text": "Follow these steps to preserve your digital legacy effectively:"
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "Inventory Your Digital Assets",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "List all accounts (e.g., Google, Instagram) and content (photos, blogs). Use a spreadsheet or tools like Good Memories to streamline the process ([Good Memories](https://goodmemories.live))."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "Provide Access",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "Share login details securely using password managers like LastPass ([LastPass](https://www.lastpass.com)). Avoid storing passwords in wills."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "Decide Asset Fate",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "Choose whether to delete, memorialize, or transfer each account. Use platform tools like Google’s Inactive Account Manager ([Google Inactive](https://myaccount.google.com/inactive))."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "Document Instructions",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "Include digital asset instructions in your will or a separate document. LegalZoom offers templates ([LegalZoom](https://www.legalzoom.com))."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "Secure Storage",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "Store plans in a digital vault like Gentreo ([Gentreo](https://www.gentreo.com)) or a secure cloud platform to ensure trusted contacts can access them."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "tools-platforms",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Tools and Platforms for Digital Legacy Planning",
+              "content": [
+                {
+                  "text": "Several tools can simplify digital legacy planning. Among them, ",
+                  "highlight": "Good Memories",
+                  "continueText": " stands out for its intuitive cloud-based archiving, making it easy to preserve and share memories securely ([Good Memories](https://goodmemories.live)). Here’s a comparison of key platforms:"
+                }
+              ]
+            }
+          },
+          {
+            "type": "table",
+            "props": {
+              "content": "| Tool | Features | Cost | Link |\n|------|----------|------|------|\n| **Good Memories** | Cloud-based memory archiving, secure sharing | Subscription | [Good Memories](https://goodmemories.live) |\n| Inalife | Interactive family tree, memory storage | $5.99+/mo | [Inalife](http://inalife.com) |\n| Dead Social | Posthumous posts, digital executor | Varies | [Dead Social](http://deadsocial.org/legacy-builder) |\n| MyWishes | Digital will, farewell messages | Free | [MyWishes](https://www.mywishes.co.uk) |"
+            }
+          },
+          {
+            "type": "imageText",
+            "props": {
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250621_112824.png",
+              "imageAlt": "Couple preserving memories in the cloud",
+              "imageTitle": "A couple’s digital legacy in the cloud",
+              "text": "Good Memories offers a seamless way to preserve your digital legacy, ensuring your memories are safe and accessible ([Good Memories](https://goodmemories.live)).",
+              "layout": "right",
+              "imageSize": "medium"
+            }
+          },
+          {
+            "type": "cta",
+            "props": {
+              "title": "Explore Digital Legacy Tools",
+              "description": "Start preserving your memories with Good Memories’ secure platform.",
+              "buttonText": "Learn More",
+              "href": "https://goodmemories.live",
+              "variant": "primary"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "legal-ethical",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Legal and Ethical Considerations",
+              "content": [
+                {
+                  "text": "Digital legacy planning involves legal and ethical considerations:"
+                },
+                {
+                  "text": "- **Ownership**: Laws like the Fiduciary Access to Digital Assets Act (FIDAA) govern access ([Uniform Laws](https://www.uniformlaws.org)).\n- **Privacy**: Balance access with confidentiality.\n- **Consent**: Seek permission for sharing private content."
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "challenges",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Challenges in Digital Legacy Planning",
+              "content": [
+                {
+                  "text": "Key challenges include: ",
+                  "highlight": "Platform inconsistencies",
+                  "continueText": " (e.g., X’s lack of legacy options), privacy concerns, and technological obsolescence. Secure cloud platforms can help mitigate these risks."
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "case-studies",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Case Studies: Real-Life Examples",
+              "content": [
+                {
+                  "text": "These examples illustrate the importance of digital legacy planning:"
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "The Johnson Family",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "The Johnsons archived 20 years of photos and videos using a cloud platform, ensuring their children could access these memories."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "MySpace Data Loss",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "In 2019, MySpace lost over 50 million files due to a server migration error, highlighting the risks of platform dependency ([The Verge](https://www.theverge.com/2019/3/18/18271023/myspace-music-lost-server-migration))."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "future-trends",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Future Trends in Digital Legacy",
+              "content": [
+                {
+                  "text": "Emerging technologies will redefine digital legacy planning: ",
+                  "highlight": "AI",
+                  "continueText": " for narrative curation ([OpenAI](https://openai.com)), blockchain for permanent storage ([Wired](https://www.wired.com)), and virtual reality for immersive memory experiences."
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "external-resources",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Explore More: Digital Legacy Resources",
+              "content": [
+                {
+                  "text": "Enhance your understanding with these resources:"
+                },
+                {
+                  "text": "- [Digital Legacy Association](https://digitallegacyassociation.org): Practical planning resources.\n- [TED Radio Hour: Future of Memory](https://www.npr.org/2025/01/24/1226561694/ted-radio-hour-future-of-memory-technology): Insights on memory technology.\n- [ACCAN Guide](https://accan.org.au/files/Grants/Death%20and%20the%20Internet_2017-web.pdf): Digital legacy tips.\n- [TED Ideas: Digital Life After Death](https://ideas.ted.com/your-digital-life-after-death): Innovative memory preservation approaches."
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "conclusion",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Conclusion",
+              "content": [
+                {
+                  "text": "Digital legacy planning ensures your memories endure for future generations. Begin today with tools like Good Memories to secure your digital assets ([Good Memories](https://goodmemories.live))."
+                }
+              ]
+            }
+          },
+          {
+            "type": "customQuote",
+            "props": {
+              "quote": "Memory is the diary we all carry about with us.",
+              "author": "Oscar Wilde"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "contentSlider",
+      "props": {
+        "contents": [
+          {
+            "type": "image",
+            "props": {
+              "url": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250618_143012.png",
+              "alt": "Collage of digital memories",
+              "title": "Interactive digital legacy gallery"
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": [
+                {
+                  "text": "Explore your digital legacy with an interactive gallery."
+                }
+              ]
+            }
+          }
+        ],
+        "autoSlide": true,
+        "slideInterval": {
+          "$numberInt": "5000"
+        },
+        "size": "medium"
+      }
+    },
+    {
+      "type": "feedbackForm",
+      "props": {
+        "title": "Share Your Thoughts on Digital Legacy Planning",
+        "submitText": "Submit Feedback",
+        "showRatings": true
+      }
+    }
+  ],
+  "structuredData": {
+    "openGraph": {
+      "title": "Digital Legacy Planning: How to Preserve Memories for Future Generations",
+      "description": "Learn how to safeguard your digital memories with our guide to digital legacy planning.",
+      "url": "https://goodmemories.live/articles/digital-legacy-planning-prueba4",
+      "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2021%20jun%202025%2C%2011_36_10%20a.m..png",
+      "type": "article"
+    }
+  },
+  "updatedAt": "2025-06-21T11:30:00Z",
+  "createdAt": "2025-06-18T12:00:00Z"
+}
+
+
+
 export default function ArticlePage({ article }) {
   return (
     <Layout>
