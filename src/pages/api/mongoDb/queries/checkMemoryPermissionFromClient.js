@@ -10,7 +10,9 @@ const typeTranslations = {
   editAccessibility: 'editPermissions',
   editTitleNameUser: 'editTitleNameUser',
   createNewTopicMemory: 'createMemoryTopics',
-  dynamicCreator: 'dynamicCreator'
+  dynamicCreator: 'dynamicCreator',
+  createDynamicCreator: 'createDynamicCreator',
+  dynamicMemory: 'dynamicMemory'
 };
 
 const staticRoutes = ['/memories', '/createNewMemory', '/payment', '/payment/payPlan'];

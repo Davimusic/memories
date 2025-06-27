@@ -5,33 +5,27 @@ import GeneralMold from '@/components/complex/generalMold';
 import '../../../estilos/general/dynamicCreator.css';
 import ReactDOM from 'react-dom';
 
-const CollageDisplay = () => {
-  const [mediaItems, setMediaItems] = useState([]);
+const MemoryViewer = () => {
+  const [memoryData, setMemoryData] = useState(null);
+  const memoryKey = memoryData?.memoryMetadata?.memoryKey;
   const [groups, setGroups] = useState([]);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
-  const [memoryData, setMemoryData] = useState(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [audioSelections, setAudioSelections] = useState([]);
   const [selectedBackgroundAudios, setSelectedBackgroundAudios] = useState([]);
   const [selectedVoiceAudios, setSelectedVoiceAudios] = useState([]);
   const [sceneDurations, setSceneDurations] = useState([]);
-  const [currentPreviewUrl, setCurrentPreviewUrl] = useState(null);
-  const [showControls, setShowControls] = useState(true);
-  const [saveMessage, setSaveMessage] = useState(null);
-  const [uid, setUid] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-  const [token, setToken] = useState('');
-
+  const [currentBackgroundAudioIndex, setCurrentBackgroundAudioIndex] = useState(0);
+  const [error, setError] = useState(null);
   const videoRefs = useRef({});
   const videoTimeouts = useRef({});
   const backgroundAudioRef = useRef(null);
   const voiceAudioRef = useRef(null);
-  const previewAudioRef = useRef(null);
-  const [currentBackgroundAudioIndex, setCurrentBackgroundAudioIndex] = useState(0);
   const modalRootRef = useRef(null);
   const defaultDuration = 10000;
   const controlsTimeoutRef = useRef(null);
+  const [showControls, setShowControls] = useState(true);
 
   const layouts = [
     { type: 'single', count: 1 },
@@ -41,24 +35,25 @@ const CollageDisplay = () => {
     { type: 'video-only', count: 1 },
   ];
 
-  // Initialize audio selections from memoryData
+  // Initialize data and open modal when memoryData is received
   useEffect(() => {
-    if (memoryData?.topics) {
-      const audios = [];
-      Object.values(memoryData.topics).forEach(topic => {
-        (topic.audios || []).forEach(audio => {
-          audios.push({
-            url: audio.url,
-            isActive: false,
-            type: 'Background',
-          });
-        });
-      });
-      setAudioSelections(audios);
-    }
-  }, [memoryData]);
+    if (!memoryData) return;
 
-  // Update selected background and voice audios, calculate scene durations
+    if (!memoryKey || !memoryData?.dynamicMemories?.[memoryKey]) {
+      setError('Memory data not available.');
+      setIsModalOpen(false);
+      return;
+    }
+
+    const dynamicMemory = memoryData.dynamicMemories[memoryKey];
+    setGroups(dynamicMemory.groups || []);
+    setAudioSelections(dynamicMemory.audioSelections || []);
+    setSceneDurations(dynamicMemory.sceneDurations || []);
+    setIsModalOpen(true); // Open modal automatically
+    setIsPlaying(true); // Start playback automatically
+  }, [memoryData, memoryKey]);
+
+  // Initialize audio selections
   useEffect(() => {
     const backgroundAudios = audioSelections
       .filter(audio => audio.isActive && audio.type === 'Background')
@@ -68,41 +63,7 @@ const CollageDisplay = () => {
       .map((audio, index) => ({ url: audio.url, groupIndex: index }));
     setSelectedBackgroundAudios(backgroundAudios);
     setSelectedVoiceAudios(voiceAudios);
-
-    const calculateSceneDurations = async () => {
-      const durations = Array(groups.length).fill(defaultDuration);
-      await Promise.all(
-        groups.map(async (group, groupIndex) => {
-          if (group.layout === 'video-only' && group.items[0]?.type === 'video') {
-            const isValid = await validateMediaUrl(group.items[0].url, 'video');
-            if (isValid) {
-              const duration = await new Promise(resolve => {
-                const tempVideo = document.createElement('video');
-                tempVideo.src = group.items[0].url;
-                tempVideo.addEventListener('loadedmetadata', () => resolve(tempVideo.duration * 1000));
-                tempVideo.addEventListener('error', () => resolve(defaultDuration));
-              });
-              durations[groupIndex] = Math.min(duration, defaultDuration);
-            }
-          } else if (voiceAudios[groupIndex]) {
-            const isValid = await validateAudioDuration(voiceAudios[groupIndex].url);
-            if (isValid) {
-              const duration = await new Promise(resolve => {
-                const tempAudio = new Audio(voiceAudios[groupIndex].url);
-                tempAudio.addEventListener('loadedmetadata', () => resolve(tempAudio.duration * 1000));
-                tempAudio.addEventListener('error', () => resolve(defaultDuration));
-              });
-              durations[groupIndex] = Math.min(duration, defaultDuration);
-            }
-          }
-        })
-      );
-      setSceneDurations(durations);
-    };
-    if (groups.length > 0) {
-      calculateSceneDurations();
-    }
-  }, [audioSelections, groups]);
+  }, [audioSelections]);
 
   // Create modal root
   useEffect(() => {
@@ -149,121 +110,6 @@ const CollageDisplay = () => {
     }, 5000);
   };
 
-  const validateMediaUrl = async (url, type) => {
-    try {
-      if (type === 'photo') {
-        const img = new Image();
-        img.src = url;
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-        });
-      } else if (type === 'video' || type === 'audio') {
-        const response = await fetch(url, { method: 'HEAD' });
-        return response.ok;
-      }
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  const validateAudioDuration = async (url) => {
-    try {
-      const audio = new Audio(url);
-      await new Promise((resolve, reject) => {
-        audio.addEventListener('loadedmetadata', () => resolve(audio.duration));
-        audio.addEventListener('error', () => reject());
-      });
-      return audio.duration <= 10;
-    } catch {
-      return false;
-    }
-  };
-
-  // Save memory to database
-  const handleSaveMemory = async () => {
-    try {
-      const memoryConfig = {
-        userId: userEmail, //?.memoryMetadata?.createdBy,
-        uid: uid, //memoryData?.uid,
-        token: token,//memoryData?.token,
-        memoryTitle: memoryData?.memoryMetadata?.title || 'Memory Collage',
-        mediaItems,
-        groups,
-        audioSelections,
-        sceneDurations,
-        memoryMetadata: memoryData?.memoryMetadata || {},
-        accessInformation: memoryData?.accessInformation || {},
-      };
-
-      const response = await fetch('/api/mongoDb/uploadFiles/uploadDinamicCreation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(memoryConfig),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save memory');
-      }
-
-      const result = await response.json();
-      console.log(result);
-      
-      setSaveMessage(`Memory saved successfully! Access it at /memory/${result.memoryId}`);
-      setTimeout(() => setSaveMessage(null), 5000);
-    } catch (error) {
-      setSaveMessage('Error saving memory. Please try again.');
-      setTimeout(() => setSaveMessage(null), 5000);
-    }
-  };
-
-  useEffect(() => {
-    if (memoryData?.topics) {
-      const items = [];
-      const validateItems = async () => {
-        for (const topic of Object.values(memoryData.topics)) {
-          for (const photo of topic.photos || []) {
-            if (await validateMediaUrl(photo.url, 'photo')) {
-              items.push({ type: 'photo', url: photo.url, metadata: photo.metadata });
-            }
-          }
-          for (const video of topic.videos || []) {
-            if (await validateMediaUrl(video.url, 'video')) {
-              items.push({ type: 'video', url: video.url, metadata: video.metadata });
-            }
-          }
-        }
-        setMediaItems(items.sort(() => Math.random() - 0.5));
-      };
-      validateItems();
-    }
-  }, [memoryData]);
-
-  useEffect(() => {
-    const createGroups = (items) => {
-      const groups = [];
-      let index = 0;
-      while (index < items.length) {
-        const remaining = items.length - index;
-        const possibleLayouts = layouts.filter(l => l.count <= remaining);
-        if (!possibleLayouts.length) break;
-        const isVideoOnly = items[index].type === 'video' && Math.random() < 0.3;
-        const layout = isVideoOnly
-          ? layouts.find(l => l.type === 'video-only')
-          : possibleLayouts[Math.floor(Math.random() * possibleLayouts.length)];
-        groups.push({ layout: layout.type, items: items.slice(index, index + layout.count) });
-        index += layout.count;
-      }
-      return groups;
-    };
-    const newGroups = createGroups(mediaItems);
-    setGroups(newGroups);
-    setCurrentGroupIndex(0);
-  }, [mediaItems]);
-
   // Scene transition logic based on video or audio playback
   useEffect(() => {
     if (!isPlaying || groups.length === 0 || sceneDurations.length === 0 || !isModalOpen) return;
@@ -280,7 +126,6 @@ const CollageDisplay = () => {
       const video = videoRefs.current[`${currentGroupIndex}-0`];
       if (video) {
         const handleVideoPlay = () => {
-          // Video has started playing
           const duration = Math.min(video.duration * 1000, defaultDuration);
           transitionTimeout = setTimeout(goToNextScene, duration);
         };
@@ -303,7 +148,6 @@ const CollageDisplay = () => {
       const currentVoiceAudio = selectedVoiceAudios.find(audio => audio.groupIndex === currentGroupIndex);
       if (currentVoiceAudio && voiceAudioRef.current) {
         const handleAudioPlay = () => {
-          // Audio has started playing
           const duration = Math.min(voiceAudioRef.current.duration * 1000, defaultDuration);
           transitionTimeout = setTimeout(goToNextScene, duration);
         };
@@ -324,7 +168,6 @@ const CollageDisplay = () => {
           clearTimeout(transitionTimeout);
         };
       } else {
-        // Fallback to default duration if no voice audio
         transitionTimeout = setTimeout(goToNextScene, sceneDurations[currentGroupIndex] || defaultDuration);
         return () => clearTimeout(transitionTimeout);
       }
@@ -336,7 +179,6 @@ const CollageDisplay = () => {
     if (isModalOpen && selectedBackgroundAudios.length > 0 && backgroundAudioRef.current) {
       const playNextBackgroundAudio = () => {
         backgroundAudioRef.current.src = selectedBackgroundAudios[currentBackgroundAudioIndex];
-        // Check if voice audio or video-only video is playing
         const isVoicePlaying = voiceAudioRef.current && !voiceAudioRef.current.paused;
         const isVideoOnlyPlaying = groups[currentGroupIndex]?.layout === 'video-only' &&
           videoRefs.current[`${currentGroupIndex}-0`] && !videoRefs.current[`${currentGroupIndex}-0`].paused;
@@ -377,33 +219,15 @@ const CollageDisplay = () => {
       const currentVoiceAudio = selectedVoiceAudios.find(audio => audio.groupIndex === currentGroupIndex);
 
       if (isVideoOnly) {
-        // Skip voice audio for video-only scenes
         voiceAudioRef.current.pause();
         voiceAudioRef.current.currentTime = 0;
       } else if (currentVoiceAudio) {
-        validateAudioDuration(currentVoiceAudio.url).then(isValid => {
-          if (isValid) {
-            voiceAudioRef.current.src = currentVoiceAudio.url;
-            voiceAudioRef.current.currentTime = 0;
-            voiceAudioRef.current.play().catch(() => console.log('Voice audio play failed:', currentVoiceAudio.url));
-            if (backgroundAudioRef.current) {
-              backgroundAudioRef.current.volume = 0.2;
-            }
-          } else {
-            console.log('Voice audio duration exceeds scene duration:', currentVoiceAudio.url);
-            voiceAudioRef.current.pause();
-            voiceAudioRef.current.currentTime = 0;
-            if (backgroundAudioRef.current) {
-              backgroundAudioRef.current.volume = 1.0;
-            }
-          }
-        });
-
-        voiceAudioRef.current.addEventListener('ended', () => {
-          if (backgroundAudioRef.current) {
-            backgroundAudioRef.current.volume = 1.0;
-          }
-        }, { once: true });
+        voiceAudioRef.current.src = currentVoiceAudio.url;
+        voiceAudioRef.current.currentTime = 0;
+        voiceAudioRef.current.play().catch(() => console.log('Voice audio play failed:', currentVoiceAudio.url));
+        if (backgroundAudioRef.current) {
+          backgroundAudioRef.current.volume = 0.2;
+        }
       } else {
         voiceAudioRef.current.pause();
         voiceAudioRef.current.currentTime = 0;
@@ -411,6 +235,12 @@ const CollageDisplay = () => {
           backgroundAudioRef.current.volume = 1.0;
         }
       }
+
+      voiceAudioRef.current.addEventListener('ended', () => {
+        if (backgroundAudioRef.current) {
+          backgroundAudioRef.current.volume = 1.0;
+        }
+      }, { once: true });
 
       return () => {
         if (voiceAudioRef.current) {
@@ -477,42 +307,6 @@ const CollageDisplay = () => {
     };
   }, [currentGroupIndex, isModalOpen, groups]);
 
-  // Preview audio control
-  const handlePreviewAudio = (url) => {
-    if (previewAudioRef.current) {
-      if (currentPreviewUrl === url && !previewAudioRef.current.paused) {
-        previewAudioRef.current.pause();
-        previewAudioRef.current.currentTime = 0;
-        setCurrentPreviewUrl(null);
-      } else {
-        if (currentPreviewUrl !== null) {
-          previewAudioRef.current.pause();
-          previewAudioRef.current.currentTime = 0;
-        }
-        previewAudioRef.current.src = url;
-        previewAudioRef.current.play().catch(() => console.log('Preview audio play failed:', url));
-        setCurrentPreviewUrl(url);
-      }
-    }
-  };
-
-  // Stop preview audio when modal opens
-  useEffect(() => {
-    if (isModalOpen && previewAudioRef.current) {
-      previewAudioRef.current.pause();
-      previewAudioRef.current.currentTime = 0;
-      setCurrentPreviewUrl(null);
-    }
-  }, [isModalOpen]);
-
-  const handleAudioSelectionChange = (url, field, value) => {
-    setAudioSelections(prev =>
-      prev.map(audio =>
-        audio.url === url ? { ...audio, [field]: value } : audio
-      )
-    );
-  };
-
   const handleEmojiClick = index => setCurrentGroupIndex(index);
 
   const handlePlayPause = () => setIsPlaying(prev => !prev);
@@ -531,53 +325,12 @@ const CollageDisplay = () => {
 
   const rightContent = (
     <div className="collage-pre-container">
-      <h3>Select Audios for Collage</h3>
-      <div className="audio-selection">
-        {audioSelections.length > 0 ? (
-          audioSelections.map(audio => (
-            <div key={audio.url} className="audio-item">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={audio.isActive}
-                  onChange={e => handleAudioSelectionChange(audio.url, 'isActive', e.target.checked)}
-                />
-                {audio.url.split('/').pop()}
-              </label>
-              <button
-                className="preview-button"
-                onClick={() => handlePreviewAudio(audio.url)}
-              >
-                {currentPreviewUrl === audio.url && !previewAudioRef.current?.paused ? 'Stop' : 'Play'}
-              </button>
-              {audio.isActive && (
-                <div className="audio-type-buttons">
-                  <button
-                    className={`audio-type-button ${audio.type === 'Background' ? 'active' : ''}`}
-                    onClick={() => handleAudioSelectionChange(audio.url, 'type', 'Background')}
-                  >
-                    Background
-                  </button>
-                  <button
-                    className={`audio-type-button ${audio.type === 'Voice' ? 'active' : ''}`}
-                    onClick={() => handleAudioSelectionChange(audio.url, 'type', 'Voice')}
-                  >
-                    Voice
-                  </button>
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <p>No audios available.</p>
-        )}
-      </div>
+      <h3>{memoryData?.memoryMetadata?.title || 'Memory Collage'}</h3>
+      <p>{memoryData?.memoryMetadata?.description || 'No description available.'}</p>
       <button className="open-collage-button" onClick={handleOpenModal}>
-        Open Memory Collage
+        View Memory Collage
       </button>
-      <button className="save-memory-button" onClick={handleSaveMemory}>
-        Save Memory
-      </button>
+      {error && <p className="error-message">{error}</p>}
       {isModalOpen && ReactDOM.createPortal(
         <div
           className="modalOverlay"
@@ -610,14 +363,9 @@ const CollageDisplay = () => {
                   {isPlaying ? '⏸' : '▶'}
                 </button>
               </div>
-              {saveMessage && (
-                <div className="save-message">
-                  {saveMessage}
-                </div>
-              )}
             </div>
-            {memoryData?.accessAllowed ? (
-              mediaItems.length > 0 ? (
+            {memoryKey && memoryData?.dynamicMemories?.[memoryKey] ? (
+              groups.length > 0 ? (
                 <div className="groups-wrapper">
                   {groups.map((group, groupIndex) => (
                     <div
@@ -669,7 +417,7 @@ const CollageDisplay = () => {
                 <div className="no-media">No media items available.</div>
               )
             ) : (
-              <div className="no-access">You do not have permission to view this content.</div>
+              <div className="no-access">Memory data not available.</div>
             )}
             <audio ref={backgroundAudioRef} style={{ display: 'none' }} />
             <audio ref={voiceAudioRef} style={{ display: 'none' }} />
@@ -677,7 +425,6 @@ const CollageDisplay = () => {
         </div>,
         modalRootRef.current
       )}
-      <audio ref={previewAudioRef} style={{ display: 'none' }} />
     </div>
   );
 
@@ -686,17 +433,13 @@ const CollageDisplay = () => {
       pageTitle={memoryData?.memoryMetadata?.title || 'Memory Collage'}
       pageDescription={memoryData?.memoryMetadata?.description || 'A collection of your memories'}
       rightContent={rightContent}
-      visibility={memoryData?.accessInformation?.view?.visibility || 'private'}
+      visibility={memoryData?.memoryMetadata?.requiredVisibility || 'private'}
       owner={memoryData?.memoryMetadata?.createdBy}
       metaKeywords="memory collage, photos, videos, memories"
-      error={memoryData?.accessInformation?.reason || ''}
-      initialData={memoryData}
+      error={error}
       setInitialData={setMemoryData}
-      setUidChild={setUid}
-      setUserEmailChild={setUserEmail}
-      setTokenChild={setToken}
     />
   );
 };
 
-export default CollageDisplay;
+export default MemoryViewer;

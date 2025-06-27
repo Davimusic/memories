@@ -178,7 +178,7 @@ const Menu = ({ isOpen, onClose, openUpdateBackgroundColor, isDarkMode }) => {
   // Prevent click propagation in menu content
   const handleMenuClick = (e) => e.stopPropagation();
 
-  // Render plan status information
+  /*/ Render plan status information
   const renderPlanStatus = () => {
     if (!planStatus) return null;
 
@@ -196,7 +196,7 @@ const Menu = ({ isOpen, onClose, openUpdateBackgroundColor, isDarkMode }) => {
     } else {
       return <p className="title-sm menu-link">Plan: {planStatus}</p>;
     }
-  };
+  };*/
 
   return (
     <>
@@ -263,12 +263,12 @@ const Menu = ({ isOpen, onClose, openUpdateBackgroundColor, isDarkMode }) => {
             </li>
           </ul>
 
-          {/* Plan status section */}
+          {/* Plan status section }
           {planStatus && (
             <div className="plan-status">
               {renderPlanStatus()}
             </div>
-          )}
+          )*/}
         </div>
       </div>
     </>

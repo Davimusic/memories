@@ -6,35 +6,25 @@ import ArticleRenderer from '@/components/complex/articles/articleRenderer';
 
 
 const test = {
- 
-  "slug": "digital-legacy-planning-prueba4",
-  "title": "Digital Legacy Planning: How to Preserve Memories for Future Generations",
+  "slug": "psychology-happy-memories-fulfilling-life",
+  "title": "The Power of Happy Memories: Psychological Key to a Fulfilling Life",
   "seo": {
-    "description": "Learn how to preserve your digital memories, including photos, videos, and social media, with our comprehensive guide to digital legacy planning.",
-    "keywords": "digital legacy, memory preservation, digital assets, cloud storage, social media legacy, digital estate planning",
-    "tags": "digital legacy, memory preservation, digital memories, estate planning, technology, cloud platforms",
-    "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2021%20jun%202025%2C%2011_36_10%20a.m..png"
+    "description": "Discover how positive memories transform your brain, increase resilience and build a meaningful life according to scientific research.",
+    "keywords": "positive psychology, happy memories, emotional wellbeing, autobiographical memory, resilience, neuroscience of happiness",
+    "tags": "psychology, happiness, memory, personal growth, neuroscience",
+    "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2018%20jun%202025%2C%2003_47_29%20p.m..png"
   },
   "breadcrumbs": [
-    {
-      "label": "Home",
-      "path": "/"
-    },
-    {
-      "label": "Articles",
-      "path": "/articles"
-    },
-    {
-      "label": "Digital Legacy Planning",
-      "path": "/articles/digital-legacy-planning"
-    }
+    {"label": "Home", "path": "/"},
+    {"label": "Articles", "path": "/articles"},
+    {"label": "Psychology of Happy Memories", "path": "/articles/psychology-happy-memories"}
   ],
   "content": [
     {
       "type": "tableOfContents",
       "props": {
-        "title": "What’s in This Article?",
-        "content": "1. [Introduction: Why Digital Legacy Planning Matters](#introduction)\n2. [What Is a Digital Legacy?](#digital-legacy)\n   - [Types of Digital Assets](#types-assets)\n   - [The Evolution of Memory Preservation](#evolution-memory)\n3. [Why Plan Your Digital Legacy?](#why-plan)\n4. [Steps to Create a Digital Legacy Plan](#steps-plan)\n   - [Inventory Your Digital Assets](#inventory-assets)\n   - [Provide Access](#provide-access)\n   - [Decide Asset Fate](#decide-fate)\n   - [Document Instructions](#document-instructions)\n   - [Secure Storage](#secure-storage)\n5. [Tools and Platforms for Digital Legacy Planning](#tools-platforms)\n6. [Legal and Ethical Considerations](#legal-ethical)\n7. [Challenges in Digital Legacy Planning](#challenges)\n8. [Case Studies: Real-Life Examples](#case-studies)\n9. [Future Trends in Digital Legacy](#future-trends)\n10. [Explore More: Digital Legacy Resources](#external-resources)\n11. [Conclusion](#conclusion)"
+        "title": "What You'll Discover in This Article",
+        "content": "1. [Introduction: Why Memories Define Your Wellbeing](#introduction)\n2. [The Neuroscience of Happy Memories](#neuroscience)\n3. [Psychological Functions of Autobiographical Memory](#memory-functions)\n4. [8 Scientific Ingredients for Creating Lasting Memories](#memory-ingredients)\n5. [Memory Through the Lifespan: The 'Reminiscence Bump'](#lifespan)\n6. [Memories as Resilience Tools](#resilience)\n7. [Techniques to Preserve and Activate Positive Memories](#preservation-techniques)\n8. [Recommended Resources](#resources)\n9. [Your Mental Happiness Album](#final-thoughts)"
       }
     },
     {
@@ -45,15 +35,10 @@ const test = {
           {
             "type": "text",
             "props": {
-              "title": "Introduction: Why Digital Legacy Planning Matters",
+              "title": "Introduction: Why Memories Define Your Wellbeing",
               "content": [
                 {
-                  "text": "In the digital era, our lives are captured online—through photos, social media posts, and emails that tell our stories. These digital assets are precious memories, but without a plan, they could be lost forever. ",
-                  "highlight": "Digital legacy planning",
-                  "continueText": " ensures these memories are preserved for future generations."
-                },
-                {
-                  "text": "According to a 2021 Pew Research Center survey, 81% of adults value their digital content, yet only 34% have a plan to preserve it ([Pew Research Center](https://www.pewresearch.org)). This guide provides practical steps and tools, like Good Memories, to safeguard your digital legacy."
+                  "text": "\"Our happiness depends largely on the relationship we have with our past,\" says Meik Wiking, director of the Happiness Research Institute in Copenhagen. Memories aren't just mental files: they're active pillars of our identity that influence our present and future emotional state. Research shows that 81% of adults consider their digital memories valuable possessions [Pew Research Center], but few understand their transformative psychological power."
                 }
               ]
             }
@@ -61,105 +46,20 @@ const test = {
           {
             "type": "imageText",
             "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2021%20jun%202025%2C%2011_36_10%20a.m..png",
-              "imageAlt": "Cloud illustration of digital memories",
-              "imageTitle": "Visualizing a secure digital legacy in the cloud",
-              "text": "Preserve your digital memories securely in the cloud to ensure access for future generations. Tools like Good Memories can simplify this process ([Good Memories](https://goodmemories.live)).",
-              "layout": "left",
-              "imageSize": "medium"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "digital-legacy",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "What Is a Digital Legacy?",
-              "content": [
-                {
-                  "text": "A digital legacy includes all digital content and accounts left behind after your passing, such as social media profiles, photos, and financial accounts, each holding emotional or practical value."
-                }
-              ]
-            }
-          },
-          {
-            "type": "accordion",
-            "props": {
-              "title": "Types of Digital Assets",
-              "defaultOpen": true,
-              "children": [
-                {
-                  "type": "table",
-                  "props": {
-                    "content": "| Asset Type | Description | Example |\n|------------|-------------|---------|\n| **Photos** | Digital images from devices | Family vacation photos |\n| **Videos** | Recorded content | Wedding video |\n| **Social Media** | Online profiles and posts | Instagram feed |\n| **Emails** | Digital correspondence | Gmail archives |\n| **Financial Accounts** | Online banking, crypto | PayPal, Bitcoin wallet |\n| **Creative Works** | Digital art, music | Photoshop designs |"
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "accordion",
-            "props": {
-              "title": "The Evolution of Memory Preservation",
-              "defaultOpen": true,
-              "children": [
-                {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "Memory preservation has evolved significantly: ",
-                        "highlight": "Physical artifacts",
-                        "continueText": " like letters and photo albums have been replaced by digital formats. Today, individuals create over 1,000 photos annually ([Statista](https://www.statista.com))."
-                      },
-                      {
-                        "text": "Digital formats offer scalability but face risks like data loss, as seen in MySpace’s 2019 server failure, and obsolescence ([The Verge](https://www.theverge.com/2019/3/18/18271023/myspace-music-lost-server-migration))."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "imageText",
-            "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250618_143012.png",
-              "imageAlt": "Collage of digital memories",
-              "imageTitle": "A collage of cherished digital memories",
-              "text": "Your life’s moments can be preserved as a digital collage, ensuring your story endures for future generations.",
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2018%20jun%202025%2C%2003_47_29%20p.m..png",
+              "imageAlt": "Smiling happy face illustration",
+              "imageTitle": "The neuroscience behind happy memories",
+              "text": "Our brain processes positive memories as rewards, activating neural circuits similar to those stimulated by monetary gains.",
               "layout": "right",
               "imageSize": "medium"
             }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "why-plan",
-        "children": [
+          },
           {
-            "type": "text",
+            "type": "videoEmbed",
             "props": {
-              "title": "Why Plan Your Digital Legacy?",
-              "content": [
-                {
-                  "text": "Without a digital legacy plan, your assets could become inaccessible or lost. Planning ensures: ",
-                  "highlight": "Emotional preservation",
-                  "continueText": " of memories, legal transfer of financial assets, and clear instructions for loved ones."
-                },
-                {
-                  "text": "A 2018 German court case, where a deceased teen’s Facebook account was granted to her parents, underscores the legal complexities of digital assets ([BBC](https://www.bbc.com/news/world-europe-44804534))."
-                }
-              ]
+              "videoUrl": "https://www.youtube.com/embed/H8QOyJQGerQ",
+              "title": "TED Talk: How Memories Shape Our Identity",
+              "description": "Psychologist Elizabeth Loftus explains memory plasticity"
             }
           }
         ]
@@ -168,15 +68,15 @@ const test = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "steps-plan",
+        "referenceId": "neuroscience",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Steps to Create a Digital Legacy Plan",
+              "title": "The Neuroscience of Happy Memories",
               "content": [
                 {
-                  "text": "Follow these steps to preserve your digital legacy effectively:"
+                  "text": "Neuroimaging studies reveal that recalling happy moments activates the brain's reward circuit, particularly the ventral striatum and medial prefrontal cortex. This explains why positive reminiscence:"
                 }
               ]
             }
@@ -184,7 +84,7 @@ const test = {
           {
             "type": "accordion",
             "props": {
-              "title": "Inventory Your Digital Assets",
+              "title": "Proven Effects on the Brain",
               "defaultOpen": true,
               "children": [
                 {
@@ -192,107 +92,10 @@ const test = {
                   "props": {
                     "content": [
                       {
-                        "text": "List all accounts (e.g., Google, Instagram) and content (photos, blogs). Use a spreadsheet or tools like Good Memories to streamline the process ([Good Memories](https://goodmemories.live))."
+                        "text": "- **Reduces cortisol**: People recalling happy memories during stressful situations show 23% lower levels of this stress hormone.\n- **Boosts resilience**: Activity in the striatum during positive reminiscence correlates with greater emotional recovery capacity.\n- **Improves mood**: fMRI studies show participants report significant mood improvements after reminiscence sessions."
                       }
                     ]
                   }
-                }
-              ]
-            }
-          },
-          {
-            "type": "accordion",
-            "props": {
-              "title": "Provide Access",
-              "defaultOpen": true,
-              "children": [
-                {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "Share login details securely using password managers like LastPass ([LastPass](https://www.lastpass.com)). Avoid storing passwords in wills."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "accordion",
-            "props": {
-              "title": "Decide Asset Fate",
-              "defaultOpen": true,
-              "children": [
-                {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "Choose whether to delete, memorialize, or transfer each account. Use platform tools like Google’s Inactive Account Manager ([Google Inactive](https://myaccount.google.com/inactive))."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "accordion",
-            "props": {
-              "title": "Document Instructions",
-              "defaultOpen": true,
-              "children": [
-                {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "Include digital asset instructions in your will or a separate document. LegalZoom offers templates ([LegalZoom](https://www.legalzoom.com))."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "accordion",
-            "props": {
-              "title": "Secure Storage",
-              "defaultOpen": true,
-              "children": [
-                {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "Store plans in a digital vault like Gentreo ([Gentreo](https://www.gentreo.com)) or a secure cloud platform to ensure trusted contacts can access them."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "tools-platforms",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "Tools and Platforms for Digital Legacy Planning",
-              "content": [
-                {
-                  "text": "Several tools can simplify digital legacy planning. Among them, ",
-                  "highlight": "Good Memories",
-                  "continueText": " stands out for its intuitive cloud-based archiving, making it easy to preserve and share memories securely ([Good Memories](https://goodmemories.live)). Here’s a comparison of key platforms:"
                 }
               ]
             }
@@ -300,26 +103,220 @@ const test = {
           {
             "type": "table",
             "props": {
-              "content": "| Tool | Features | Cost | Link |\n|------|----------|------|------|\n| **Good Memories** | Cloud-based memory archiving, secure sharing | Subscription | [Good Memories](https://goodmemories.live) |\n| Inalife | Interactive family tree, memory storage | $5.99+/mo | [Inalife](http://inalife.com) |\n| Dead Social | Posthumous posts, digital executor | Varies | [Dead Social](http://deadsocial.org/legacy-builder) |\n| MyWishes | Digital will, farewell messages | Free | [MyWishes](https://www.mywishes.co.uk) |"
+              "content": "| **Psychological Effect** | **Neurological Basis** | **Proven Benefit** |\n|------------------------|----------------------|--------------------------|\n| **Emotional regulation** | Prefrontal cortex activation | Reduces depressive symptoms |\n| **Positive self-perception** | Autobiographical connections | Strengthens self-esteem |\n| **Social connection** | Attachment system activation | Reduces loneliness |"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "memory-functions",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Psychological Functions of Autobiographical Memory",
+              "content": [
+                {
+                  "text": "Autobiographical memory serves essential wellbeing functions:"
+                }
+              ]
             }
           },
           {
             "type": "imageText",
             "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250621_112824.png",
-              "imageAlt": "Couple preserving memories in the cloud",
-              "imageTitle": "A couple’s digital legacy in the cloud",
-              "text": "Good Memories offers a seamless way to preserve your digital legacy, ensuring your memories are safe and accessible ([Good Memories](https://goodmemories.live)).",
-              "layout": "right",
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2018%20jun%202025%2C%2004_54_04%20p.m..png",
+              "imageAlt": "Happy children riding bikes with mother",
+              "imageTitle": "How memories build our identity",
+              "text": "\"Memories are ways of holding onto the things you love, the things you are, the things you never want to lose\" - Anonymous",
+              "layout": "left",
               "imageSize": "medium"
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "4 Key Psychological Functions",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "1. **Identity construction**: Our personal story defines us (\"Who am I?\") \n2. **Emotional regulation**: Positive memories counteract negative moods \n3. **Social function**: Sharing memories strengthens bonds (\"Where do I belong?\") \n4. **Existential compass**: Guides future decisions based on past experiences"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "memory-ingredients",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "8 Scientific Ingredients for Creating Lasting Memories",
+              "content": [
+                {
+                  "text": "According to Meik Wiking, these elements enhance the formation of meaningful memories:"
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "The Power of First Times",
+              "defaultOpen": false,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "Novel experiences (first kiss, first solo trip) account for 23% of our most vivid memories. The brain processes novelty more intensely, creating deeper memory traces."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "Multisensory Engagement",
+              "defaultOpen": false,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "A scent or texture can \"teleport\" us to the past (Proust effect). Engaging multiple senses makes memories more vivid and accessible."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "customQuote",
+            "props": {
+              "quote": "The brain is an organ capable of storing, organizing and prioritizing all our memories. A pleasant memory can restore lost inner peace",
+              "author": "Psychology Today"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "lifespan",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Memory Through the Lifespan: The 'Reminiscence Bump'",
+              "content": [
+                {
+                  "text": "Research shows we disproportionately recall more events from ages 20-30 (\"reminiscence bump\"). This occurs because:"
+                }
+              ]
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "content": [
+                {
+                  "text": "- **Identity formation**: Crucial decisions (career, relationships) create memorable milestones\n- **First experiences**: Higher density of novel events\n- **Connection to current wellbeing**: Those perceiving control over these events show greater life satisfaction"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "resilience",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Memories as Resilience Tools",
+              "content": [
+                {
+                  "text": "Recalling positive memories isn't escapism - it's applied neurobiology for wellbeing. People using this strategy:"
+                }
+              ]
+            }
+          },
+          {
+            "type": "accordion",
+            "props": {
+              "title": "Psychological Benefits",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "- **Stress inoculation**: Reduces cortisol better than many relaxation techniques\n- **Self-efficacy restoration**: \"If I was happy before, I can be again\"\n- **Reconnection with core values**: Memories as compass during existential crises"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "preservation-techniques",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Techniques to Preserve and Activate Positive Memories",
+              "content": [
+                {
+                  "text": "Strategies validated by psychologists and neuroscientists:"
+                }
+              ]
+            }
+          },
+          {
+            "type": "table",
+            "props": {
+              "content": "| **Technique** | **Scientific Basis** | **How to Apply** |\n|-------------|---------------------------|---------------------|\n| **Therapeutic reminiscence** | Improves self-esteem in seniors  | Use photos/music to evoke meaningful memories |\n| **Peak-end rule** | Memory bias (Kahneman)  | Design experiences with emotionally positive endings |\n| **Conscious externalization** | Multisensory encoding  | Create digital albums with emotional narratives |\n| **Positive reconsolidation** | Memory plasticity  | Revisit neutral memories seeking positive aspects |"
             }
           },
           {
             "type": "cta",
             "props": {
-              "title": "Explore Digital Legacy Tools",
-              "description": "Start preserving your memories with Good Memories’ secure platform.",
-              "buttonText": "Learn More",
+              "title": "Start Your Positive Memory Bank",
+              "description": "Preserve your meaningful moments with Good Memories",
+              "buttonText": "Create Free Account",
               "href": "https://goodmemories.live",
               "variant": "primary"
             }
@@ -330,18 +327,15 @@ const test = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "legal-ethical",
+        "referenceId": "resources",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Legal and Ethical Considerations",
+              "title": "Recommended Resources",
               "content": [
                 {
-                  "text": "Digital legacy planning involves legal and ethical considerations:"
-                },
-                {
-                  "text": "- **Ownership**: Laws like the Fiduciary Access to Digital Assets Act (FIDAA) govern access ([Uniform Laws](https://www.uniformlaws.org)).\n- **Privacy**: Balance access with confidentiality.\n- **Consent**: Seek permission for sharing private content."
+                  "text": "- **Book**: \"The Art of Making Memories\" by Meik Wiking\n- **TED Talk**: [Why Nostalgia is Good For You](https://www.ted.com/talks/clay_routledge_why_nostalgia_is_good_for_you)\n- **Digital tool**: [Good Memories](https://goodmemories.live) - Platform to preserve meaningful memories\n- **Scientific study**: [Savoring the past: Positive memories evoke value representations](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4254527/)"
                 }
               ]
             }
@@ -352,136 +346,15 @@ const test = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "challenges",
+        "referenceId": "final-thoughts",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Challenges in Digital Legacy Planning",
+              "title": "Your Mental Happiness Album",
               "content": [
                 {
-                  "text": "Key challenges include: ",
-                  "highlight": "Platform inconsistencies",
-                  "continueText": " (e.g., X’s lack of legacy options), privacy concerns, and technological obsolescence. Secure cloud platforms can help mitigate these risks."
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "case-studies",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "Case Studies: Real-Life Examples",
-              "content": [
-                {
-                  "text": "These examples illustrate the importance of digital legacy planning:"
-                }
-              ]
-            }
-          },
-          {
-            "type": "accordion",
-            "props": {
-              "title": "The Johnson Family",
-              "defaultOpen": true,
-              "children": [
-                {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "The Johnsons archived 20 years of photos and videos using a cloud platform, ensuring their children could access these memories."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "accordion",
-            "props": {
-              "title": "MySpace Data Loss",
-              "defaultOpen": true,
-              "children": [
-                {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "In 2019, MySpace lost over 50 million files due to a server migration error, highlighting the risks of platform dependency ([The Verge](https://www.theverge.com/2019/3/18/18271023/myspace-music-lost-server-migration))."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "future-trends",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "Future Trends in Digital Legacy",
-              "content": [
-                {
-                  "text": "Emerging technologies will redefine digital legacy planning: ",
-                  "highlight": "AI",
-                  "continueText": " for narrative curation ([OpenAI](https://openai.com)), blockchain for permanent storage ([Wired](https://www.wired.com)), and virtual reality for immersive memory experiences."
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "external-resources",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "Explore More: Digital Legacy Resources",
-              "content": [
-                {
-                  "text": "Enhance your understanding with these resources:"
-                },
-                {
-                  "text": "- [Digital Legacy Association](https://digitallegacyassociation.org): Practical planning resources.\n- [TED Radio Hour: Future of Memory](https://www.npr.org/2025/01/24/1226561694/ted-radio-hour-future-of-memory-technology): Insights on memory technology.\n- [ACCAN Guide](https://accan.org.au/files/Grants/Death%20and%20the%20Internet_2017-web.pdf): Digital legacy tips.\n- [TED Ideas: Digital Life After Death](https://ideas.ted.com/your-digital-life-after-death): Innovative memory preservation approaches."
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "conclusion",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "Conclusion",
-              "content": [
-                {
-                  "text": "Digital legacy planning ensures your memories endure for future generations. Begin today with tools like Good Memories to secure your digital assets ([Good Memories](https://goodmemories.live))."
+                  "text": "As Nobel laureate Daniel Kahneman summarizes: \"Our memory isn't an accurate record, but a storyteller that emphasizes certain moments.\" Cultivating positive memories isn't a luxury but a proven psychological strategy to build resilience, identity and existential meaning. By systematically externalizing and revisiting these moments - especially those with strong sensory or emotional components - we create a wellbeing bank to draw upon during difficult times. As Wiking notes: \"Positive memories are our emotional shelter when facing storms.\""
                 }
               ]
             }
@@ -489,63 +362,25 @@ const test = {
           {
             "type": "customQuote",
             "props": {
-              "quote": "Memory is the diary we all carry about with us.",
-              "author": "Oscar Wilde"
+              "quote": "We are largely the continuation of our past; the result of a memory",
+              "author": "Pío Baroja"
             }
           }
         ]
-      }
-    },
-    {
-      "type": "contentSlider",
-      "props": {
-        "contents": [
-          {
-            "type": "image",
-            "props": {
-              "url": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250618_143012.png",
-              "alt": "Collage of digital memories",
-              "title": "Interactive digital legacy gallery"
-            }
-          },
-          {
-            "type": "text",
-            "props": {
-              "content": [
-                {
-                  "text": "Explore your digital legacy with an interactive gallery."
-                }
-              ]
-            }
-          }
-        ],
-        "autoSlide": true,
-        "slideInterval": {
-          "$numberInt": "5000"
-        },
-        "size": "medium"
-      }
-    },
-    {
-      "type": "feedbackForm",
-      "props": {
-        "title": "Share Your Thoughts on Digital Legacy Planning",
-        "submitText": "Submit Feedback",
-        "showRatings": true
       }
     }
   ],
   "structuredData": {
     "openGraph": {
-      "title": "Digital Legacy Planning: How to Preserve Memories for Future Generations",
-      "description": "Learn how to safeguard your digital memories with our guide to digital legacy planning.",
-      "url": "https://goodmemories.live/articles/digital-legacy-planning-prueba4",
-      "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2021%20jun%202025%2C%2011_36_10%20a.m..png",
+      "title": "The Power of Happy Memories: Psychological Key to a Fulfilling Life",
+      "description": "Discover how science explains the transformative power of positive memories on your mental wellbeing",
+      "url": "https://goodmemories.live/articles/psychology-happy-memories-fulfilling-life",
+      "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2018%20jun%202025%2C%2003_47_29%20p.m..png",
       "type": "article"
     }
   },
-  "updatedAt": "2025-06-21T11:30:00Z",
-  "createdAt": "2025-06-18T12:00:00Z"
+  "updatedAt": "2025-06-26T09:15:00Z",
+  "createdAt": "2025-06-25T14:30:00Z"
 }
 
 

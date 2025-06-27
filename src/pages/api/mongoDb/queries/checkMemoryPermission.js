@@ -136,6 +136,7 @@ export const checkMemoryPermission = async ({ ownerKey, memoryName, type, uid, t
     currentUser: sanitizedCurrentUser,
     memoryMetadata: memoryConfig.metadata,
     topics: memoryConfig.topics || {},
+    dynamicMemories: memoryConfig.dynamicMemories || {},
   };
 };
 
