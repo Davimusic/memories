@@ -97,9 +97,12 @@ body.modal-open {
 }
 
 .collage-pre-container {
-  padding: 20px;
-  max-width: 600px;
-  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
 }
 
 .collage-container {
@@ -141,17 +144,11 @@ body.modal-open {
 }
 
 .emoji.active {
-  color: #fff;
-}
-
-.emoji:hover,
-.emoji:focus {
-  color: #aaa;
-  outline: none;
+  color: #000000b4;
 }
 
 .play-pause-button {
-  background: #f0f0f0;
+  background: var(--bg-secondary);
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -161,13 +158,6 @@ body.modal-open {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.3s ease;
-}
-
-.play-pause-button:hover,
-.play-pause-button:focus {
-  background: #ddd;
-  outline: none;
 }
 
 .open-collage-button,
@@ -182,6 +172,7 @@ body.modal-open {
   font-size: 16px;
   width: 100%;
   transition: background-color 0.3s ease;
+  position: relative;
 }
 
 .open-collage-button:hover,
@@ -190,6 +181,29 @@ body.modal-open {
 .save-memory-button:focus {
   background-color: #0056b3;
   outline: none;
+}
+
+.save-memory-button.loading {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.save-memory-button .spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .groups-wrapper {
@@ -317,6 +331,8 @@ body.modal-open {
   border-radius: 8px;
   max-height: 50vh;
   overflow-y: auto;
+  padding-top: 0;
+  margin-top: 0;
 }
 
 .audio-selection h3 {

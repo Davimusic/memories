@@ -1,69 +1,31 @@
-'use client';
-
 import React, { useState, useEffect, useRef } from 'react';
-import GeneralMold from '@/components/complex/generalMold';
-import '../../../estilos/general/dynamicCreator.css';
 import ReactDOM from 'react-dom';
+import '../../estilos/general/dynamicCreator.css';
 
-const MemoryViewer = () => {
-  const [memoryData, setMemoryData] = useState(null);
-  const memoryKey = memoryData?.memoryMetadata?.memoryKey;
-  const [groups, setGroups] = useState([]);
+const MemoryCollageModal = ({
+  isModalOpen,
+  setIsModalOpen,
+  memoryData,
+  dynamicMemoryID = null,
+  groups,
+  sceneDurations = [],
+  audioSelections = [],
+  defaultDuration = 10000,
+  PlayPauseComponent = null,
+  setFailMessage = () => {},
+}) => {
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [audioSelections, setAudioSelections] = useState([]);
+  const [showControls, setShowControls] = useState(true);
   const [selectedBackgroundAudios, setSelectedBackgroundAudios] = useState([]);
   const [selectedVoiceAudios, setSelectedVoiceAudios] = useState([]);
-  const [sceneDurations, setSceneDurations] = useState([]);
   const [currentBackgroundAudioIndex, setCurrentBackgroundAudioIndex] = useState(0);
-  const [error, setError] = useState(null);
   const videoRefs = useRef({});
   const videoTimeouts = useRef({});
   const backgroundAudioRef = useRef(null);
   const voiceAudioRef = useRef(null);
   const modalRootRef = useRef(null);
-  const defaultDuration = 10000;
   const controlsTimeoutRef = useRef(null);
-  const [showControls, setShowControls] = useState(true);
-
-  const layouts = [
-    { type: 'single', count: 1 },
-    { type: 'double', count: 2 },
-    { type: 'triple', count: 3 },
-    { type: 'quad', count: 4 },
-    { type: 'video-only', count: 1 },
-  ];
-
-  // Initialize data and open modal when memoryData is received
-  useEffect(() => {
-    if (!memoryData) return;
-
-    if (!memoryKey || !memoryData?.dynamicMemories?.[memoryKey]) {
-      setError('Memory data not available.');
-      setIsModalOpen(false);
-      return;
-    }
-
-    const dynamicMemory = memoryData.dynamicMemories[memoryKey];
-    setGroups(dynamicMemory.groups || []);
-    setAudioSelections(dynamicMemory.audioSelections || []);
-    setSceneDurations(dynamicMemory.sceneDurations || []);
-    setIsModalOpen(true); // Open modal automatically
-    setIsPlaying(true); // Start playback automatically
-  }, [memoryData, memoryKey]);
-
-  // Initialize audio selections
-  useEffect(() => {
-    const backgroundAudios = audioSelections
-      .filter(audio => audio.isActive && audio.type === 'Background')
-      .map(audio => audio.url);
-    const voiceAudios = audioSelections
-      .filter(audio => audio.isActive && audio.type === 'Voice')
-      .map((audio, index) => ({ url: audio.url, groupIndex: index }));
-    setSelectedBackgroundAudios(backgroundAudios);
-    setSelectedVoiceAudios(voiceAudios);
-  }, [audioSelections]);
 
   // Create modal root
   useEffect(() => {
@@ -110,69 +72,89 @@ const MemoryViewer = () => {
     }, 5000);
   };
 
-  // Scene transition logic based on video or audio playback
+  // Initialize audio selections
   useEffect(() => {
-    if (!isPlaying || groups.length === 0 || sceneDurations.length === 0 || !isModalOpen) return;
+    const backgroundAudios = audioSelections
+      .filter(audio => audio.isActive && audio.type === 'Background')
+      .map(audio => audio.url);
+    const voiceAudios = audioSelections
+      .filter(audio => audio.isActive && audio.type === 'Voice')
+      .map((audio, index) => ({ url: audio.url, groupIndex: index }));
+    setSelectedBackgroundAudios(backgroundAudios);
+    setSelectedVoiceAudios(voiceAudios);
+  }, [audioSelections]);
+
+  // Scene transition logic
+  useEffect(() => {
+    if (!isPlaying || groups.length === 0 || !isModalOpen) return;
 
     const currentGroup = groups[currentGroupIndex];
     const isVideoOnly = currentGroup?.layout === 'video-only';
     let transitionTimeout;
 
     const goToNextScene = () => {
-      setCurrentGroupIndex(prev => (prev + 1) % groups.length);
+      setCurrentGroupIndex(prev => {
+        const nextIndex = (prev + 1) % groups.length;
+        let attempts = 0;
+        let newIndex = nextIndex;
+        while (groups[newIndex]?.items.every(item => !item.url) && attempts < groups.length) {
+          newIndex = (newIndex + 1) % groups.length;
+          attempts++;
+        }
+        return newIndex;
+      });
     };
 
     if (isVideoOnly && currentGroup.items[0]?.type === 'video') {
       const video = videoRefs.current[`${currentGroupIndex}-0`];
       if (video) {
-        const handleVideoPlay = () => {
-          const duration = Math.min(video.duration * 1000, defaultDuration);
-          transitionTimeout = setTimeout(goToNextScene, duration);
-        };
-
         const handleVideoEnded = () => {
-          clearTimeout(transitionTimeout);
           goToNextScene();
         };
 
-        video.addEventListener('play', handleVideoPlay, { once: true });
+        const handleVideoError = () => {
+          console.log('Video error, skipping:', video.src);
+          setFailMessage('Video playback failed');
+          goToNextScene();
+        };
+
         video.addEventListener('ended', handleVideoEnded, { once: true });
+        video.addEventListener('error', handleVideoError, { once: true });
 
         return () => {
-          video.removeEventListener('play', handleVideoPlay);
           video.removeEventListener('ended', handleVideoEnded);
-          clearTimeout(transitionTimeout);
+          video.removeEventListener('error', handleVideoError);
         };
       }
     } else {
       const currentVoiceAudio = selectedVoiceAudios.find(audio => audio.groupIndex === currentGroupIndex);
       if (currentVoiceAudio && voiceAudioRef.current) {
-        const handleAudioPlay = () => {
-          const duration = Math.min(voiceAudioRef.current.duration * 1000, defaultDuration);
-          transitionTimeout = setTimeout(goToNextScene, duration);
-        };
-
         const handleAudioEnded = () => {
-          clearTimeout(transitionTimeout);
           goToNextScene();
         };
 
-        voiceAudioRef.current.addEventListener('play', handleAudioPlay, { once: true });
+        const handleAudioError = () => {
+          console.log('Voice audio error, skipping:', currentVoiceAudio.url);
+          setFailMessage('Voice audio playback failed');
+          goToNextScene();
+        };
+
         voiceAudioRef.current.addEventListener('ended', handleAudioEnded, { once: true });
+        voiceAudioRef.current.addEventListener('error', handleAudioError, { once: true });
 
         return () => {
           if (voiceAudioRef.current) {
-            voiceAudioRef.current.removeEventListener('play', handleAudioPlay);
             voiceAudioRef.current.removeEventListener('ended', handleAudioEnded);
+            voiceAudioRef.current.removeEventListener('error', handleAudioError);
           }
-          clearTimeout(transitionTimeout);
         };
       } else {
-        transitionTimeout = setTimeout(goToNextScene, sceneDurations[currentGroupIndex] || defaultDuration);
+        const duration = sceneDurations[currentGroupIndex] || defaultDuration;
+        transitionTimeout = setTimeout(goToNextScene, duration);
         return () => clearTimeout(transitionTimeout);
       }
     }
-  }, [isPlaying, groups, currentGroupIndex, sceneDurations, isModalOpen, selectedVoiceAudios]);
+  }, [isPlaying, groups, currentGroupIndex, sceneDurations, isModalOpen, selectedVoiceAudios, setFailMessage]);
 
   // Background audio playback control
   useEffect(() => {
@@ -183,16 +165,26 @@ const MemoryViewer = () => {
         const isVideoOnlyPlaying = groups[currentGroupIndex]?.layout === 'video-only' &&
           videoRefs.current[`${currentGroupIndex}-0`] && !videoRefs.current[`${currentGroupIndex}-0`].paused;
         backgroundAudioRef.current.volume = (isVoicePlaying || isVideoOnlyPlaying) ? 0.2 : 1.0;
-        backgroundAudioRef.current.play().catch(() => console.log('Background audio play failed:', selectedBackgroundAudios[currentBackgroundAudioIndex]));
+        backgroundAudioRef.current.play().catch(() => {
+          console.log('Background audio play failed:', selectedBackgroundAudios[currentBackgroundAudioIndex]);
+          setFailMessage('Background audio playback failed');
+        });
       };
 
       const handleAudioEnded = () => {
         const nextIndex = (currentBackgroundAudioIndex + 1) % selectedBackgroundAudios.length;
         setCurrentBackgroundAudioIndex(nextIndex);
-        playNextBackgroundAudio();
+      };
+
+      const handleAudioError = () => {
+        console.log('Background audio error, skipping:', selectedBackgroundAudios[currentBackgroundAudioIndex]);
+        setFailMessage('Background audio playback failed');
+        const nextIndex = (currentBackgroundAudioIndex + 1) % selectedBackgroundAudios.length;
+        setCurrentBackgroundAudioIndex(nextIndex);
       };
 
       backgroundAudioRef.current.addEventListener('ended', handleAudioEnded);
+      backgroundAudioRef.current.addEventListener('error', handleAudioError);
 
       if (backgroundAudioRef.current.paused) {
         playNextBackgroundAudio();
@@ -201,6 +193,7 @@ const MemoryViewer = () => {
       return () => {
         if (backgroundAudioRef.current) {
           backgroundAudioRef.current.removeEventListener('ended', handleAudioEnded);
+          backgroundAudioRef.current.removeEventListener('error', handleAudioError);
           backgroundAudioRef.current.pause();
           backgroundAudioRef.current.currentTime = 0;
         }
@@ -209,7 +202,7 @@ const MemoryViewer = () => {
       backgroundAudioRef.current.pause();
       backgroundAudioRef.current.currentTime = 0;
     }
-  }, [isModalOpen, currentBackgroundAudioIndex, selectedBackgroundAudios, currentGroupIndex, groups]);
+  }, [isModalOpen, selectedBackgroundAudios, currentBackgroundAudioIndex, setFailMessage]);
 
   // Voice audio and video audio playback control
   useEffect(() => {
@@ -224,7 +217,10 @@ const MemoryViewer = () => {
       } else if (currentVoiceAudio) {
         voiceAudioRef.current.src = currentVoiceAudio.url;
         voiceAudioRef.current.currentTime = 0;
-        voiceAudioRef.current.play().catch(() => console.log('Voice audio play failed:', currentVoiceAudio.url));
+        voiceAudioRef.current.play().catch(() => {
+          console.log('Voice audio play failed:', currentVoiceAudio.url);
+          setFailMessage('Voice audio playback failed');
+        });
         if (backgroundAudioRef.current) {
           backgroundAudioRef.current.volume = 0.2;
         }
@@ -258,7 +254,7 @@ const MemoryViewer = () => {
         backgroundAudioRef.current.volume = 1.0;
       }
     }
-  }, [isModalOpen, currentGroupIndex, selectedVoiceAudios, groups]);
+  }, [isModalOpen, currentGroupIndex, selectedVoiceAudios, groups, setFailMessage]);
 
   // Video playback control
   useEffect(() => {
@@ -267,10 +263,13 @@ const MemoryViewer = () => {
       const [groupIndexStr] = key.split('-');
       const groupIndex = parseInt(groupIndexStr);
       const isVideoOnly = groups[groupIndex]?.layout === 'video-only';
-      if (groupIndex === currentGroupIndex && isModalOpen) {
+      if (groupIndex === currentGroupIndex && isModalOpen && isPlaying) {
         video.currentTime = 0;
         video.muted = !isVideoOnly;
-        video.play().catch(() => console.log('Video play failed:', video.src));
+        video.play().catch(() => {
+          console.log('Video play failed:', video.src);
+          setFailMessage('Video playback failed');
+        });
         if (isVideoOnly && backgroundAudioRef.current) {
           video.addEventListener('play', () => {
             if (backgroundAudioRef.current) backgroundAudioRef.current.volume = 0.2;
@@ -305,17 +304,26 @@ const MemoryViewer = () => {
         }
       });
     };
-  }, [currentGroupIndex, isModalOpen, groups]);
+  }, [currentGroupIndex, isModalOpen, isPlaying, groups, setFailMessage]);
+
+  // Pause all media when isPlaying is false
+  useEffect(() => {
+    if (!isPlaying) {
+      if (backgroundAudioRef.current) {
+        backgroundAudioRef.current.pause();
+      }
+      if (voiceAudioRef.current) {
+        voiceAudioRef.current.pause();
+      }
+      Object.values(videoRefs.current).forEach(video => {
+        if (video) video.pause();
+      });
+    }
+  }, [isPlaying]);
 
   const handleEmojiClick = index => setCurrentGroupIndex(index);
 
   const handlePlayPause = () => setIsPlaying(prev => !prev);
-
-  const handleOpenModal = () => {
-    setCurrentGroupIndex(0);
-    setIsModalOpen(true);
-    setShowControls(true);
-  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -323,14 +331,13 @@ const MemoryViewer = () => {
     setShowControls(true);
   };
 
-  const rightContent = (
-    <div className="collage-pre-container">
-      <h3>{memoryData?.memoryMetadata?.title || 'Memory Collage'}</h3>
-      <p>{memoryData?.memoryMetadata?.description || 'No description available.'}</p>
-      <button className="open-collage-button" onClick={handleOpenModal}>
-        View Memory Collage
-      </button>
-      {error && <p className="error-message">{error}</p>}
+  // Check if memory data is accessible
+  const isMemoryAccessible = dynamicMemoryID
+    ? memoryData && memoryData.dynamicMemories && memoryData.dynamicMemories[dynamicMemoryID]
+    : memoryData && memoryData.accessAllowed;
+
+  return (
+    <>
       {isModalOpen && ReactDOM.createPortal(
         <div
           className="modalOverlay"
@@ -355,16 +362,24 @@ const MemoryViewer = () => {
                     </button>
                   ))}
                 </div>
-                <button
-                  className="play-pause-button"
-                  onClick={handlePlayPause}
-                  aria-label={isPlaying ? 'Pause animation' : 'Play animation'}
-                >
-                  {isPlaying ? '⏸' : '▶'}
-                </button>
+                {PlayPauseComponent ? (
+                  <PlayPauseComponent
+                    isPlaying={isPlaying}
+                    onToggle={handlePlayPause}
+                    size={30}
+                  />
+                ) : (
+                  <button
+                    className="play-pause-button"
+                    onClick={handlePlayPause}
+                    aria-label={isPlaying ? 'Pause animation' : 'Play animation'}
+                  >
+                    {isPlaying ? '⏸' : '▶'}
+                  </button>
+                )}
               </div>
             </div>
-            {memoryKey && memoryData?.dynamicMemories?.[memoryKey] ? (
+            {isMemoryAccessible ? (
               groups.length > 0 ? (
                 <div className="groups-wrapper">
                   {groups.map((group, groupIndex) => (
@@ -380,6 +395,10 @@ const MemoryViewer = () => {
                               src={item.url}
                               alt={`Background for memory ${index + 1}`}
                               className="background-media"
+                              onError={() => {
+                                console.log('Background image failed:', item.url);
+                                setFailMessage('Background image failed to load');
+                              }}
                             />
                           ) : (
                             <video
@@ -389,6 +408,10 @@ const MemoryViewer = () => {
                               loop
                               autoPlay
                               playsInline
+                              onError={() => {
+                                console.log('Background video failed:', item.url);
+                                setFailMessage('Background video failed to load');
+                              }}
                             />
                           )}
                           {/* Foreground media */}
@@ -397,6 +420,10 @@ const MemoryViewer = () => {
                               src={item.url}
                               alt={`Memory photo ${index + 1}`}
                               className="media"
+                              onError={() => {
+                                console.log('Foreground image failed:', item.url);
+                                setFailMessage('Foreground image failed to load');
+                              }}
                             />
                           ) : (
                             <video
@@ -404,6 +431,10 @@ const MemoryViewer = () => {
                               src={item.url}
                               className="media"
                               playsInline
+                              onError={() => {
+                                console.log('Foreground video failed:', item.url);
+                                setFailMessage('Foreground video playback failed');
+                              }}
                             >
                               Your browser does not support the video tag.
                             </video>
@@ -419,27 +450,31 @@ const MemoryViewer = () => {
             ) : (
               <div className="no-access">Memory data not available.</div>
             )}
-            <audio ref={backgroundAudioRef} style={{ display: 'none' }} />
-            <audio ref={voiceAudioRef} style={{ display: 'none' }} />
+            <audio
+              ref={backgroundAudioRef}
+              style={{ display: 'none' }}
+              onError={() => {
+                console.log('Background audio error:', backgroundAudioRef.current?.src);
+                setFailMessage('Background audio playback failed');
+                const nextIndex = (currentBackgroundAudioIndex + 1) % selectedBackgroundAudios.length;
+                setCurrentBackgroundAudioIndex(nextIndex);
+              }}
+            />
+            <audio
+              ref={voiceAudioRef}
+              style={{ display: 'none' }}
+              onError={() => {
+                console.log('Voice audio error:', voiceAudioRef.current?.src);
+                setFailMessage('Voice audio playback failed');
+                setCurrentGroupIndex(prev => (prev + 1) % groups.length);
+              }}
+            />
           </div>
         </div>,
         modalRootRef.current
       )}
-    </div>
-  );
-
-  return (
-    <GeneralMold
-      pageTitle={memoryData?.memoryMetadata?.title || 'Memory Collage'}
-      pageDescription={memoryData?.memoryMetadata?.description || 'A collection of your memories'}
-      rightContent={rightContent}
-      visibility={memoryData?.memoryMetadata?.requiredVisibility || 'private'}
-      owner={memoryData?.memoryMetadata?.createdBy}
-      metaKeywords="memory collage, photos, videos, memories"
-      error={error}
-      setInitialData={setMemoryData}
-    />
+    </>
   );
 };
 
-export default MemoryViewer;
+export default MemoryCollageModal;

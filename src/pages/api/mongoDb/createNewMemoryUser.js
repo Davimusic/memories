@@ -149,6 +149,10 @@ export default async function handler(req, res) {
           visibility: editVisibility || 'private',
           invitedEmails: editInvitedEmails || [],
         },
+        dynamicMemories: {
+          visibility: editVisibility || 'private',
+          invitedEmails: editInvitedEmails || [],
+        }
       },
       topics: {
         general: {
@@ -164,7 +168,7 @@ export default async function handler(req, res) {
         edits: [],
       },
       dynamicMemories: {
-        
+
       }
     };
 

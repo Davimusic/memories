@@ -237,13 +237,13 @@ const Menu = ({ isOpen, onClose, openUpdateBackgroundColor, isDarkMode }) => {
 
           {/* Menu items list */}
           <ul className="menu-list">
-            {['Memories', 'update Plane'].map((item, index) => (
+            {['Memories', 'new memory plan'].map((item, index) => (
               <li key={index} className="menu-item effectHover borderRadius1">
                 <a
                   href={
                     item === 'Memories'
                       ? '/memories'
-                      : item === 'update Plane'
+                      : item === 'new memory plan'
                       ? '/payment'
                       : '/#'
                   }

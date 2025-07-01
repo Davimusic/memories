@@ -30,6 +30,10 @@ export const checkMemoryPermission = async ({ ownerKey, memoryName, type, uid, t
   if (!globalDoc) throw new Error('Documento global no encontrado');
 
   console.log('db................................x.x.x.x.');
+  console.log('menoryName');
+  console.log(memoryName);
+  
+  
   console.log(globalDoc);
   
   if (!globalDoc[memoryName]) {
@@ -43,6 +47,11 @@ export const checkMemoryPermission = async ({ ownerKey, memoryName, type, uid, t
   
   
   const accessConfig = memoryConfig.access?.[type];
+
+  console.log('tipo de recuerdo');
+  console.log(type);
+  
+  
 
   console.log('accessConfig:', accessConfig);
 

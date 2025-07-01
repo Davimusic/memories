@@ -8,15 +8,16 @@ import '../../estilos/general/information.css';
 import Layout from '@/components/complex/articles/layout';
 import Breadcrumb from '@/components/complex/articles/breadcrumb';
 
-
-
-
-
 const ArticlesList = ({ articles }) => {
   const breadcrumbs = [
     { label: 'Home', path: '/' },
     { label: 'Articles', path: '/articles' },
   ];
+
+  // Sort articles by updatedAt in descending order (newest first)
+  const sortedArticles = [...articles].sort((a, b) => 
+    new Date(b.updatedAt) - new Date(a.updatedAt)
+  );
 
   if (!articles || articles.length === 0) {
     return (
@@ -48,7 +49,7 @@ const ArticlesList = ({ articles }) => {
         <Breadcrumb items={breadcrumbs} />
         <h1 className="articles-title">Articles</h1>
         <div className="articles-grid">
-          {articles.map((article, index) => (
+          {sortedArticles.map((article, index) => (
             <div key={index} className="article-card">
               {article.seo.image && (
                 <div className="article-image">
@@ -140,12 +141,6 @@ export async function getServerSideProps(context) {
     };
   }
 }
-
-
-
-
-
-
 
 
 

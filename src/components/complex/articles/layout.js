@@ -205,13 +205,13 @@ const Layout = ({ children }) => {
             <h3>Contact</h3>
             <ul>
               <li>
-                <i className="fas fa-map-marker-alt"></i> 123 Technology Ave, Digital City
+                <i className="fas fa-map-marker-alt"></i> San gil, Santander, Colombia
               </li>
               <li>
-                <i className="fas fa-phone"></i> +1 234 567 890
+                <i className="fas fa-phone"></i> +57 3138860917
               </li>
               <li>
-                <i className="fas fa-envelope"></i> info@digitalmemories.com
+                <i className="fas fa-envelope"></i> goodmemoriesapp.gmail.com
               </li>
             </ul>
             <Modal trigger={<button className="footer-feedback-button">Give Feedback</button>} title="Send Your Feedback">

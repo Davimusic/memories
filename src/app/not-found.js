@@ -19,7 +19,7 @@ const NotFound = () => {
 
     // Redirect to homepage after 3 seconds
     const timer = setTimeout(() => {
-      router.push('/');
+      //router.push('/');
     }, 3000);
 
     return () => clearTimeout(timer); // Cleanup timer on unmount
