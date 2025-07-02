@@ -1,31 +1,58 @@
 .comments-container {
   margin-top: 20px;
   padding: 20px;
-  background: #f9f9f9;
+  background: var(--card-bg);
   border-radius: 8px;
+  max-height: 50vh;
+  overflow-y: auto;
+  width: 100%;
+}
+
+textarea {
+  color: black !important;
+  resize: none;
+  width: 100% !important;
+}
+
+.createCommentButton {
+  margin-top: 15px;
+  padding: 12px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  position: relative;
 }
 
 .comment {
   margin: 10px 0;
   padding: 10px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--text-muted);
 }
 
 .reply {
   margin-left: 20px;
-  border-left: 2px solid #007bff;
+  border-left: 2px solid var(--accent);
   padding-left: 10px;
 }
 
 .comment-header {
   display: flex;
   justify-content: space-between;
-  font-size: 0.9em;
-  color: #666;
+  font-size: 0.8em; /* Reduced font size for less emphasis */
+  color: var(--text-muted); /* Lighter color to de-emphasize */
+  margin-bottom: 5px;
 }
 
 .comment-text {
   margin: 10px 0;
+  font-size: 1.1em; /* Larger font size for emphasis */
+  font-weight: 500; /* Bolder text */
+  color: var(--text-primary); /* Primary color for prominence */
+  line-height: 1.4; /* Improved readability */
 }
 
 .comment-actions {
@@ -36,7 +63,7 @@
 .comment-actions button {
   background: none;
   border: none;
-  color: #007bff;
+  color: var(--accent);
   cursor: pointer;
 }
 
@@ -49,11 +76,55 @@
   min-height: 80px;
   margin-bottom: 10px;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--text-muted);
   border-radius: 4px;
+  color: var(--text-primary);
 }
 
 .error-message {
-  color: red;
+  color: var(--error);
   margin: 10px 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .comments-container {
+    padding: 10px;
+  }
+  .comment {
+    padding: 5px;
+  }
+  .reply {
+    margin-left: 10px;
+  }
+  .new-comment textarea, .reply-input textarea {
+    min-height: 60px;
+  }
+  .comment-text {
+    font-size: 1em; /* Slightly smaller but still prominent */
+  }
+  .comment-header {
+    font-size: 0.75em; /* Further reduce header size */
+  }
+}
+
+@media (max-width: 576px) {
+  .comments-container {
+    padding: 5px;
+  }
+  .comment {
+    padding: 3px;
+  }
+  .reply {
+    margin-left: 5px;
+  }
+  .new-comment textarea, .reply-input textarea {
+    min-height: 50px;
+  }
+  .comment-text {
+    font-size: 0.95em; /* Adjust for smaller screens */
+  }
+  .comment-header {
+    font-size: 0.7em; /* Further reduce header size */
+  }
 }

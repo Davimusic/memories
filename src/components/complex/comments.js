@@ -1,133 +1,182 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import '../../estilos/general/comments.css'; // Assuming a separate CSS file for styling
+import '../../estilos/general/comments.css';
+import { auth } from '../../../firebase';
+import { useRouter } from 'next/navigation';
 
-const Comments = ({ commentsData = [], endpoint, userId, memoryId }) => {
+// Build comment tree from flat array
+const buildCommentTree = (comments, parentId = null) => {
+  return comments
+    .filter((c) => c.parentId === parentId)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .map((c) => ({ ...c, replies: buildCommentTree(comments, c.id) }));
+};
+
+const Comments = ({ commentsData = [], userId, memoryId, uniqueMemoryId, token, uid }) => {
   const [comments, setComments] = useState(commentsData);
   const [newComment, setNewComment] = useState('');
   const [replyText, setReplyText] = useState({});
   const [editText, setEditText] = useState({});
   const [error, setError] = useState(null);
+  const router = useRouter();
 
-  // Update comments when commentsData prop changes
+  // Endpoints for API calls
+  const ENDPOINTS = {
+    CREATE: `/api/mongoDb/comments/uploadComment`,
+    LIKE: `/api/mongoDb/comments/like`,
+    EDIT: `/api/mongoDb/comments/edit`,
+    DELETE: `/api/mongoDb/comments/delete`,
+  };
+
+  // Update comments when initial data changes
   useEffect(() => {
-    setComments(commentsData);
+    setComments(commentsData || []);
   }, [commentsData]);
 
-  // Helper function to send API requests
+  // Function to send HTTP requests
   const sendRequest = async (url, method, body) => {
     try {
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: method !== 'GET' ? JSON.stringify(body) : undefined,
       });
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) throw new Error(`Network response was not ok: ${response.status}`);
       return await response.json();
     } catch (err) {
       setError(err.message);
+      console.error('Request error:', err);
       return null;
     }
   };
 
-  // Handle creating a new comment
+  // Create a comment or reply
   const handleCreateComment = async (parentId = null) => {
-    if (!newComment.trim() && !parentId) return;
     const commentText = parentId ? replyText[parentId] || '' : newComment;
     if (!commentText.trim()) return;
 
     const commentData = {
-      memoryId,
-      userId,
       text: commentText,
       parentId,
-      createdAt: new Date().toISOString(),
+      userId,
+      memoryId,
+      uniqueMemoryId,
+      token,
+      uid,
     };
 
-    const result = await sendRequest(endpoint, 'POST', commentData);
-    console.log(result);
-    
-    if (result) {
-      setComments(prev => parentId 
-        ? prev.map(comment => comment.id === parentId 
-            ? { ...comment, replies: [...(comment.replies || []), result] }
-            : comment)
-        : [...prev, result]
-      );
+    const result = await sendRequest(ENDPOINTS.CREATE, 'POST', commentData);
+
+    if (result && result.success && result.comment) {
+      setComments((prev) => [...prev, result.comment]);
       if (!parentId) setNewComment('');
-      else setReplyText(prev => ({ ...prev, [parentId]: '' }));
+      else setReplyText((prev) => ({ ...prev, [parentId]: '' }));
       setError(null);
+    } else {
+      setError(result?.message || `Failed to create ${parentId ? 'reply' : 'comment'}`);
     }
   };
 
-  // Handle liking a comment
-  /*const handleLike = async (commentId) => {
-    const result = await sendRequest(`${endpoint}/${commentId}/like`, 'POST', { userId });
-    if (result) {
-      setComments(prev => prev.map(comment => 
-        comment.id === commentId 
-          ? { ...comment, likes: result.likes }
-          : comment.replies 
-            ? { ...comment, replies: comment.replies.map(reply => 
-                reply.id === commentId ? { ...reply, likes: result.likes } : reply
-              )}
-            : comment
-      ));
+  // Like a comment
+  const handleLike = async (commentId) => {
+    if (!commentId) {
+      setError('Comment ID is missing');
+      return;
     }
-  };
 
-  // Handle editing a comment
-  const handleEdit = async (commentId, isReply = false) => {
-    const text = editText[commentId];
-    if (!text?.trim()) return;
+    const result = await sendRequest(ENDPOINTS.LIKE, 'PUT', {
+      commentId,
+      userId,
+      memoryId,
+      uniqueMemoryId,
+      token,
+      uid,
+    });
 
-    const result = await sendRequest(`${endpoint}/${commentId}`, 'PUT', { text });
-    if (result) {
-      setComments(prev => prev.map(comment => 
-        isReply 
-          ? { ...comment, replies: comment.replies.map(reply => 
-              reply.id === commentId ? { ...reply, text } : reply
-            )}
-          : comment.id === commentId 
-            ? { ...comment, text }
-            : comment
-      ));
-      setEditText(prev => ({ ...prev, [commentId]: '' }));
-    }
-  };
-
-  // Handle deleting a comment
-  const handleDelete = async (commentId, isReply = false) => {
-    const result = await sendRequest(`${endpoint}/${commentId}`, 'DELETE');
-    if (result) {
-      setComments(prev => isReply 
-        ? prev.map(comment => ({
-            ...comment,
-            replies: comment.replies.filter(reply => reply.id !== commentId)
-          }))
-        : prev.filter(comment => comment.id !== commentId)
+    if (result && result.success && result.likes) {
+      setComments((prev) =>
+        prev.map((c) => (c.id === commentId ? { ...c, likes: result.likes } : c))
       );
+      setError(null);
+    } else {
+      setError(result?.message || 'Failed to like comment');
     }
-  };*/
+  };
 
-  // Render individual comment
+  // Edit a comment
+  const handleEdit = async (commentId) => {
+    if (!commentId) {
+      setError('Comment ID is missing');
+      return;
+    }
+
+    const text = editText[commentId];
+    if (!text.trim()) return;
+
+    const result = await sendRequest(ENDPOINTS.EDIT, 'PUT', {
+      commentId,
+      text,
+      userId,
+      memoryId,
+      uniqueMemoryId,
+      token,
+      uid,
+    });
+
+    if (result && result.success && result.comment) {
+      setComments((prev) =>
+        prev.map((c) => (c.id === commentId ? { ...c, text: result.comment.text } : c))
+      );
+      setEditText((prev) => ({ ...prev, [commentId]: undefined }));
+      setError(null);
+    } else {
+      setError(result?.message || 'Failed to edit comment');
+    }
+  };
+
+  // Delete a comment
+  const handleDelete = async (commentId) => {
+    if (!commentId) {
+      setError('Comment ID is missing');
+      return;
+    }
+
+    const result = await sendRequest(ENDPOINTS.DELETE, 'DELETE', {
+      commentId,
+      userId,
+      memoryId,
+      uniqueMemoryId,
+      token,
+      uid,
+    });
+
+    if (result && result.success) {
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      setError(null);
+    } else {
+      setError(result?.message || 'Failed to delete comment');
+    }
+  };
+
+  // Render a comment
   const renderComment = (comment, isReply = false) => (
     <div key={comment.id} className={`comment ${isReply ? 'reply' : ''}`}>
       <div className="comment-header">
         <span className="comment-author">{comment.author || 'Anonymous'}</span>
-        <span className="comment-date">
-          {new Date(comment.createdAt).toLocaleString()}
-        </span>
+        <span className="comment-date">{new Date(comment.createdAt).toLocaleString()}</span>
       </div>
       {editText[comment.id] !== undefined ? (
         <div className="comment-edit">
           <textarea
             value={editText[comment.id]}
-            onChange={(e) => setEditText(prev => ({ ...prev, [comment.id]: e.target.value }))}
+            onChange={(e) => setEditText((prev) => ({ ...prev, [comment.id]: e.target.value }))}
           />
-          <button onClick={() => handleEdit(comment.id, isReply)}>Save</button>
-          <button onClick={() => setEditText(prev => ({ ...prev, [comment.id]: undefined }))}>
+          <button onClick={() => handleEdit(comment.id)}>Save</button>
+          <button onClick={() => setEditText((prev) => ({ ...prev, [comment.id]: undefined }))}>
             Cancel
           </button>
         </div>
@@ -138,38 +187,41 @@ const Comments = ({ commentsData = [], endpoint, userId, memoryId }) => {
             <button onClick={() => handleLike(comment.id)}>
               Like ({comment.likes?.length || 0})
             </button>
-            {!isReply && (
-              <button onClick={() => setReplyText(prev => ({ ...prev, [comment.id]: '' }))}>
-                Reply
-              </button>
-            )}
-            {comment.userId === userId && (
+            <button onClick={() => setReplyText((prev) => ({ ...prev, [comment.id]: '' }))}>
+              Reply
+            </button>
+            {comment.author === userId && (
               <>
-                <button onClick={() => setEditText(prev => ({ ...prev, [comment.id]: comment.text }))}>
+                <button
+                  onClick={() => setEditText((prev) => ({ ...prev, [comment.id]: comment.text }))}
+                >
                   Edit
                 </button>
-                <button onClick={() => handleDelete(comment.id, isReply)}>Delete</button>
+                <button onClick={() => handleDelete(comment.id)}>Delete</button>
               </>
             )}
           </div>
         </>
       )}
-      {!isReply && replyText[comment.id] !== undefined && (
+      {replyText[comment.id] !== undefined && (
         <div className="reply-input">
           <textarea
             value={replyText[comment.id] || ''}
-            onChange={(e) => setReplyText(prev => ({ ...prev, [comment.id]: e.target.value }))}
-            placeholder="Write a reply..."
+            onChange={(e) => setReplyText((prev) => ({ ...prev, [comment.id]: e.target.value }))}
+            placeholder="Write&amp;nbsp;a&amp;nbsp;reply..."
           />
           <button onClick={() => handleCreateComment(comment.id)}>Submit Reply</button>
-          <button onClick={() => setReplyText(prev => ({ ...prev, [comment.id]: undefined }))}>
+          <button onClick={() => setReplyText((prev) => ({ ...prev, [comment.id]: undefined }))}>
             Cancel
           </button>
         </div>
       )}
-      {comment.replies?.map(reply => renderComment(reply, true))}
+      {comment.replies.map((reply) => renderComment(reply, true))}
     </div>
   );
+
+  // Build the comment tree
+  const commentTree = buildCommentTree(comments);
 
   return (
     <div className="comments-container">
@@ -179,13 +231,13 @@ const Comments = ({ commentsData = [], endpoint, userId, memoryId }) => {
         <textarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Write a comment..."
+          placeholder="write your comment..."
         />
-        <button onClick={() => handleCreateComment()}>Submit Comment</button>
+        <button className='createCommentButton' onClick={() => handleCreateComment()}>Submit Comment</button>
       </div>
       <div className="comments-list">
-        {comments.length > 0 ? (
-          comments.map(comment => renderComment(comment))
+        {commentTree.length > 0 ? (
+          commentTree.map((comment) => renderComment(comment))
         ) : (
           <p>No comments yet.</p>
         )}

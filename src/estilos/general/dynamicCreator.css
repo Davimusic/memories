@@ -29,12 +29,9 @@ body.modal-open {
 }
 
 .modalContentMemories {
-  width: 100vw;
-  height: 100vh;
+  
   background: var(--bg-primary, #000);
-  overflow: hidden;
-  position: relative;
-  box-sizing: border-box;
+
 }
 
 .floating-controls {
@@ -159,6 +156,9 @@ body.modal-open {
   align-items: center;
   justify-content: center;
 }
+
+
+
 
 .open-collage-button,
 .save-memory-button {
