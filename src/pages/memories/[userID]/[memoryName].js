@@ -1,150 +1,418 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
+import ReactDOM from 'react-dom';
+import styles from '../../../estilos/general/memoryDetail.module.css';
+import '../../../app/globals.css';
+import SpinnerIcon from '@/components/complex/spinnerIcon';
+import dynamic from 'next/dynamic';
+import LoadingMemories from '@/components/complex/loading';
+import Head from 'next/head';
 import GeneralMold from '@/components/complex/generalMold';
-import MemoryCollageModal from '@/components/complex/memoryCollageModal';
-import Comments from '@/components/complex/comments';
-import QRIcon from '@/components/complex/icons/qrIcon';
-import QRGenerator from '@/components/complex/QRGenerator';
 import QRCodeStyling from 'qr-code-styling';
-import '../../../estilos/general/dynamicCreator.css';
+import QRGenerator from '@/components/complex/QRGenerator';
+import QRIcon from '@/components/complex/icons/qrIcon';
 
-const MemoryViewer = () => {
-  const [memoryData, setMemoryData] = useState(null);
-  const [groups, setGroups] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
-  const [audioSelections, setAudioSelections] = useState([]);
-  const [sceneDurations, setSceneDurations] = useState([]);
-  const [comments, setComments] = useState([]);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [token, setToken] = useState(null);
-  const [Uid, setUid] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
-  const defaultDuration = 10000;
+const Video = dynamic(() => import('../../../components/simple/video'), { ssr: false });
+const AudioPlayer = dynamic(() => import('../../../components/complex/audioPlayer'), { ssr: false });
+const ImageSlider = dynamic(() => import('../../../components/complex/imageSlider'), { ssr: false });
 
+const MemoryDetail = () => {
   const router = useRouter();
-  const { dynamicMemoryID, memoryID, memoryName } = router.query;
-  const userId = userEmail;
+  const { userID, memoryName } = router.query;
+  const [memoryData, setMemoryData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [folderContents, setFolderContents] = useState({});
+  const [folderLoadingStates, setFolderLoadingStates] = useState({});
+  const [roll, setRoll] = useState('false');
+  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [mediaType, setMediaType] = useState(null);
+  const [previewFolder, setPreviewFolder] = useState(null);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [videoThumbnails, setVideoThumbnails] = useState({});
+  const [initialData, setInitialData] = useState();
+  const [uid, setUid] = useState(null);
+  const [token, setToken] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const modalRootRef = useRef(null);
   const qrCodeRef = useRef(null);
+  const mediaCache = useRef(new Map());
+  const thumbnailsCache = useRef(new Map());
 
-  const layouts = [
-    { type: 'single', count: 1 },
-    { type: 'double', count: 2 },
-    { type: 'triple', count: 3 },
-    { type: 'quad', count: 4 },
-    { type: 'video-only', count: 1 },
-  ];
+  const [mediaState, setMediaState] = useState({
+    currentIndex: 0,
+    srcs: [],
+    content: [],
+    tags: [],
+    isContentVisible: false,
+    componentInUse: '',
+    currentTimeMedia: 0,
+    volumeMedia: 1,
+    qualityMedia: 'hd',
+    isRepeatMedia: false,
+    isShuffleMedia: false,
+    isMutedMedia: false,
+    isLike: false,
+    isHybridView: false,
+  });
 
-  // Get current URL for QR code
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const currentPath = router.asPath;
+  const qrCodeUrl = userID && memoryName ? `${baseUrl}${currentPath}` : 'https://example.com';
 
-  // Initialize QRCodeStyling instance
+  useEffect(() => {
+    if (!document.getElementById('modal-root')) {
+      const modalRoot = document.createElement('div');
+      modalRoot.id = 'modal-root';
+      document.body.appendChild(modalRoot);
+    }
+    modalRootRef.current = document.getElementById('modal-root');
+
+    return () => {
+      if (document.getElementById('modal-root')) {
+        document.body.removeChild(document.getElementById('modal-root'));
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (previewFolder || selectedMedia || isQrModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+  }, [previewFolder, selectedMedia, isQrModalOpen]);
+
+  const generateVideoThumbnail = async (url) => {
+    return new Promise((resolve, reject) => {
+      if (!url) {
+        console.error('Invalid video URL:', url);
+        return reject(new Error('Invalid video URL'));
+      }
+      const video = document.createElement('video');
+      video.crossOrigin = 'anonymous';
+      video.preload = 'metadata';
+      video.src = url;
+
+      video.onloadeddata = () => {
+        video.currentTime = 0.1;
+      };
+
+      video.onseeked = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const thumbnail = canvas.toDataURL('image/jpeg', 0.8);
+          resolve(thumbnail);
+        } else {
+          reject(new Error('Canvas context not available'));
+        }
+      };
+
+      video.onerror = (error) => {
+        console.error('Error loading video for thumbnail:', url, error);
+        reject(error);
+      };
+    });
+  };
+
+  const preloadMedia = async () => {
+    if (!memoryData?.topics) return;
+
+    Object.values(memoryData.topics).forEach((topic) => {
+      topic.photos?.forEach((photo) => {
+        if (!mediaCache.current.has(photo.url)) {
+          const img = new Image();
+          img.src = formatImageUrl(photo.url);
+          img.onload = () => mediaCache.current.set(photo.url, true);
+          img.onerror = () => {
+            console.error('Error preloading image:', photo.url);
+            mediaCache.current.set(photo.url, false);
+          };
+        }
+      });
+
+      topic.videos?.forEach((video) => {
+        if (!video.url) {
+          console.error('Invalid video URL in topic:', video);
+          return;
+        }
+        if (!mediaCache.current.has(video.url)) {
+          const videoEl = document.createElement('video');
+          videoEl.preload = 'metadata';
+          videoEl.src = video.url;
+          videoEl.onloadeddata = () => mediaCache.current.set(video.url, true);
+          videoEl.onerror = () => {
+            console.error('Error preloading video:', video.url);
+            mediaCache.current.set(video.url, false);
+          };
+
+          if (!thumbnailsCache.current.has(video.url)) {
+            generateVideoThumbnail(video.url)
+              .then((thumbnail) => {
+                thumbnailsCache.current.set(video.url, thumbnail);
+                setVideoThumbnails((prev) => ({ ...prev, [video.url]: thumbnail }));
+              })
+              .catch((error) => {
+                console.error(`Error generating thumbnail for ${video.url}:`, error);
+                thumbnailsCache.current.set(video.url, '/video-placeholder.jpg');
+                setVideoThumbnails((prev) => ({ ...prev, [video.url]: '/video-placeholder.jpg' }));
+              });
+          }
+        }
+      });
+
+      topic.audios?.forEach((audio) => {
+        if (!mediaCache.current.has(audio.url)) {
+          const audioEl = new Audio();
+          audioEl.preload = 'metadata';
+          audioEl.src = audio.url;
+          audioEl.onloadeddata = () => mediaCache.current.set(audio.url, true);
+          audioEl.onerror = () => {
+            console.error('Error preloading audio:', audio.url);
+            mediaCache.current.set(audio.url, false);
+          };
+        }
+      });
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      Object.values(videoThumbnails).forEach(URL.revokeObjectURL);
+    };
+  }, [videoThumbnails]);
+
+  useEffect(() => {
+    const fetchMemoryData = async () => {
+      try {
+        if (!userID || !memoryName) {
+          setError('Missing userID or memoryName');
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch('/api/mongoDb/postMemoryReferenceUser', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userID, memoryTitle: memoryName }),
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const mongoData = await res.json();
+
+        if (!mongoData.success) {
+          throw new Error('Failed to load memory data');
+        }
+
+        const formattedData = {
+          ...mongoData.memory,
+          ownerEmail: mongoData.ownerEmail,
+          metadata: {
+            ...mongoData.memory.metadata,
+            createdAt: mongoData.memory.metadata.createdAt
+              ? new Date(mongoData.memory.metadata.createdAt).toISOString()
+              : null,
+            lastUpdated: mongoData.memory.metadata.lastUpdated
+              ? new Date(mongoData.memory.metadata.lastUpdated).toISOString()
+              : null,
+          },
+          access: mongoData.memory.access || {},
+          media: mongoData.memory.media || {
+            photos: [],
+            videos: [],
+            audios: [],
+            documents: [],
+            texts: [],
+          },
+        };
+
+        console.log(formattedData);
+        setMemoryData(formattedData);
+        const firstTopicWithContent = Object.keys(formattedData.topics || {}).find((topicName) => {
+          const topic = formattedData.topics[topicName];
+          return (
+            topic.photos?.length > 0 ||
+            topic.videos?.length > 0 ||
+            topic.audios?.length > 0 ||
+            topic.texts?.length > 0
+          );
+        });
+        setSelectedTopic(firstTopicWithContent || Object.keys(formattedData.topics || {})[0] || null);
+        setError(null);
+        preloadMedia();
+      } catch (err) {
+        console.error('fetchMemoryData error:', err.message);
+        setError(err.message || 'Failed to fetch memory data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMemoryData();
+  }, [userID, memoryName]);
+
+  useEffect(() => {
+    if (!memoryData || !userEmail) return;
+
+    const checkViewPermissions = () => {
+      const viewAccess = memoryData.access?.view;
+      if (!viewAccess) {
+        setError('Invalid access configuration');
+        return;
+      }
+
+      const { visibility, invitedEmails = [] } = viewAccess;
+
+      if (visibility === 'public') {
+        setRoll('Anyone can view this memory');
+        return;
+      }
+
+      if (!userEmail) {
+        setRoll('Please log in to view this memory');
+        return;
+      }
+
+      const transformEmail = (email) => email.replace(/[@.]/g, '_');
+      const currentUserTransformed = transformEmail(userEmail);
+      const ownerTransformed = transformEmail(memoryData.ownerEmail);
+
+      if (visibility === 'private') {
+        if (currentUserTransformed === ownerTransformed) {
+          setRoll('You are the owner');
+        } else {
+          setRoll('User not allowed');
+        }
+      } else if (visibility === 'invitation') {
+        const transformedInvites = invitedEmails.map(transformEmail);
+        if (transformedInvites.includes(currentUserTransformed)) {
+          setRoll('Invited to view this memory');
+        } else {
+          setRoll('User not allowed');
+        }
+      }
+    };
+
+    checkViewPermissions();
+  }, [memoryData, userEmail]);
+
   useEffect(() => {
     if (!qrCodeRef.current) {
       qrCodeRef.current = new QRCodeStyling({
-        width: 250,
-        height: 250,
-        data: currentUrl,
+        width: 200,
+        height: 200,
+        data: qrCodeUrl,
         dotsOptions: { color: '#000000', type: 'rounded' },
         cornersSquareOptions: { type: 'extra-rounded' },
         backgroundOptions: { color: '#ffffff' },
         imageOptions: { crossOrigin: 'anonymous', margin: 5 },
       });
     } else {
-      qrCodeRef.current.update({ data: currentUrl });
+      qrCodeRef.current.update({ data: qrCodeUrl });
     }
-  }, [currentUrl]);
+  }, [qrCodeUrl]);
 
-  useEffect(() => {
-    const dynamicMemory = memoryData?.dynamicMemories?.[dynamicMemoryID];
-    console.log(dynamicMemory);
-    
-    if (dynamicMemory?.comments) {
-      setComments(dynamicMemory.comments);
-    }
-
-    if (!memoryData || !dynamicMemoryID || !memoryID || !userEmail) return;
-
-    const fetchComments = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`/api/memories/${memoryID}/${dynamicMemoryID}/comments`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        console.log('Fetched comments:', data);
-        if (data.success) {
-          setComments(data.comments || []);
-        } else {
-          setError(data.message || 'Failed to fetch comments');
-        }
-      } catch (err) {
-        setError('Error fetching comments: ' + err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchComments();
-  }, [memoryData, dynamicMemoryID, memoryID, userEmail, token]);
-
-  useEffect(() => {
-    if (!memoryData || !dynamicMemoryID) return;
-
-    const dynamicMemory = memoryData.dynamicMemories[dynamicMemoryID];
-    if (!dynamicMemory) {
-      setError('Memory data not available.');
-      setIsModalOpen(false);
+  const preloadVideo = (url) => {
+    if (!url) {
+      console.error('Invalid URL for preloadVideo:', url);
       return;
     }
-
-    const groups = dynamicMemory.groups || [];
-    const validatedGroups = groups
-      .map((group) => ({
-        ...group,
-        items: group.layout === 'video-only' ? group.items.filter((item) => item.type === 'video') : group.items,
-      }))
-      .filter((group) => group.items.length > 0);
-
-    setGroups(validatedGroups);
-    const updatedAudioSelections = dynamicMemory.audioSelections || [];
-    if (!updatedAudioSelections.some((audio) => audio.isActive && audio.type === 'Background')) {
-      const firstBackground = updatedAudioSelections.find((audio) => audio.type === 'Background');
-      if (firstBackground) {
-        firstBackground.isActive = true;
-      }
+    if (!mediaCache.current.has(url)) {
+      const video = document.createElement('video');
+      video.preload = 'auto';
+      video.src = url;
+      video.onloadeddata = () => mediaCache.current.set(url, true);
+      video.onerror = () => {
+        console.error('Error preloading video:', url);
+        mediaCache.current.set(url, false);
+      };
     }
-    setAudioSelections(updatedAudioSelections);
-    setSceneDurations(
-      dynamicMemory.sceneDurations.length > 0
-        ? dynamicMemory.sceneDurations
-        : validatedGroups.map(() => defaultDuration)
-    );
-    setIsModalOpen(true);
-  }, [memoryData, dynamicMemoryID]);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
   };
 
-  const handleOpenQRModal = () => {
-    setIsQRModalOpen(true);
+  const handleFolderClick = async (mediaType) => {
+    if (!selectedTopic) return;
+
+    const folderKey = `${selectedTopic}_${mediaType}`;
+    setFolderLoadingStates((prev) => ({ ...prev, [folderKey]: true }));
+    setPreviewFolder(folderKey);
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    if (!folderContents[folderKey]) {
+      const topicData = memoryData.topics[selectedTopic] || {};
+      const filesWithCacheStatus = (topicData[mediaType] || []).map((item) => ({
+        url: item.url,
+        fileName: item.url.split('/').pop(),
+        cached: mediaCache.current.has(item.url),
+        metadata: item.metadata,
+      }));
+
+      setFolderContents((prev) => ({
+        ...prev,
+        [folderKey]: { files: filesWithCacheStatus, loaded: true },
+      }));
+    }
+
+    if (mediaType === 'videos' && memoryData.topics[selectedTopic]?.videos?.length > 0) {
+      preloadVideo(memoryData.topics[selectedTopic].videos[0].url);
+    }
+
+    setFolderLoadingStates((prev) => ({ ...prev, [folderKey]: false }));
   };
 
-  const handleCloseQRModal = () => {
-    setIsQRModalOpen(false);
+  const closeFolderPreview = () => setPreviewFolder(null);
+
+  const handleFileSelect = (url, folderKey, index) => {
+    const files = folderContents[folderKey]?.files || [];
+    const mediaTypeMap = {
+      photos: 'image',
+      videos: 'video',
+      audios: 'audio',
+      texts: 'text',
+    };
+    const mediaType = mediaTypeMap[folderKey.split('_')[1]] || 'image';
+
+    setMediaType(mediaType);
+
+    const mediaContent = files.map((file) => ({
+      src: file.url,
+      type: mediaType,
+      fileName: file.fileName,
+      cached: file.cached,
+      metadata: file.metadata,
+    }));
+
+    setMediaState((prev) => ({
+      ...prev,
+      content: mediaContent,
+      srcs: mediaType === 'video' ? mediaContent.map((file) => file.src) : prev.srcs,
+      currentIndex: index,
+    }));
+
+    setSelectedMedia(url);
+    closeFolderPreview();
+  };
+
+  const closeMediaPlayer = () => {
+    setSelectedMedia(null);
+    setMediaType(null);
+    setMediaState((prev) => ({ ...prev, componentInUse: '' }));
   };
 
   const handleDownloadQR = () => {
     if (qrCodeRef.current) {
-      qrCodeRef.current.download({ name: `memory-${memoryData?.memoryMetadata?.title || 'qr'}`, extension: 'png' });
+      qrCodeRef.current.download({ name: `memory-${memoryData?.metadata?.title || 'qr'}`, extension: 'png' });
     }
   };
 
@@ -157,167 +425,401 @@ const MemoryViewer = () => {
           });
         });
 
-        const qrFile = new File([qrBlob], `memory-qr-${memoryData?.memoryMetadata?.title || 'qr'}.png`, {
+        const qrFile = new File([qrBlob], `memory-qr-${memoryData?.metadata?.title || 'qr'}.png`, {
           type: 'image/png',
         });
 
         await navigator.share({
-          title: memoryData?.memoryMetadata?.title || 'Memory Collage',
-          text: memoryData?.memoryMetadata?.description || 'Check out this memory!',
-          url: currentUrl,
+          title: memoryData?.metadata?.title || 'Memory Detail',
+          text: memoryData?.metadata?.description || 'Check out this memory!',
+          url: qrCodeUrl,
           files: [qrFile],
         });
       } catch (err) {
         console.error('Share failed:', err);
-        alert('Sharing failed. You can copy the URL: ' + currentUrl);
+        alert('Sharing failed. You can copy the URL: ' + qrCodeUrl);
       }
     } else {
-      alert('Sharing is not supported on this device/browser. You can copy the URL: ' + currentUrl);
+      alert('Sharing is not supported on this device/browser. You can copy the URL: ' + qrCodeUrl);
     }
   };
 
-  const rightContent = (
-    <div className="collage-pre-container">
-      <div style={{ display: 'block' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <h3>{memoryData?.memoryMetadata?.title || 'Memory Collage'}</h3>
-          <QRIcon size={24} onClick={handleOpenQRModal} />
-        </div>
-        <p>{memoryData?.memoryMetadata?.description || 'No description available.'}</p>
-      </div>
-      {isLoading && <p>Loading memory data...</p>}
-      {error && <p className="error-message">{error}</p>}
-      {!isLoading && !error && (
-        <>
-          <Comments
-            commentsData={comments}
-            endpoint={`/api/mongoDb/comments/uploadComment`}
-            userId={userEmail}
-            memoryId={memoryName}
-            uniqueMemoryId={dynamicMemoryID}
-            token={token}
-            uid={Uid}
-          />
-          <button className="open-collage-button" onClick={handleOpenModal}>
-            View Memory Collage
-          </button>
-        </>
-      )}
-      <MemoryCollageModal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-        memoryData={memoryData}
-        dynamicMemoryID={dynamicMemoryID}
-        groups={groups}
-        sceneDurations={sceneDurations}
-        audioSelections={audioSelections}
-        defaultDuration={defaultDuration}
-      />
-      {isQRModalOpen && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1000,
-          }}
-          onClick={handleCloseQRModal}
+  const formatImageUrl = (url) => {
+    if (!url) return url;
+    return url.includes('?') ? (url.includes('format=webp') ? url : `${url}&format=webp`) : `${url}?format=webp`;
+  };
+
+  const renderPreviewItem = (file, index, folderKey) => {
+    const formattedUrl = formatImageUrl(file.url);
+    const mediaType = folderKey.split('_')[1];
+
+    if (mediaType === 'photos') {
+      return (
+        <article
+          key={index}
+          onClick={() => handleFileSelect(file.url, folderKey, index)}
+          className={styles.previewItem}
+          aria-label={`Open ${file.fileName}`}
         >
-          <div
-            className="modal-content"
-            style={{
-              backgroundColor: 'var(--modal-background, #ffffff)',
-              padding: '20px',
-              borderRadius: '8px',
-              maxWidth: '400px',
-              width: '90%',
-              textAlign: 'center',
-              position: 'relative',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={handleCloseQRModal}
-              className="closeButton"
-              style={{
-                position: 'absolute',
-                top: '10px',
-                left: '10px',
-                background: 'none',
-                border: 'none',
-                fontSize: '24px',
-                cursor: 'pointer',
-                color: '#333',
-              }}
-            >
-              ×
-            </button>
-            <h3>Share this Memory</h3>
-            <QRGenerator
-              value={currentUrl}
-              width={250}
-              height={250}
-              dotsColor="#000000"
-              bgColor="#ffffff"
-              dotsType="rounded"
-              cornersType="extra-rounded"
+          <div className={styles.imagePreview}>
+            <img
+              src={formattedUrl || '/placeholder-image.jpg'}
+              alt={`Preview of ${file.fileName}`}
+              loading="lazy"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
-            <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '20px' }}>
-              <button
-                onClick={handleDownloadQR}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
-              >
-                Download
-              </button>
-              <button
-                onClick={handleShareQR}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: '#28a745',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
-              >
-                Share
-              </button>
-            </div>
+          </div>
+        </article>
+      );
+    } else if (mediaType === 'videos') {
+      const thumbnail = videoThumbnails[file.url] || '/video-placeholder.jpg';
+      return (
+        <article
+          key={index}
+          onClick={() => handleFileSelect(file.url, folderKey, index)}
+          className={styles.previewItem}
+          aria-label={`Open ${file.fileName}`}
+        >
+          <div className={styles.videoPreview} onMouseEnter={() => preloadVideo(file.url)}>
+            <img
+              src={thumbnail}
+              alt={`Preview of ${file.fileName}`}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'block';
+              }}
+            />
+            <div className={styles.playIcon}>▶</div>
+            <span
+              style={{ display: 'none', color: 'white', textAlign: 'center', padding: '10px' }}
+            >
+              {file.fileName} (Cargando...)
+            </span>
+          </div>
+        </article>
+      );
+    } else if (mediaType === 'audios') {
+      return (
+        <article
+          key={index}
+          onClick={() => handleFileSelect(file.url, folderKey, index)}
+          className={styles.previewItem}
+          aria-label={`Open ${file.fileName}`}
+        >
+          <div className={styles.audioPreview}>
+            <div className={styles.audioIcon}>🎵</div>
+            <span style={{ color: 'white' }}>{file.fileName}</span>
+          </div>
+        </article>
+      );
+    } else {
+      return (
+        <article
+          key={index}
+          onClick={() => handleFileSelect(file.url, folderKey, index)}
+          className={styles.previewItem}
+          aria-label={`Open ${file.fileName}`}
+        >
+          <div className={styles.filePreview}>
+            <span>{file.fileName}</span>
+          </div>
+        </article>
+      );
+    }
+  };
+
+  const foldersWithContent = selectedTopic
+    ? Object.keys(memoryData?.topics?.[selectedTopic] || {}).filter(
+        (mediaType) =>
+          ['photos', 'videos', 'audios', 'texts'].includes(mediaType) &&
+          memoryData.topics[selectedTopic][mediaType]?.length > 0,
+      )
+    : [];
+
+  const leftContent = loading ? (
+    <LoadingMemories />
+  ) : error ? (
+    <div className="error-container">
+      <p className="color1 title-lg">{error}</p>
+    </div>
+  ) : (
+    <div className={styles.infoColumn}>
+      <p>
+        <strong className={roll !== 'User not allowed' ? 'text-secondary' : 'alertColor'}>Role:</strong>{' '}
+        <span className={roll !== 'User not allowed' ? 'text-secondary' : 'alertColor'}>{roll}</span>
+      </p>
+      {roll === 'User not allowed' && (
+        <p className="alertColor">If you believe this is a mistake, please contact the account owner.</p>
+      )}
+      <h2 className="text-primary">{memoryData?.metadata?.title || 'No title available'}</h2>
+      {memoryData?.metadata && (
+        <div className={styles.metadataContainer}>
+          <p className={`${styles.memoryDescription} text-primary`}>
+            {memoryData.metadata.description || 'No description available'}
+          </p>
+          <div className={styles.datesContainer}>
+            <p className="folderToggle">Created: {new Date(memoryData.metadata.createdAt).toLocaleDateString()}</p>
+            <p className="folderToggle">
+              Last modified: {new Date(memoryData.metadata.lastUpdated).toLocaleDateString()}
+            </p>
+            <button
+              style={{ backgroundColor: '#66666600', border: 'none', width: '40px' }}
+              onClick={() => setIsQrModalOpen(true)}
+              aria-label="Open QR Code"
+            >
+              <QRIcon size={30} onClick={() => setIsQrModalOpen(true)} />
+            </button>
           </div>
         </div>
       )}
     </div>
   );
 
+  const renderModals = () => {
+    return (
+      <>
+        {previewFolder &&
+          ReactDOM.createPortal(
+            <div className={styles.modalOverlay} onClick={closeFolderPreview}>
+              <div className={styles.modalContentMemories} onClick={(e) => e.stopPropagation()}>
+                <button onClick={closeFolderPreview} className={'closeButton'}>
+                  ×
+                </button>
+                <h2 className={styles.previewTitle}>{previewFolder.split('_')[1]}</h2>
+                <div className={styles.previewContent}>
+                  {folderLoadingStates[previewFolder] ? (
+                    <div className={styles.loadingPreview}>
+                      <SpinnerIcon size={40} />
+                      <p>Loading contents...</p>
+                    </div>
+                  ) : folderContents[previewFolder]?.files?.length > 0 ? (
+                    <div className={styles.previewGrid}>
+                      {folderContents[previewFolder].files.map((file, index) =>
+                        renderPreviewItem(file, index, previewFolder),
+                      )}
+                    </div>
+                  ) : (
+                    <p>No files in this category.</p>
+                  )}
+                </div>
+              </div>
+            </div>,
+            modalRootRef.current,
+          )}
+
+        {selectedMedia &&
+          ReactDOM.createPortal(
+            <div className={styles.modalOverlay} onClick={closeMediaPlayer}>
+              <div className={styles.modalContentMemories} onClick={(e) => e.stopPropagation()}>
+                <button onClick={closeMediaPlayer} className={'closeButton'}>
+                  ×
+                </button>
+                <div className={styles.mediaContainer}>
+                  {mediaType === 'video' && (
+                    <Video
+                      srcs={mediaState.srcs}
+                      currentIndex={mediaState.currentIndex}
+                      setCurrentIndex={(index) => setMediaState((prev) => ({ ...prev, currentIndex: index }))}
+                      setCurrentTimeMedia={(time) => setMediaState((prev) => ({ ...prev, currentTimeMedia: time }))}
+                      currentTimeMedia={mediaState.currentTimeMedia}
+                      setVolumeMedia={(vol) => setMediaState((prev) => ({ ...prev, volumeMedia: vol }))}
+                      volumeMedia={mediaState.volumeMedia}
+                      setIsMutedMedia={(muted) => setMediaState((prev) => ({ ...prev, isMutedMedia: muted }))}
+                      isMutedMedia={mediaState.isMutedMedia}
+                      setIsRepeatMedia={(repeat) => setMediaState((prev) => ({ ...prev, isRepeatMedia: repeat }))}
+                      isRepeatMedia={mediaState.isRepeatMedia}
+                      setIsLike={(like) => setMediaState((prev) => ({ ...prev, isLike: like }))}
+                      isLike={mediaState.isLike}
+                      isHybridView={mediaState.isHybridView}
+                      buttonColor="white"
+                    />
+                  )}
+                  {mediaType === 'audio' && (
+                    <div className={styles.audioPlayerWrapper}>
+                      <AudioPlayer
+                        currentIndex={mediaState.currentIndex}
+                        audioFiles={mediaState.content}
+                        className={styles.customAudioPlayer}
+                      />
+                    </div>
+                  )}
+                  {mediaType === 'image' && (
+                    <ImageSlider
+                      images={mediaState.content.filter((item) => item.src).map((item) => formatImageUrl(item.src))}
+                      initialCurrentIndex={mediaState.currentIndex}
+                      onIndexChange={(index) => setMediaState((prev) => ({ ...prev, currentIndex: index }))}
+                      controls={{
+                        showPrevious: true,
+                        showPlayPause: true,
+                        showNext: true,
+                        showShuffle: true,
+                        showEffects: true,
+                        showDownload: true,
+                      }}
+                      timeToShow={5000}
+                      showControls={true}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>,
+            modalRootRef.current,
+          )}
+
+        {isQrModalOpen &&
+          ReactDOM.createPortal(
+            <div className={styles.modalOverlay} onClick={() => setIsQrModalOpen(false)}>
+              <div className={styles.modalContentMemories} onClick={(e) => e.stopPropagation()}>
+                <button onClick={() => setIsQrModalOpen(false)} className={'closeButton'}>
+                  ×
+                </button>
+                <h2 className={styles.previewTitle}>Share this Memory</h2>
+                <div className={styles.qrCodeWrapper}>
+                  <div>
+                    <QRGenerator
+                      value={qrCodeUrl}
+                      dotsColor="#000000"
+                      bgColor="#ffffff"
+                      dotsType="rounded"
+                      cornersType="extra-rounded"
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%' }}>
+                      <button className={'button2'} onClick={handleDownloadQR}>
+                        Download
+                      </button>
+                      <button className={'button2'} onClick={handleShareQR}>
+                        Share
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>,
+            modalRootRef.current,
+          )}
+      </>
+    );
+  };
+
+  const rightContent = loading || error ? null : (
+    <section className={styles.filesColumn}>
+      <h2 className="text-primary">Media Types</h2>
+      <div style={{ marginBottom: '20px' }}>
+        <label htmlFor="topicSelect" className="text-secondary" style={{ marginRight: '10px' }}>
+          Select Topic:
+        </label>
+        <select
+          id="topicSelect"
+          value={selectedTopic || ''}
+          onChange={(e) => {
+            setSelectedTopic(e.target.value);
+            setFolderContents({});
+            setPreviewFolder(null);
+          }}
+          style={{ padding: '5px', fontSize: '16px' }}
+        >
+          {Object.keys(memoryData?.topics || {}).map((topicName) => (
+            <option key={topicName} value={topicName}>
+              {topicName}
+            </option>
+          ))}
+        </select>
+      </div>
+      {selectedTopic && foldersWithContent.length > 0 ? (
+        <ul className={`${styles.foldersList} text-secondary`}>
+          {foldersWithContent.map((mediaType) => (
+            <li style={{ listStyle: 'none' }} key={mediaType} className={styles.folderItem}>
+              <button
+                style={{ width: '100%', background: 'none', border: 'none' }}
+                className={styles.folderHeader}
+                onClick={() => handleFolderClick(mediaType)}
+                aria-expanded={previewFolder === `${selectedTopic}_${mediaType}`}
+              >
+                <div className={styles.folderInfo}>
+                  <h3 className="text-secondary">{mediaType.charAt(0).toUpperCase() + mediaType.slice(1)}</h3>
+                  <span className="text-secondary">
+                    {memoryData.topics[selectedTopic][mediaType]?.length || 0}{' '}
+                    {memoryData.topics[selectedTopic][mediaType]?.length === 1 ? 'item' : 'items'}
+                  </span>
+                  {folderLoadingStates[`${selectedTopic}_${mediaType}`] && <SpinnerIcon size={16} />}
+                </div>
+                <span className={styles.folderToggle}>→</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : selectedTopic ? (
+        <p>No media available for this topic.</p>
+      ) : (
+        <p>Please select a topic.</p>
+      )}
+    </section>
+  );
+
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: memoryData?.metadata?.title || 'Memory Detail',
+    description: memoryData?.metadata?.description || 'A collection of media files for a specific memory.',
+    url: qrCodeUrl,
+    datePublished: memoryData?.metadata?.createdAt
+      ? new Date(memoryData.metadata.createdAt).toISOString()
+      : undefined,
+    dateModified: memoryData?.metadata?.lastUpdated
+      ? new Date(memoryData.metadata.lastUpdated).toISOString()
+      : undefined,
+    image: Object.values(memoryData?.topics || {})
+      .find((topic) => topic.photos?.length > 0)?.photos[0]?.url
+      ? formatImageUrl(Object.values(memoryData?.topics || {}).find((topic) => topic.photos?.length > 0)?.photos[0]?.url)
+      : '/default-og-image.jpg',
+  };
+
   return (
-    <GeneralMold
-      pageTitle={memoryData?.memoryMetadata?.title || 'Memory Collage'}
-      pageDescription={memoryData?.memoryMetadata?.description || 'A collection of your memories'}
-      rightContent={rightContent}
-      visibility={memoryData?.memoryMetadata?.requiredVisibility || 'private'}
-      owner={memoryData?.memoryMetadata?.createdBy}
-      metaKeywords="memory collage, photos, videos, memories"
-      error={error}
-      setInitialData={setMemoryData}
-      setTokenChild={setToken}
-      setUserEmailChild={setUserEmail}
-      setUidChild={setUid}
-    />
+    <>
+      <Head>
+        <title>{memoryData?.metadata?.title || 'Memory Detail'}</title>
+        <meta
+          name="description"
+          content={memoryData?.metadata?.description || 'View photos, videos, and other media for this memory.'}
+        />
+        <meta name="keywords" content="memory, media, photos, videos, audios, documents, texts" />
+        <meta name="robots" content={memoryData?.access?.view?.visibility === 'public' ? 'index, follow' : 'noindex'} />
+        <meta property="og:title" content={memoryData?.metadata?.title || 'Memory Detail'} />
+        <meta
+          property="og:description"
+          content={memoryData?.metadata?.description || 'View photos, videos, and other media for this memory.'}
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={qrCodeUrl} />
+        <meta
+          property="og:image"
+          content={
+            Object.values(memoryData?.topics || {}).find((topic) => topic.photos?.length > 0)?.photos[0]?.url
+              ? formatImageUrl(
+                  Object.values(memoryData?.topics || {}).find((topic) => topic.photos?.length > 0)?.photos[0]?.url,
+                )
+              : '/default-og-image.jpg'
+          }
+        />
+        <link rel="canonical" href={qrCodeUrl} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      </Head>
+      <GeneralMold
+        pageTitle={memoryData?.metadata?.title || 'Memory Detail'}
+        pageDescription={memoryData?.metadata?.description || 'View memory details'}
+        visibility={memoryData?.access?.view?.visibility || 'private'}
+        owner={memoryData?.ownerEmail || 'Unknown'}
+        leftContent={leftContent}
+        rightContent={rightContent}
+        setInitialData={setInitialData}
+        setUidChild={setUid}
+        setTokenChild={setToken}
+        setUserEmailChild={setUserEmail}
+      />
+      {renderModals()}
+    </>
   );
 };
 
-export default MemoryViewer;
+export default MemoryDetail;
