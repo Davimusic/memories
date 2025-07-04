@@ -196,6 +196,7 @@ const MemoryViewer = () => {
             uniqueMemoryId={dynamicMemoryID}
             token={token}
             uid={Uid}
+            root="dynamicMemory"
           />
           <button className="open-collage-button" onClick={handleOpenModal}>
             View Memory Collage

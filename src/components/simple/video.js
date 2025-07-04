@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+/*import React, { useEffect, useRef, useState, useCallback } from 'react';
 import '../../estilos/music/video.css';
 import TogglePlayPause from '../complex/TogglePlayPause';
 import DownloadIcon from '../complex/downloadIcon';
@@ -340,7 +340,7 @@ const Video = ({
         showControls();
       }}
     >
-      {/* Fondo difuminado */}
+      
       {blurredBackground && (
         <div 
           className="video-blur-background"
@@ -348,10 +348,10 @@ const Video = ({
         />
       )}
       
-      {/* Capa oscura para mejorar contraste */}
+      
       <div className="video-dark-overlay" />
       
-      {/* Video principal */}
+      
       {srcs.length > 0 && (
         <video
           ref={videoRef}
@@ -378,16 +378,16 @@ const Video = ({
         />
       )}
 
-      {/* Spinner de carga */}
+      
       {isLoading && (
         <div className="loading-overlay">
           <SpinnerIcon size={40} />
         </div>
       )}
 
-      {/* Controles del reproductor */}
+      
       <div className={`video-controls ${isControlsVisible ? 'visible' : ''}`}>
-        {/* Barra de progreso */}
+       
         <div className="progress-container">
           <span className="time-display">
             {formatTime(currentTimeMedia)}
@@ -409,7 +409,7 @@ const Video = ({
             {formatTime(duration)}
           </span>
 
-          {/* Controles de volumen */}
+          
           <div className="volume-controls">
             <ToggleMute
               size={20}
@@ -431,7 +431,7 @@ const Video = ({
           </div>
         </div>
 
-        {/* Controles principales */}
+        
         <div className="media-controls">
           <div className="left-controls">
             <HeartIcon 
@@ -489,7 +489,7 @@ const Video = ({
         </div>
       </div>
 
-      {/* Modal de calidad */}
+      
       {showQualityModal && (
         <div className="quality-modal">
           <h4>Calidad</h4>
@@ -505,7 +505,7 @@ const Video = ({
         </div>
       )}
 
-      {/* Botón central de play/pause */}
+      
       <div className={`center-play-button ${isControlsVisible ? 'visible' : ''}`}>
         <TogglePlayPause
           size={40}
@@ -517,43 +517,12 @@ const Video = ({
   );
 };
 
-export default Video;
+export default Video;*/
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import '../../estilos/music/video.css';
 import TogglePlayPause from '../complex/TogglePlayPause';
 import DownloadIcon from '../complex/downloadIcon';
@@ -565,7 +534,9 @@ import QualityIcon from '../complex/ToggleIcon';
 import ToggleMute from '../complex/ToggleMute';
 import RangeInput from '../complex/rangeInput';
 import SpinnerIcon from '../complex/spinnerIcon';
-
+import CommentsIcon from '../complex/icons/commentsIcon'; // Import CommentsIcon
+import Modal from '../complex/modal'; // Import Modal for comments
+import Comments from '../complex/comments'; // Import Comments component
 
 const Video = ({
   srcs = [],
@@ -586,52 +557,84 @@ const Video = ({
   showComponent,
   setShowComponent,
   content,
-  buttonColor = 'white'
+  buttonColor = 'white',
+  commentsData = [], // Comments for the current video
+  userId = null, // User email for comment authorship
+  memoryId = null, // Memory ID for endpoint
+  token = null, // Firebase auth token
+  uid = null, // Firebase user UID
+  fileId = '', // Current video URL for comment association
+  onCommentAdded = () => {}, // Callback to notify parent of new comments
 }) => {
+  // Referencias
   const videoRef = useRef(null);
   const videoContainerRef = useRef(null);
+  const timeoutRef = useRef(null);
+
+  // Estados del reproductor
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [isControlsVisible, setIsControlsVisible] = useState(true);
-  const [videoDimensions, setVideoDimensions] = useState({ width: 0, height: 0 });
-  const timeoutRef = useRef(null);
   const [isShuffle, setIsShuffle] = useState(false);
   const [showQualityModal, setShowQualityModal] = useState(false);
   const [quality, setQuality] = useState('auto');
   const [isHovering, setIsHovering] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [autoPlayNext, setAutoPlayNext] = useState(false);
-  const [blurredBackground, setBlurredBackground] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [commentsModalOpen, setCommentsModalOpen] = useState(false); // State for comments modal
 
+  // Estados para el fondo difuminado
+  const [blurredBackground, setBlurredBackground] = useState(null);
+  const [bgUpdateInterval, setBgUpdateInterval] = useState(null);
+
+  // Genera el fondo difuminado a partir del frame actual del video
   const updateBlurredBackground = useCallback(() => {
-  try {
-    if (!videoRef.current || videoRef.current.readyState < 2) return;
-    
-    const canvas = document.createElement('canvas');
-    const video = videoRef.current;
-    const width = video.videoWidth || 640;
-    const height = video.videoHeight || 360;
-    
-    canvas.width = width;
-    canvas.height = height;
-    
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, width, height);
-    ctx.filter = 'blur(20px)';
-    ctx.drawImage(canvas, 0, 0, width, height);
-    
-    setBlurredBackground(canvas.toDataURL());
-  } catch (error) {
-    console.error('Error generating blurred background:', error);
-    setBlurredBackground(null);
-  }
-}, []);
+    try {
+      if (!videoRef.current || videoRef.current.readyState < 2) return;
 
+      const canvas = document.createElement('canvas');
+      const video = videoRef.current;
+
+      // Tamaño reducido para mejor rendimiento (16:9 aspect ratio)
+      const width = 160;
+      const height = 90;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+
+      // Dibuja el frame actual en el canvas
+      ctx.drawImage(video, 0, 0, width, height);
+
+      // Aplica efectos al frame
+      ctx.filter = 'blur(15px) brightness(0.6)';
+      ctx.drawImage(canvas, 0, 0, width, height);
+
+      // Guarda como URL de imagen
+      setBlurredBackground(canvas.toDataURL());
+    } catch (error) {
+      console.error('Error generando fondo difuminado:', error);
+      setBlurredBackground(null);
+    }
+  }, []);
+
+  // Configura el intervalo para actualizar el fondo
+  useEffect(() => {
+    if (isPlaying) {
+      const interval = setInterval(updateBlurredBackground, 1000);
+      setBgUpdateInterval(interval);
+      return () => clearInterval(interval);
+    } else {
+      if (bgUpdateInterval) clearInterval(bgUpdateInterval);
+    }
+  }, [isPlaying, updateBlurredBackground]);
+
+  // Efecto para manejar interacciones y detectar dispositivos móviles
   useEffect(() => {
     const checkIsMobile = () => {
-      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      setIsMobile(isTouchDevice);
+      setIsMobile('ontouchstart' in window || navigator.maxTouchPoints > 0);
     };
     checkIsMobile();
 
@@ -666,12 +669,11 @@ const Video = ({
     };
   }, [isMobile]);
 
+  // Efecto para manejar cambios de fuente del video
   useEffect(() => {
     if (videoRef.current && srcs.length > 0) {
       const handleCanPlay = () => {
         if (!videoRef.current) return;
-        const { videoWidth, videoHeight } = videoRef.current;
-        setVideoDimensions({ width: videoWidth, height: videoHeight });
         updateBlurredBackground();
       };
 
@@ -686,7 +688,7 @@ const Video = ({
       videoRef.current.addEventListener('loadeddata', updateBlurredBackground);
       videoRef.current.addEventListener('waiting', () => setIsLoading(true));
       videoRef.current.addEventListener('playing', () => setIsLoading(false));
-      
+
       handleSourceChange();
 
       return () => {
@@ -698,9 +700,10 @@ const Video = ({
     }
   }, [srcs, currentIndex, updateBlurredBackground]);
 
+  // Funciones del reproductor
   const playVideo = () => {
     if (srcs.length === 0) return;
-    
+
     videoRef.current?.play()
       .then(() => setIsPlaying(true))
       .catch(error => console.error('Error al reproducir:', error));
@@ -719,7 +722,7 @@ const Video = ({
 
   const handleEnded = () => {
     setIsPlaying(false);
-    
+
     if (isRepeatMedia) {
       videoRef.current.currentTime = 0;
       playVideo();
@@ -732,11 +735,11 @@ const Video = ({
   const handleNextVideo = (e) => {
     e?.stopPropagation();
     if (srcs.length === 0) return;
-    
-    const nextIndex = isShuffle 
+
+    const nextIndex = isShuffle
       ? Math.floor(Math.random() * srcs.length)
       : (currentIndex + 1) % srcs.length;
-    
+
     if (nextIndex === currentIndex) {
       videoRef.current.currentTime = 0;
       playVideo();
@@ -750,7 +753,7 @@ const Video = ({
   const handlePreviousVideo = (e) => {
     e?.stopPropagation();
     if (srcs.length === 0) return;
-    
+
     const prevIndex = (currentIndex - 1 + srcs.length) % srcs.length;
     setCurrentIndex(prevIndex);
     setCurrentTimeMedia(0);
@@ -761,7 +764,7 @@ const Video = ({
     setDuration(videoRef.current.duration);
     setIsLoadingMedia?.(false);
     setIsLoading(false);
-    
+
     if (autoPlayNext) {
       playVideo();
       setAutoPlayNext(false);
@@ -772,7 +775,7 @@ const Video = ({
     setIsControlsVisible(true);
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
-      if (!isHovering) {
+      if (!isHovering && !commentsModalOpen) { // Keep controls visible if comments modal is open
         setIsControlsVisible(false);
       }
     }, 5000);
@@ -834,19 +837,19 @@ const Video = ({
     e?.stopPropagation();
     const currentSrc = srcs[currentIndex];
     if (!currentSrc) return;
-  
+
     try {
       const response = await fetch(currentSrc);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const fileName = currentSrc.split('/').pop().split('?')[0] || `video-${Date.now()}.mp4`;
-  
+
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', decodeURIComponent(fileName));
       document.body.appendChild(link);
       link.click();
-      
+
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -861,18 +864,28 @@ const Video = ({
     showControls();
   };
 
+  // Opens the comments modal
+  const openCommentsModal = (e) => {
+    e?.stopPropagation();
+    setCommentsModalOpen(true);
+    showControls();
+  };
+
+  // Closes the comments modal
+  const closeCommentsModal = () => {
+    setCommentsModalOpen(false);
+    showControls();
+  };
+
+  // Handles new comment addition and notifies parent
+  const handleCommentAdded = (newComment) => {
+    onCommentAdded(currentIndex, newComment);
+  };
+
   return (
-    <div 
+    <div
       ref={videoContainerRef}
-      style={{ 
-        position: 'relative', 
-        width: '100%', 
-        height: '100%', 
-        overflow: 'hidden',
-        background: blurredBackground 
-          ? `url(${blurredBackground}) center/cover` 
-          : '#000'
-      }}
+      className="video-player-container"
       onClick={(e) => {
         if (e.target === videoContainerRef.current || e.target === videoRef.current) {
           togglePlayPause(e);
@@ -880,21 +893,24 @@ const Video = ({
         showControls();
       }}
     >
+      {/* Fondo difuminado */}
+      {blurredBackground && (
+        <div
+          className="video-blur-background"
+          style={{ backgroundImage: `url(${blurredBackground})` }}
+        />
+      )}
+
+      {/* Capa oscura para mejorar contraste */}
+      <div className="video-dark-overlay" />
+
+      {/* Video principal */}
       {srcs.length > 0 && (
         <video
           ref={videoRef}
+          className="main-video-element"
           src={srcs[currentIndex]}
-          crossOrigin="anonymous"  
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 2
-          }}
+          crossOrigin="anonymous"
           onEnded={handleEnded}
           onLoadedMetadata={handleLoadedMetadata}
           onTimeUpdate={() => setCurrentTimeMedia(videoRef.current?.currentTime || 0)}
@@ -915,41 +931,20 @@ const Video = ({
         />
       )}
 
-      {isLoading && <SpinnerIcon size={40} />}
+      {/* Spinner de carga */}
+      {isLoading && (
+        <div className="loading-overlay">
+          <SpinnerIcon size={40} />
+        </div>
+      )}
 
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
-        padding: '10px 15px',
-        opacity: isControlsVisible ? 1 : 0,
-        transition: 'opacity 0.3s ease',
-        zIndex: 10,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px'
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: '100%'
-        }}>
-          <span style={{ 
-            color: 'white', 
-            fontSize: '12px',
-            minWidth: '40px',
-            fontFamily: 'Arial, sans-serif'
-          }}>
-            {formatTime(currentTimeMedia)}
-          </span>
+      {/* Controles del reproductor */}
+      <div className={`video-controls ${isControlsVisible ? 'visible' : ''}`}>
+        {/* Barra de progreso */}
+        <div className="progress-container">
+          <span className="time-display">{formatTime(currentTimeMedia)}</span>
 
-          <div style={{ 
-            flex: 1,
-            margin: '0 10px'
-          }}>
+          <div className="progress-bar">
             <RangeInput
               min={0}
               max={duration || 100}
@@ -961,23 +956,10 @@ const Video = ({
             />
           </div>
 
-          <span style={{ 
-            color: 'white', 
-            fontSize: '12px',
-            minWidth: '40px',
-            fontFamily: 'Arial, sans-serif',
-            textAlign: 'right'
-          }}>
-            {formatTime(duration)}
-          </span>
+          <span className="time-display">{formatTime(duration)}</span>
 
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '5px',
-            marginLeft: '15px',
-            width: isMobile ? '30%' : 'auto'
-          }}>
+          {/* Controles de volumen */}
+          <div className="volume-controls">
             <ToggleMute
               size={20}
               isMuted={isMutedMedia}
@@ -998,59 +980,24 @@ const Video = ({
           </div>
         </div>
 
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: '100%'
-        }}>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center',
-            gap: '15px'
-          }}>
-            <HeartIcon 
-              size={20}
-              onClickFunction={toggleLike}
-              defaultLike={isLike}
-            />
-            
-            <DownloadIcon 
-              size={20}
-              onToggle={handleDownload}
-            />
+        {/* Controles principales */}
+        <div className="media-controls">
+          <div className="left-controls">
+            <HeartIcon size={20} onClickFunction={toggleLike} defaultLike={isLike} />
+            <DownloadIcon size={20} onToggle={handleDownload} />
+            <CommentsIcon size={20} onClick={openCommentsModal} /> {/* Add CommentsIcon */}
           </div>
 
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center',
-            gap: '15px'
-          }}>
+          <div className="center-controls">
             <ShuffleButton
               buttonColor="white"
               isShuffle={isShuffle}
               toggleShuffle={toggleShuffle}
               size={20}
             />
-
-            <NextBeforeIcon 
-              size={20}
-              direction="left"
-              onToggle={handlePreviousVideo}
-            />
-            
-            <TogglePlayPause
-              size={24}
-              isPlaying={isPlaying}
-              onToggle={togglePlayPause}
-            />
-            
-            <NextBeforeIcon 
-              size={20}
-              direction="right"
-              onToggle={handleNextVideo}
-            />
-
+            <NextBeforeIcon size={20} direction="left" onToggle={handlePreviousVideo} />
+            <TogglePlayPause size={24} isPlaying={isPlaying} onToggle={togglePlayPause} />
+            <NextBeforeIcon size={20} direction="right" onToggle={handleNextVideo} />
             <RepeatButton
               buttonColor="white"
               isRepeat={isRepeatMedia}
@@ -1059,44 +1006,20 @@ const Video = ({
             />
           </div>
 
-          <div>
-            <QualityIcon 
-              size={20}
-              onClick={() => setShowQualityModal(true)}
-            />
+          <div className="right-controls">
+            <QualityIcon size={20} onClick={() => setShowQualityModal(true)} />
           </div>
         </div>
       </div>
 
+      {/* Modal de calidad */}
       {showQualityModal && (
-        <div style={{
-          position: 'absolute',
-          bottom: '120px',
-          right: '20px',
-          backgroundColor: 'rgba(30, 30, 30, 0.9)',
-          padding: '15px',
-          borderRadius: '8px',
-          zIndex: 20,
-          border: '1px solid #444'
-        }}>
-          <h4 style={{ 
-            color: 'white', 
-            margin: '0 0 10px 0',
-            fontSize: '14px',
-            fontWeight: '500'
-          }}>
-            Calidad
-          </h4>
+        <div className="quality-modal">
+          <h4>Calidad</h4>
           {['auto', '720p', '480p', '360p'].map((q) => (
-            <div 
+            <div
               key={q}
-              style={{
-                color: quality === q ? '#1DB954' : 'white',
-                padding: '8px 0',
-                cursor: 'pointer',
-                fontSize: '13px',
-                borderBottom: '1px solid #333'
-              }}
+              className={`quality-option ${quality === q ? 'active' : ''}`}
               onClick={(e) => handleQualityChange(q, e)}
             >
               {q}
@@ -1105,26 +1028,32 @@ const Video = ({
         </div>
       )}
 
-      <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        opacity: isControlsVisible ? 1 : 0,
-        transition: 'opacity 0.3s ease',
-        zIndex: 5
-      }}>
-        <TogglePlayPause
-          size={40}
-          isPlaying={isPlaying}
-          onToggle={togglePlayPause}
-        />
+      {/* Modal de comentarios */}
+      <Modal isOpen={commentsModalOpen} onClose={closeCommentsModal}>
+        <div className="comments-container">
+          <Comments
+            commentsData={commentsData}
+            userId={userId}
+            memoryId={memoryId}
+            token={token}
+            uid={uid}
+            root="files" // Set to "files" for file-specific comments
+            fileId={fileId}
+            onCommentAdded={handleCommentAdded}
+            currentIndex={currentIndex}
+          />
+        </div>
+      </Modal>
+
+      {/* Botón central de play/pause */}
+      <div className={`center-play-button ${isControlsVisible ? 'visible' : ''}`}>
+        <TogglePlayPause size={40} isPlaying={isPlaying} onToggle={togglePlayPause} />
       </div>
     </div>
   );
 };
 
-export default Video;*/
+export default Video;
 
 
 

@@ -27,6 +27,8 @@ module.exports = withPWA({
       'res.cloudinary.com',
       'lh3.googleusercontent.com',
       'f005.backblazeb2.com',
+      'goodmemories.live'
+
     ],
     remotePatterns: [
       {

@@ -48,7 +48,7 @@ const TableRenderer = ({ content, headers, rows }) => {
           </thead>
           <tbody>
             {dataRows.map((cells, rowIndex) => (
-              <tr key={rowIndex} className={rowIndex % 2 === 1 ? 'alternate-row' : ''}>
+              <tr key={rowIndex}  className={rowIndex % 2 === 1 ? 'alternate-row' : ''}>
                 {cells.map((cell, cellIndex) => (
                   <td key={cellIndex}>{cell}</td>
                 ))}
@@ -67,7 +67,7 @@ const TableRenderer = ({ content, headers, rows }) => {
           <thead>
             <tr>
               {headers.map((header, i) => (
-                <th className="tableTitle" key={i}>
+                <th style={{backgroundColor: 'black', color: 'white'}} key={i}>
                   {header}
                 </th>
               ))}
@@ -75,7 +75,10 @@ const TableRenderer = ({ content, headers, rows }) => {
           </thead>
           <tbody>
             {rows.map((cells, rowIndex) => (
-              <tr key={rowIndex} className={rowIndex % 2 === 1 ? 'alternate-row' : ''}>
+              <tr
+                key={rowIndex}
+                style={rowIndex % 2 === 1 ? { backgroundColor: 'gray', color: 'white' } : {}}
+              >
                 {cells.map((cell, cellIndex) => (
                   <td key={cellIndex}>{parseCellContent(cell)}</td>
                 ))}

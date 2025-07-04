@@ -13,6 +13,7 @@ import GeneralMold from '@/components/complex/generalMold';
 import QRCodeStyling from 'qr-code-styling';
 import QRGenerator from '@/components/complex/QRGenerator';
 import QRIcon from '@/components/complex/icons/qrIcon';
+import Comments from '@/components/complex/comments';
 
 const Video = dynamic(() => import('../../../components/simple/video'), { ssr: false });
 const AudioPlayer = dynamic(() => import('../../../components/complex/audioPlayer'), { ssr: false });
@@ -32,6 +33,7 @@ const MemoryDetail = () => {
   const [previewFolder, setPreviewFolder] = useState(null);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [videoThumbnails, setVideoThumbnails] = useState({});
+  const [generatingThumbnails, setGeneratingThumbnails] = useState(new Set());
   const [initialData, setInitialData] = useState();
   const [uid, setUid] = useState(null);
   const [token, setToken] = useState(null);
@@ -62,6 +64,10 @@ const MemoryDetail = () => {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
   const currentPath = router.asPath;
   const qrCodeUrl = userID && memoryName ? `${baseUrl}${currentPath}` : 'https://example.com';
+
+  useEffect(() => {
+    //console.log(mediaState);
+  }, [mediaState]);
 
   useEffect(() => {
     if (!document.getElementById('modal-root')) {
@@ -103,8 +109,10 @@ const MemoryDetail = () => {
 
       video.onseeked = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+        const thumbnailWidth = 200;
+        const aspectRatio = video.videoHeight / video.videoWidth;
+        canvas.width = thumbnailWidth;
+        canvas.height = thumbnailWidth * aspectRatio;
         const ctx = canvas.getContext('2d');
 
         if (ctx) {
@@ -139,36 +147,6 @@ const MemoryDetail = () => {
         }
       });
 
-      topic.videos?.forEach((video) => {
-        if (!video.url) {
-          console.error('Invalid video URL in topic:', video);
-          return;
-        }
-        if (!mediaCache.current.has(video.url)) {
-          const videoEl = document.createElement('video');
-          videoEl.preload = 'metadata';
-          videoEl.src = video.url;
-          videoEl.onloadeddata = () => mediaCache.current.set(video.url, true);
-          videoEl.onerror = () => {
-            console.error('Error preloading video:', video.url);
-            mediaCache.current.set(video.url, false);
-          };
-
-          if (!thumbnailsCache.current.has(video.url)) {
-            generateVideoThumbnail(video.url)
-              .then((thumbnail) => {
-                thumbnailsCache.current.set(video.url, thumbnail);
-                setVideoThumbnails((prev) => ({ ...prev, [video.url]: thumbnail }));
-              })
-              .catch((error) => {
-                console.error(`Error generating thumbnail for ${video.url}:`, error);
-                thumbnailsCache.current.set(video.url, '/video-placeholder.jpg');
-                setVideoThumbnails((prev) => ({ ...prev, [video.url]: '/video-placeholder.jpg' }));
-              });
-          }
-        }
-      });
-
       topic.audios?.forEach((audio) => {
         if (!mediaCache.current.has(audio.url)) {
           const audioEl = new Audio();
@@ -183,6 +161,34 @@ const MemoryDetail = () => {
       });
     });
   };
+
+  useEffect(() => {
+    if (!selectedTopic || !memoryData?.topics?.[selectedTopic]) return;
+
+    const videos = memoryData.topics[selectedTopic].videos || [];
+    videos.forEach((video) => {
+      if (!thumbnailsCache.current.has(video.url)) {
+        setGeneratingThumbnails((prev) => new Set(prev).add(video.url));
+        generateVideoThumbnail(video.url)
+          .then((thumbnail) => {
+            thumbnailsCache.current.set(video.url, thumbnail);
+            setVideoThumbnails((prev) => ({ ...prev, [video.url]: thumbnail }));
+          })
+          .catch((error) => {
+            console.error(`Error generating thumbnail for ${video.url}:`, error);
+            thumbnailsCache.current.set(video.url, '/video-placeholder.jpg');
+            setVideoThumbnails((prev) => ({ ...prev, [video.url]: '/video-placeholder.jpg' }));
+          })
+          .finally(() => {
+            setGeneratingThumbnails((prev) => {
+              const newSet = new Set(prev);
+              newSet.delete(video.url);
+              return newSet;
+            });
+          });
+      }
+    });
+  }, [selectedTopic, memoryData]);
 
   useEffect(() => {
     return () => {
@@ -391,12 +397,13 @@ const MemoryDetail = () => {
       fileName: file.fileName,
       cached: file.cached,
       metadata: file.metadata,
+      comments: file.metadata?.comments || [], // Include file-specific comments
     }));
 
     setMediaState((prev) => ({
       ...prev,
       content: mediaContent,
-      srcs: mediaType === 'video' ? mediaContent.map((file) => file.src) : prev.srcs,
+      srcs: mediaType === 'video' ? mediaContent.map((file) =>  file.src) : prev.srcs,
       currentIndex: index,
     }));
 
@@ -472,7 +479,8 @@ const MemoryDetail = () => {
         </article>
       );
     } else if (mediaType === 'videos') {
-      const thumbnail = videoThumbnails[file.url] || '/video-placeholder.jpg';
+      const thumbnail = videoThumbnails[file.url];
+      const isGenerating = generatingThumbnails.has(file.url);
       return (
         <article
           key={index}
@@ -481,21 +489,22 @@ const MemoryDetail = () => {
           aria-label={`Open ${file.fileName}`}
         >
           <div className={styles.videoPreview} onMouseEnter={() => preloadVideo(file.url)}>
-            <img
-              src={thumbnail}
-              alt={`Preview of ${file.fileName}`}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'block';
-              }}
-            />
+            {isGenerating ? (
+              <div className={styles.loadingThumbnail}>
+                <SpinnerIcon size={20} />
+                <span>Loading thumbnail...</span>
+              </div>
+            ) : (
+              <img
+                src={thumbnail || '/video-placeholder.jpg'}
+                alt={`Preview of ${file.fileName}`}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.src = '/video-placeholder.jpg';
+                }}
+              />
+            )}
             <div className={styles.playIcon}>▶</div>
-            <span
-              style={{ display: 'none', color: 'white', textAlign: 'center', padding: '10px' }}
-            >
-              {file.fileName} (Cargando...)
-            </span>
           </div>
         </article>
       );
@@ -558,6 +567,14 @@ const MemoryDetail = () => {
           <p className={`${styles.memoryDescription} text-primary`}>
             {memoryData.metadata.description || 'No description available'}
           </p>
+          <Comments
+            commentsData={memoryData?.comments || []}
+            userId={userEmail}
+            memoryId={memoryName}
+            token={token}
+            uid={uid}
+            root="generalMemory"
+          />
           <div className={styles.datesContainer}>
             <p className="folderToggle">Created: {new Date(memoryData.metadata.createdAt).toLocaleDateString()}</p>
             <p className="folderToggle">
@@ -633,6 +650,12 @@ const MemoryDetail = () => {
                       isLike={mediaState.isLike}
                       isHybridView={mediaState.isHybridView}
                       buttonColor="white"
+                      commentsData={mediaState.content || []} //mediaState.content[mediaState.currentIndex]?.comments || [] Pass file-specific comments
+                      userId={userEmail}
+                      memoryId={memoryName}
+                      token={token}
+                      uid={uid}
+                      fileId={mediaState.content[mediaState.currentIndex]?.src} // Pass fileId for comment association
                     />
                   )}
                   {mediaType === 'audio' && (
@@ -641,6 +664,12 @@ const MemoryDetail = () => {
                         currentIndex={mediaState.currentIndex}
                         audioFiles={mediaState.content}
                         className={styles.customAudioPlayer}
+                        commentsData={mediaState.content[mediaState.currentIndex]?.comments || []} // Pass file-specific comments
+                        userId={userEmail}
+                        memoryId={memoryName}
+                        token={token}
+                        uid={uid}
+                        fileId={mediaState.content[mediaState.currentIndex]?.src} // Pass fileId for comment association
                       />
                     </div>
                   )}
@@ -659,6 +688,12 @@ const MemoryDetail = () => {
                       }}
                       timeToShow={5000}
                       showControls={true}
+                      commentsData={mediaState || []} //{mediaState.content[mediaState.currentIndex]?.comments || []} Pass file-specific comments
+                      userId={userEmail}
+                      memoryId={memoryName}
+                      token={token}
+                      uid={uid}
+                      fileId={mediaState.content[mediaState.currentIndex]?.src} // Pass fileId for comment association
                     />
                   )}
                 </div>
