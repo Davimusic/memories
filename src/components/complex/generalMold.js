@@ -402,8 +402,9 @@ const GeneralMold = ({
   const notifySuccess = (message) => toast.success(message);
   const notifyFail = (message) => toast.error(message);
 
-  // Pass uid, token, userEmail to parent if provided
-  useEffect(() => {
+  
+
+   useEffect(() => {
     if (setUidChild && uid !== undefined && uid !== null) setUidChild(uid);
   }, [uid, setUidChild]);
 
@@ -454,14 +455,16 @@ const GeneralMold = ({
       }
     });
 
-    if ([uid, token, userEmail].every((value) => value === null) || (uid && token && userEmail)) {
+    //if ([uid, token, userEmail].every((value) => value === null) || (uid && token && userEmail)) {
       fetchPermissionData();
-    }
+    //}
 
     return () => unsubscribe();
   }, [router, uid, token, userEmail, retryCount]);
 
   const fetchPermissionData = async () => {
+    
+    
     const dynamicRoute = router.pathname;
     const basePath = dynamicRoute.split('/')[1];
     let realRoute = dynamicRoute;
@@ -496,6 +499,11 @@ const GeneralMold = ({
 
       
       
+console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+      console.log(data);
+
+      
+      
       console.log('Permission data:', {
           ...data,           // Conservas todas las propiedades originales de data
           userID,            // Agregas userID (equivalente a userID: userID)
@@ -508,6 +516,12 @@ const GeneralMold = ({
           memoryName         // Agregas memoryName (equivalente a memoryName: memoryName)
         });
       }
+
+      console.log('debe pasar');
+      
+      console.log(data);
+      
+      
       setPermissionResult(data);
 
       if (data.requiredVisibility === 'public') {
@@ -533,6 +547,7 @@ const GeneralMold = ({
     } catch (err) {
       console.error('Fetch error:', err.message);
       setPermissionError(`Failed to verify permissions: ${err.message}`);
+      setPermissionError(null);
       setIsLoading(false);
     }
   };

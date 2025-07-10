@@ -27,6 +27,13 @@ export const handleGoogleLogin = async (setError, setIsLoading, hasAgreedToTerms
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
     const email = user.providerData[0]?.email || user.email;
+
+    const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+    console.log(redirectPath);
+    localStorage.removeItem('redirectPath');
+    router.push(redirectPath);
+
+
     return { user, email };
   } catch (error) {
     console.error('Error signing in with Google:', error);

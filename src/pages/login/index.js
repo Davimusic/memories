@@ -36,7 +36,7 @@ const RegularLogin = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user && initialMount.current) {
-        const userEmail = user.providerData[0]?.email || user.email || '';
+        const userEmail = user?.providerData[0]?.email || user.email || '';
         const token = await user.getIdToken();
         localStorage.setItem('authToken', token);
         localStorage.setItem('userName', user.displayName || 'User');
@@ -77,6 +77,8 @@ const RegularLogin = () => {
       const user = userCredential.user;
       await handleUserAfterAuth(user.uid, user.email, 'login', setError, setModalMessage, setIsModalOpen, router);
       const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+      console.log(redirectPath);
+      
       localStorage.removeItem('redirectPath');
       router.push(redirectPath);
     } catch (error) {

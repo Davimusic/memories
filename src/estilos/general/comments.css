@@ -3,7 +3,7 @@
   
   background: var(--card-bg);
   border-radius: 8px;
-  max-height: 50vh;
+  max-height: 35vh;
   overflow-y: auto;
   width: 100%;
 }
@@ -42,10 +42,15 @@ textarea:focus {
   position: relative;
 }
 
+.comments-list{
+  width: 100%;
+}
+
 .comment {
   margin: 10px 0;
   padding: 10px;
   border-bottom: 1px solid var(--text-muted);
+  width: 100%;
 }
 
 .reply {
@@ -75,6 +80,10 @@ textarea:focus {
   gap: 10px;
 }
 
+.comment.reply {
+  overflow: auto;
+}
+
 .comment-actions button {
   background: none;
   border: none;
@@ -84,6 +93,7 @@ textarea:focus {
 
 .new-comment, .reply-input {
   margin: 10px 0;
+  width: 100%;
 }
 
 .new-comment textarea, .reply-input textarea {
@@ -129,6 +139,7 @@ button.loading {
 @media (max-width: 768px) {
   .comments-container {
     padding: 10px;
+    max-height: 20vh;
   }
   .comment {
     padding: 5px;

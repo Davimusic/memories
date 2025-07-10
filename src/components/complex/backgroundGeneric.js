@@ -163,6 +163,7 @@ const BackgroundGeneric = ({
               showControls={false}
               style={{ height: "100%" }}
               initializeAutomatically={true}
+              controls={{showComments: false}}
             />
           </div>
         )}
@@ -194,6 +195,7 @@ const BackgroundGeneric = ({
               showControls={false}
               style={{ height: "599px" }}
               initializeAutomatically={true}
+              controls={{showComments: false}}
             />
           </div>
         )}

@@ -19,7 +19,8 @@ export default function Home() {
                 showPlayPause: true,
                 showNext: true,
                 showShuffle: true,
-                showEffects: true
+                showEffects: true,
+                showComments: true
             }}
             timeToShow = {5000}
         />

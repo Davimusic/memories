@@ -204,8 +204,13 @@ export default async function handler(req, res) {
   try {
     const { path, uid, token, userEmail, mediaItems, groups, audioSelections, sceneDurations } = req.body;
 
+    console.log('check from client...............................................');
+    console.log(req.body);
+    
+    
+
     // Validate required fields for all paths
-    if (!path || !uid || !token || !userEmail) {
+    if (!path){ // || !uid || !token || !userEmail) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -218,6 +223,9 @@ export default async function handler(req, res) {
       if (!loginResult.success) {
         return res.status(401).json({ error: 'Authentication failed from static routes: ' + loginResult.error });
       }
+
+      
+      
 
       const client = await clientPromise;
       const db = client.db('goodMemories');

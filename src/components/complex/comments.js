@@ -38,6 +38,9 @@ const Comments = ({
   const [loadingStates, setLoadingStates] = useState({});
   const router = useRouter();
 
+  console.log(userId);
+  
+
   const validRoots = ['dynamicMemory', 'generalMemory', 'files'];
   useEffect(() => {
     if (!validRoots.includes(root)) {
@@ -93,6 +96,18 @@ const Comments = ({
   };
 
   const handleCreateComment = async (parentId = null) => {
+
+    if(!userId){
+      const path = window.location.pathname;
+      localStorage.setItem('redirectPath', path);
+      localStorage.setItem('reason', 'userEmailValidationOnly');
+      router.push('/login');
+    }
+    
+
+
+
+
     const loadingKey = parentId ? `reply_${parentId}` : 'newComment';
     setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
 

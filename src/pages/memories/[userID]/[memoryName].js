@@ -217,6 +217,9 @@ const MemoryDetail = () => {
 
         const mongoData = await res.json();
 
+        console.log(mongoData);
+        
+
         if (!mongoData.success) {
           throw new Error('Failed to load memory data');
         }
