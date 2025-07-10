@@ -438,7 +438,7 @@ const ImageSlider = ({
         </Modal>
       )}
 
-      <Modal isOpen={commentsModalOpen} onClose={close.commentsModal}>
+      <Modal isOpen={commentsModalOpen} onClose={closeCommentsModal}>
         <div className="comments-container">
           <Comments
             commentsData={commentsData}
