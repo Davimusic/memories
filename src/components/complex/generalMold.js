@@ -455,9 +455,16 @@ const GeneralMold = ({
       }
     });
 
-    //if ([uid, token, userEmail].every((value) => value === null) || (uid && token && userEmail)) {
+    const dynamicRoute = router.pathname;
+    const basePath = dynamicRoute.split('/')[1];
+
+    if(basePath === 'memories'){//agregar estàticas
       fetchPermissionData();
-    //}
+    } else if ([uid, token, userEmail].every((value) => value === null) || (uid && token && userEmail)) {
+      fetchPermissionData();
+    }
+
+    
 
     return () => unsubscribe();
   }, [router, uid, token, userEmail, retryCount]);
@@ -476,6 +483,14 @@ const GeneralMold = ({
 
     console.log('.......basePath');
     console.log(basePath);
+
+
+    console.log(uid);
+    console.log(token);
+    console.log(userEmail);
+    
+    
+    
     
     
 

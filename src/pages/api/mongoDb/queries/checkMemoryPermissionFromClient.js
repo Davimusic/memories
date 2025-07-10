@@ -262,13 +262,16 @@ export default async function handler(req, res) {
         userEmail,
       });
 
-      console.log('permissionResult');
+      console.log('permissionResult............c.c.c.c.c.c.c.c.c.c.c.c.c.c.c.c.c.c.c');
       console.log(permissionResult);
       
 
       if (!permissionResult.accessAllowed) {
         return res.status(403).json({ error: 'Permission denied' });
       }
+
+      
+      
 
       function filterMemoryData(fullData, dynamicMemoryKey) {
         const { topics, dynamicMemories, ...baseData } = fullData; // Excluye 'topics'

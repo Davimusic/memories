@@ -314,7 +314,7 @@ export default function MemoriesIndex({ initialMemories, userInfo, error: initia
       >
         {selectedMemory && (
           <div className="actions-modal flex-column p-3">
-            <h2 className="title-md color2">{selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}</h2>
+            <h2 className="title-md ">{selectedMemory.details.metadata?.title || selectedMemory.memoryTitle}</h2>
             <button
               className="button2 rounded p-2 m-1 accionsContainer"
               onClick={() =>
