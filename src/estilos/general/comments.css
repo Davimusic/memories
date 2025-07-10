@@ -1,5 +1,5 @@
+/* Estilos originales */
 .comments-container {
-  margin-top: 20px;
   
   background: var(--card-bg);
   border-radius: 8px;
@@ -8,10 +8,25 @@
   width: 100%;
 }
 
+.reply-input, .comment-edit {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
 textarea {
   color: black !important;
   resize: none;
   width: 100% !important;
+  border-radius: 0.7em;
+  border: 2px solid transparent;
+  outline: none;
+  padding: 10px;
+}
+
+textarea:focus {
+  border: 2px solid #2196F3;
+  outline: none;
 }
 
 .createCommentButton {
@@ -42,17 +57,17 @@ textarea {
 .comment-header {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8em; /* Reduced font size for less emphasis */
-  color: var(--text-muted); /* Lighter color to de-emphasize */
+  font-size: 0.8em;
+  color: var(--text-muted);
   margin-bottom: 5px;
 }
 
 .comment-text {
   margin: 10px 0;
-  font-size: 1.1em; /* Larger font size for emphasis */
-  font-weight: 500; /* Bolder text */
-  color: var(--text-primary); /* Primary color for prominence */
-  line-height: 1.4; /* Improved readability */
+  font-size: 1.1em;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
 }
 
 .comment-actions {
@@ -86,7 +101,31 @@ textarea {
   margin: 10px 0;
 }
 
-/* Responsive adjustments */
+/* Estilos para la animación de carga */
+button.loading {
+  cursor: not-allowed;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Ajustes responsive */
 @media (max-width: 768px) {
   .comments-container {
     padding: 10px;
@@ -101,10 +140,10 @@ textarea {
     min-height: 60px;
   }
   .comment-text {
-    font-size: 1em; /* Slightly smaller but still prominent */
+    font-size: 1em;
   }
   .comment-header {
-    font-size: 0.75em; /* Further reduce header size */
+    font-size: 0.75em;
   }
 }
 
@@ -122,9 +161,9 @@ textarea {
     min-height: 50px;
   }
   .comment-text {
-    font-size: 0.95em; /* Adjust for smaller screens */
+    font-size: 0.95em;
   }
   .comment-header {
-    font-size: 0.7em; /* Further reduce header size */
+    font-size: 0.7em;
   }
 }

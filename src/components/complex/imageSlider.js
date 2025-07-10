@@ -480,8 +480,8 @@ const ImageSlider = ({
       {/* Effects selection modal (hidden after timeout) */}
       {(!fixedEffect && userControlsVisible) && (
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-          <h2 style={{ color: "#fff", textAlign: "center", marginBottom: "15px" }}>
-            Transition effect
+          <h2 style={{ color: "black", textAlign: "center", marginBottom: "15px" }}>
+            Effects
           </h2>
           <div className="modal-options">
             <button onClick={() => handleEffectSelection("random")}>Random effect</button>

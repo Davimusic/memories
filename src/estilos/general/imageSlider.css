@@ -1,3 +1,26 @@
+/* Variables CSS para temas */
+:root {
+    --modal-background: #ffffff;
+    --modal-text: #000000;
+    --modal-title-color: #000000;
+    --button-background: #f0f0f0;
+    --button-text: #000000;
+    --button-border: #cccccc;
+    --button-hover-background: #e0e0e0;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --modal-background: #333333;
+        --modal-text: #ffffff;
+        --modal-title-color: #ffffff;
+        --button-background: #444444;
+        --button-text: #ffffff;
+        --button-border: #555555;
+        --button-hover-background: #555555;
+    }
+}
+
 .slider-container {
     position: relative;
     width: 100%;
@@ -8,7 +31,6 @@
     overflow: hidden;
 }
 
-/* Contenedor del slider */
 .slider {
     width: 100%;
     height: 100%;
@@ -17,7 +39,6 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Wrapper de imágenes */
 .image-wrapper {
     position: relative;
     width: 100%;
@@ -28,7 +49,6 @@
     background-color: #000;
 }
 
-/* Imagen de fondo */
 .background-image {
     position: absolute;
     top: 0;
@@ -42,7 +62,6 @@
     z-index: 1;
 }
 
-/* Imagen principal */
 .slideImage {
     position: relative;
     max-width: 100%;
@@ -52,7 +71,6 @@
     border-radius: 0.5em;
 }
 
-/* Controles: posicionados de manera flotante y centrados en la parte inferior */
 .controls {
     position: absolute;
     bottom: 15px;
@@ -69,7 +87,6 @@
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-/* Comments container in modal */
 .comments-container {
     display: flex;
     flex-direction: column;
@@ -82,21 +99,44 @@
     overflow-y: auto;
 }
 
-/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: var(--modal-background);
+    color: var(--modal-text);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+}
+
 .modal-options {
     display: flex;
     flex-direction: column;
     gap: 10px;
     align-items: center;
-    width: 80%;
+    width: 50vh;
     padding: 10px;
 }
 
 .modal-options button {
     padding: 10px 15px;
-    border: none;
-    background-color: #008cba;
-    color: #fff;
+    border: 1px solid var(--button-border);
+    background-color: var(--button-background);
+    color: var(--button-text);
     cursor: pointer;
     border-radius: 6px;
     transition: all 0.3s ease;
@@ -106,7 +146,7 @@
 }
 
 .modal-options button:hover {
-    background-color: #005f75;
+    background-color: var(--button-hover-background);
     transform: translateY(-2px);
 }
 
