@@ -6,24 +6,24 @@ import ArticleRenderer from '@/components/complex/articles/articleRenderer';
 
 
 const test = {
-  "slug": "joyful-graduation-odyssey",
-  "title": "A Joyful Graduation Odyssey: Embracing the End and Welcoming the Future",
+  "slug": "celebrating-new-pet",
+  "title": "Celebrating the Arrival of a New Pet: Crafting Unforgettable Family Memories",
   "seo": {
-    "description": "A vibrant fictional tale of a high school graduation, filled with laughter, tears, and unforgettable moments, celebrating the end of one journey and the start of another, with tips on preserving these memories using Good Memories.",
-    "keywords": "graduation story, high school graduation, life milestones, digital memory preservation, Good Memories, emotional storytelling, new beginnings",
-    "tags": "graduation, life transitions, memories, storytelling, digital preservation, emotional milestones",
-    "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250709_085930.png"
+    "description": "Welcoming a new pet is a joyful milestone. Explore creative ways to bond, capture, and preserve these moments with Project Memories, backed by science and expert insights.",
+    "keywords": "new pet, pet adoption, family memories, pet bonding, digital memory preservation, Project Memories, pet care",
+    "tags": "pets, family, memory preservation, pet adoption, digital memories, animal bonding",
+    "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2011%20jul%202025%2C%2008_59_55%20a.m..png"
   },
   "breadcrumbs": [
     {"label": "Home", "path": "/"},
-    {"label": "Stories", "path": "/stories"},
-    {"label": "Graduation Odyssey", "path": "/stories/graduation-odyssey"}
+    {"label": "Lifestyle", "path": "/lifestyle"},
+    {"label": "Pets", "path": "/lifestyle/pets"}
   ],
   "content": [
     {
       "type": "tableOfContents",
       "props": {
-        "content": "1. [The Dawn of the Big Day](#introduction)\n2. [The Ceremony: A Tapestry of Emotions](#ceremony)\n3. [Laughter and Tears](#emotions)\n4. [Reflections by the Lake](#reflections)\n5. [A Night of Celebration](#celebration)\n6. [Dreams of Tomorrow](#future)\n7. [Preserving Your Graduation with Good Memories](#good-memories)\n8. [Tips for Capturing Milestones](#tips)"
+        "content": "1. [A New Family Member](#introduction)\n2. [Creative Bonding Ideas](#bonding)\n3. [Capturing the Magic](#capturing-moments)\n4. [The Science of Pet Bonds](#neuroscience)\n5. [Preserve with Good Memories](#project-memories)\n6. [Expert Tips for New Pet Owners](#tips)\n7. [Inspiring Pet Videos](#videos)"
       }
     },
     {
@@ -34,13 +34,11 @@ const test = {
           {
             "type": "text",
             "props": {
-              "title": "The Dawn of the Big Day",
+              "title": "A New Family Member: The Joy of a New Pet",
               "content": [
                 {
-                  "text": "The sun rose over Willow Creek High on July 9, 2025, casting a golden glow over the campus. For Elena, the day felt surreal. Her graduation cap sat proudly on her dresser, a symbol of four years of triumphs, struggles, and friendships. As she slipped into her gown, the weight of the moment settled in—this was the end of an era. The hallways, once filled with the chaos of locker slams and hurried footsteps, were now quiet, save for the excited chatter of her classmates preparing for the ceremony."
-                },
-                {
-                  "text": "Elena paused by her locker, running her fingers over the faded stickers she’d plastered there as a freshman. Each one told a story: a concert ticket stub, a doodle from her best friend Lucas, a quote from her favorite book. Today, these small relics felt like treasures, anchoring her to a chapter that was closing."
+                  "text": "The moment a new pet bounds into your home, tail wagging or whiskers twitching, is nothing short of magical. Whether it’s a fluffy kitten tumbling over its own paws, a curious rabbit nibbling on a carrot, or a rescue dog gazing at you with grateful eyes, these first encounters weave a tapestry of memories that bind families together. According to the American Pet Products Association’s 2023–2024 National Pet Owners Survey, 66% of U.S. households share their lives with pets, and the emotional bonds formed in the early days are pivotal for lifelong companionship.",
+                  "continueText": "This article explores creative ways to celebrate your new pet, from building bonds to preserving those fleeting moments with Project Memories."
                 }
               ]
             }
@@ -48,9 +46,9 @@ const test = {
           {
             "type": "imageText",
             "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250709_085930.png",
-              "imageAlt": "Newly graduated students celebrating together",
-              "text": "Graduation day pulses with a unique energy—pride, nostalgia, and anticipation blend as students stand on the cusp of new adventures.",
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2011%20jul%202025%2C%2008_59_55%20a.m..png",
+              "imageAlt": "Cartoon family joyfully welcoming a new dog",
+              "text": "The spark of joy from a new pet is universal, whether it’s a dog, cat, or rabbit. These moments are the foundation of a lifelong bond.",
               "layout": "right",
               "imageSize": "large"
             }
@@ -61,38 +59,47 @@ const test = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "ceremony",
+        "referenceId": "bonding",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "The Ceremony: A Tapestry of Emotions",
+              "title": "Creative Ways to Bond with Your New Pet",
               "content": [
                 {
-                  "text": "The school’s football field was transformed into a stage for dreams. Rows of chairs stretched across the grass, filled with families clutching cameras and tissues. Elena marched in the procession, her heart pounding as the band played a triumphant tune. The principal’s speech was a blur of inspiration—words about courage, growth, and the future—but when Elena’s name echoed through the speakers, the world sharpened into focus. She stepped onto the stage, gripping her diploma as her family erupted in cheers."
-                },
-                {
-                  "text": "Across the field, Lucas, ever the jokester, struck a dramatic pose as he received his diploma, earning laughs from the crowd. Meanwhile, Elena’s friend Aisha, usually stoic, wiped away tears, overwhelmed by the moment. The ceremony was a kaleidoscope of emotions—pride, joy, and a touch of sorrow for the end of their shared journey."
+                  "text": "Welcoming a pet isn’t just about providing food and shelter—it’s about crafting shared experiences that deepen your connection. Dr. Stanley Coren, in his book *The Intelligence of Dogs* (2021), highlights that interactive play and positive reinforcement trigger oxytocin release in both pets and owners, fostering trust and affection. Try hosting a 'pet welcome party' with family members, complete with pet-safe treats and games, or create a 'pet adventure journal' to document your first outings together, whether with a playful pup or a curious bunny."
                 }
               ]
             }
           },
           {
-            "type": "imageText",
+            "type": "accordion",
             "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/r4.png",
-              "imageAlt": "Student receiving diploma on stage",
-              "text": "The moment of receiving a diploma is a milestone, a tangible symbol of hard work and new beginnings.",
-              "layout": "left",
-              "imageSize": "medium"
+              "title": "Unique Bonding Activities",
+              "defaultOpen": true,
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "content": [
+                      {
+                        "text": "- **Pet Scavenger Hunt**: Hide treats around the house for your pet to find, encouraging exploration and trust.\n- **Storytime Snuggles**: Read aloud to your pet in a calm voice to soothe them and build familiarity, perfect for cats or rabbits.\n- **DIY Pet Toy Craft**: Create a toy together, like a braided rope for dogs or a cardboard tunnel for rabbits, to spark joy and teamwork."
+                      }
+                    ]
+                  }
+                }
+              ]
             }
           },
           {
-            "type": "customQuote",
+            "type": "text",
             "props": {
-              "quote": "This diploma isn’t just paper—it’s a key to the next chapter, built on every lesson and laugh we shared here.",
-              "author": "Elena Martinez",
-              "source": "Willow Creek High Graduation Speech, 2025"
+              "content": [
+                {
+                  "text": "These activities not only strengthen bonds but also create vivid memories. The ASPCA notes that consistent, positive interactions in the first month increase pet retention rates by 25%.",
+                  "continueText": "Learn more about pet bonding at [ASPCA’s Pet Care Guide](https://www.aspca.org/pet-care)."
+                }
+              ]
             }
           }
         ]
@@ -101,15 +108,15 @@ const test = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "emotions",
+        "referenceId": "capturing-moments",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Laughter and Tears",
+              "title": "Capturing the Magic of Your Pet’s First Days",
               "content": [
                 {
-                  "text": "As the ceremony ended, the graduates tossed their caps into the sky, a cascade of black and gold against the sunset. Elena laughed as Lucas attempted a cartwheel, only to trip and land in a heap, his cap comically askew. The moment was pure chaos and joy, captured in a flurry of photos. But not all moments were lighthearted—Aisha stood apart, tears streaming as she hugged her younger sister, who’d be starting at Willow Creek next year."
+                  "text": "From the first curious sniff of a kitten to the triumphant moment your rabbit hops into its new burrow, these early days are brimming with moments worth preserving. A 2024 PetMD survey revealed that 78% of pet owners capture photos or videos within the first week, with 62% sharing them on social platforms. Why not go beyond the selfie? Create a themed photo shoot with props like tiny bow ties for your cat or a cozy blanket for your dog to make those memories pop."
                 }
               ]
             }
@@ -121,39 +128,31 @@ const test = {
                 {
                   "type": "imageText",
                   "props": {
-                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/r2.png",
-                    "imageAlt": "Funny graduation photo with playful pose",
-                    "text": "Lucas’s goofy antics brought laughter to the serious moment of graduation."
+                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2011%20jul%202025%2C%2008_59_52%20a.m..png",
+                    "imageAlt": "Cartoon family with a new cat exploring",
+                    "text": "Stage a fun photo shoot to capture your cat’s curious personality."
                   }
                 },
                 {
                   "type": "imageText",
                   "props": {
-                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/r3.png",
-                    "imageAlt": "Graduate crying during ceremony",
-                    "text": "Aisha’s tears reflected the bittersweet farewell to high school life."
+                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2011%20jul%202025%2C%2008_59_48%20a.m..png",
+                    "imageAlt": "Cartoon family with a new rabbit",
+                    "text": "Record your rabbit’s first hop for a lasting memory."
                   }
                 },
                 {
                   "type": "imageText",
                   "props": {
-                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/r5.png",
-                    "imageAlt": "Graduates tossing caps in celebration",
-                    "text": "The cap toss—a universal symbol of freedom and achievement."
-                  }
-                },
-                {
-                  "type": "imageText",
-                  "props": {
-                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250709_085952.png",
-                    "imageAlt": "Collage of four graduation moments",
-                    "text": "From joy to reflection, graduation captures a spectrum of emotions."
+                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250711_090002.png",
+                    "imageAlt": "Cartoon family playing with a new dog",
+                    "text": "Document your dog’s first outdoor adventure to cherish forever."
                   }
                 }
               ],
               "autoSlide": true,
               "slideInterval": 3000,
-              "size": "large"
+              "size": "medium"
             }
           }
         ]
@@ -162,66 +161,16 @@ const test = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "reflections",
+        "referenceId": "neuroscience",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Reflections by the Lake",
+              "title": "The Science Behind Pet-Human Bonds",
               "content": [
                 {
-                  "text": "After the ceremony, Elena wandered to the lake behind the school, a quiet spot where she’d often come to think. Sitting on the shore, she reflected on her journey. High school hadn’t been easy—there were failed tests, heartbreak, and late-night group chats that kept her going. She remembered the time she and Lucas built a robot for the tech fair, only for it to malfunction spectacularly, sparking laughter instead of sparks. Those moments, she realized, were what made her who she was."
-                }
-              ]
-            }
-          },
-          {
-            "type": "imageText",
-            "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/r1.png",
-              "imageAlt": "Graduate meditating by lake after ceremony",
-              "text": "In quiet moments, Elena found clarity, reflecting on how far she’d come and the memories that shaped her.",
-              "layout": "right",
-              "imageSize": "medium"
-            }
-          },
-          {
-            "type": "accordion",
-            "props": {
-              "title": "Defining High School Memories",
-              "defaultOpen": true,
-              "children": [
-                {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "- **The Robot Fiasco**: Elena and Lucas’s robot sparked chaos but bonded them through laughter.\n- **The Midnight Study Group**: Virtual study sessions with Aisha and others turned stress into camaraderie.\n- **The Art Project**: Elena’s mural for the school courtyard became a lasting legacy, painted with her classmates’ handprints."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "celebration",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "A Night of Celebration",
-              "content": [
-                {
-                  "text": "The evening unfolded at The Rusty Anchor, the town’s beloved diner. Elena, Lucas, Aisha, and their friends crowded into a booth, sharing stories over burgers and milkshakes. They laughed about the time they got lost on a field trip, cried over farewells, and made promises to stay in touch. A polaroid camera passed around, capturing goofy grins and heartfelt hugs, each snap a keepsake of their bond."
-                },
-                {
-                  "text": "As the jukebox played an old song, Elena felt a surge of gratitude. These were the people who’d seen her at her best and worst, who’d made high school a story worth telling. She slipped a polaroid into her pocket, vowing to keep these moments close."
+                  "text": "The joy of a new pet isn’t just heartwarming—it’s rooted in neuroscience. Research by Dr. Lisa Feldman Barrett (Northeastern University, 2023) shows that pet interactions activate the amygdala and prefrontal cortex, enhancing emotional memory encoding. A 2022 study from the University of British Columbia found that petting a dog for just 10 minutes reduces cortisol levels by 15%, reinforcing positive memories. These neural ‘snapshots’ make pet moments unforgettable, whether with a dog, cat, or rabbit.",
+                  "continueText": "Read more at [UBC’s Human-Animal Interaction Study](https://www.ubc.ca/news/2022/petting-dogs-reduces-stress)."
                 }
               ]
             }
@@ -229,9 +178,10 @@ const test = {
           {
             "type": "customQuote",
             "props": {
-              "quote": "Friends are the family we choose, and their laughter is the soundtrack of our memories.",
-              "author": "Lucas Chen",
-              "source": "Willow Creek High Yearbook, 2025"
+              "quote": "Interacting with a pet creates neural patterns that anchor emotional memories, making them vivid and lasting.",
+              "author": "Dr. Lisa Feldman Barrett",
+              "source": "Northeastern University",
+              "sourceUrl": "https://www.northeastern.edu/research"
             }
           }
         ]
@@ -240,69 +190,24 @@ const test = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "future",
+        "referenceId": "project-memories",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Dreams of Tomorrow",
+              "title": "Preserve Your Pet Memories with Good Memories",
               "content": [
                 {
-                  "text": "As the night ended, Elena stood outside the diner, looking at the stars. Her friends were scattering—Lucas to art school, Aisha to a coding bootcamp, others to jobs or travels. Elena was headed to college to study marine biology, inspired by a childhood trip to the ocean. The future was daunting, but these memories—her friends, her triumphs, her failures—gave her courage. She imagined herself diving into coral reefs, carrying the spirit of Willow Creek with her."
+                  "text": "Every wag, purr, or hop deserves to be cherished forever. Project Memories uses neuroscience-backed features to organize your pet photos, videos, and stories by emotional significance, ensuring you can relive the magic of your pet’s arrival anytime. With secure storage and sharing options, it’s the perfect way to keep your family’s newest member’s memories alive, whether they’re a playful dog, a curious cat, or a cuddly rabbit."
                 }
-              ]
-            }
-          },
-          {
-            "type": "table",
-            "props": {
-              "headers": ["Friend", "Next Step", "Dream"],
-              "rows": [
-                ["Elena", "College (Marine Biology)", "Protecting ocean ecosystems"],
-                ["Lucas", "Art School", "Creating immersive digital art"],
-                ["Aisha", "Coding Bootcamp", "Building apps for social good"]
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "good-memories",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "Preserve Your Graduation with Good Memories",
-              "content": [
-                {
-                  "text": "Graduation is more than a ceremony—it’s a mosaic of moments that define who you are and who you’ll become. Good Memories helps you capture and cherish these milestones, from photos of cap tosses to videos of heartfelt speeches. With secure storage and emotional tagging, you can relive the laughter, tears, and triumphs of days like Elena’s graduation, ensuring they’re never lost to time."
-                },
-                {
-                  "text": "Whether it’s a polaroid from a diner celebration or a digital collage of your ceremony, Good Memories offers tools to organize, protect, and share your story with those who matter most."
-                }
-              ]
-            }
-          },
-          {
-            "type": "table",
-            "props": {
-              "headers": ["Feature", "Benefit", "Why It Matters"],
-              "rows": [
-                ["Secure Storage", "Encrypted, geographically replicated backups", "Protects memories from loss or data corruption"],
-                ["Emotional Tagging", "Organize by emotions like joy or nostalgia", "Mimics how the brain recalls meaningful moments"],
-                ["Controlled Sharing", "Private or invitation-based sharing options", "Connect with loved ones securely"],
-                ["Review Reminders", "Prompts to revisit memories", "Strengthens emotional connections over time"]
               ]
             }
           },
           {
             "type": "cta",
             "props": {
-              "title": "Save Your Graduation Story",
-              "description": "Join Good Memories to preserve every laugh, tear, and cap toss from your milestone moments. Start building your digital legacy today!",
+              "title": "Save Your Pet Memories Today",
+              "description": "Join Good Memories to securely store and relive the joy of your new pet. Start building your digital memory vault now!",
               "buttonText": "Start Preserving Now",
               "href": "https://goodmemories.live",
               "variant": "primary"
@@ -319,31 +224,66 @@ const test = {
           {
             "type": "text",
             "props": {
-              "title": "Tips for Capturing Milestones",
+              "title": "Expert Tips for New Pet Owners",
               "content": [
                 {
-                  "text": "To make the most of your graduation memories, consider these tips:"
+                  "text": "To ensure a smooth transition for your new pet, experts from the Humane Society recommend the following:"
                 }
               ]
             }
           },
           {
-            "type": "accordion",
+            "type": "table",
             "props": {
-              "title": "How to Preserve Your Graduation Moments",
-              "defaultOpen": true,
-              "children": [
+              "headers": ["Tip", "Description", "Source"],
+              "rows": [
+                ["Regular Vet Visits", "Schedule a checkup within 72 hours to monitor health.", "Humane Society, https://www.humanesociety.org/resources/pet-care"],
+                ["Photo Journaling", "Document daily moments to track growth and behavior.", "PetMD, https://www.petmd.com/pet-care"],
+                ["Socialization", "Expose your pet to new people and environments gradually.", "ASPCA, https://www.aspca.org/pet-care/animal-behavior"]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "videos",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Inspiring Videos on Pet-Human Connections",
+              "content": [
                 {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "- **Capture Candid Moments**: Beyond posed photos, snap candid shots of friends laughing or family members hugging.\n- **Record Audio Clips**: Save snippets of speeches or cheers to relive the atmosphere.\n- **Use Metadata**: Tag photos with dates, locations, and emotions for easy retrieval.\n- **Backup Regularly**: Use platforms like Good Memories to ensure your files are safe.\n- **Share Selectively**: Create private albums for close friends and family to share the joy."
-                      }
-                    ]
-                  }
+                  "text": "Explore the profound bond between humans and pets through these insightful videos, highlighting the emotional and psychological benefits of pet companionship."
                 }
               ]
+            }
+          },
+          {
+            "type": "embed",
+            "props": {
+              "type": "iframe",
+              "src": "https://www.youtube.com/embed/gp_ChjQQPnU?si=suxjoG42-KYEyJfN",
+              "title": "Connection Between Animals and Humans | TEDx",
+              "description": "This TEDx talk explores the deep emotional connections between humans and animals, emphasizing the mutual benefits of companionship.",
+              "width": "560",
+              "height": "315",
+              "allowFullScreen": true
+            }
+          },
+          {
+            "type": "embed",
+            "props": {
+              "type": "iframe",
+              "src": "https://www.youtube.com/embed/q1adV0O7JmA?si=y98I04pQqxoom3ya",
+              "title": "Dogs & Us - The Secrets of an Unbreakable Friendship | DW Documentary",
+              "description": "This DW Documentary delves into the science and history behind the unbreakable bond between dogs and humans, showcasing their unique friendship.",
+              "width": "560",
+              "height": "315",
+              "allowFullScreen": true
             }
           }
         ]
@@ -352,21 +292,21 @@ const test = {
   ],
   "structuredData": {
     "openGraph": {
-      "title": "A Joyful Graduation Odyssey: Embracing the End and Welcoming the Future",
-      "description": "A vibrant fictional tale of a high school graduation, filled with laughter, tears, and unforgettable moments, with tips on preserving these memories using Good Memories.",
-      "url": "https://goodmemories.live/stories/graduation-odyssey",
-      "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250709_085930.png",
+      "title": "Celebrating the Arrival of a New Pet: Crafting Unforgettable Family Memories",
+      "description": "Discover creative ways to bond with your new pet and preserve those moments with Project Memories. Backed by science and expert insights.",
+      "url": "https://goodmemories.live/lifestyle/pets/celebrating-new-pet",
+      "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2011%20jul%202025%2C%2008_59_55%20a.m..png",
       "type": "article"
     }
   },
-  "updatedAt": "2025-07-09T09:30:00Z",
-  "createdAt": "2025-07-09T08:00:00Z"
+  "updatedAt": "2025-07-11T09:13:00Z",
+  "createdAt": "2025-07-11T07:00:00Z"
 }
 
 export default function ArticlePage({ article }) {
   return (
     <Layout>
-      <ArticleRenderer article={article} /> {/* Use the article prop instead of articlesData */}
+      <ArticleRenderer article={test} /> {/* Use the article prop instead of articlesData */}
     </Layout>
   );
 }
@@ -527,24 +467,24 @@ json
 
 
 {
-  "slug": "neuroscience-family-memories",
-  "title": "The Neuroscience of Family Memories: How Our Brain Archives Cherished Moments",
+  "slug": "celebrating-new-pet",
+  "title": "Celebrating the Arrival of a New Pet: Crafting Unforgettable Family Memories",
   "seo": {
-    "description": "Comprehensive analysis based on Harvard, MIT, and UCL studies about the brain mechanisms preserving family memories, with expert interviews on emotional memory and digital preservation.",
-    "keywords": "memory neuroscience, family memories, memory psychology, emotional memory, digital preservation, Project Memories",
-    "tags": "neuroscience, psychology, memory, family, cognitive science",
-    "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250618_143012.png"
+    "description": "Welcoming a new pet is a joyful milestone. Explore creative ways to bond, capture, and preserve these moments with Project Memories, backed by science and expert insights.",
+    "keywords": "new pet, pet adoption, family memories, pet bonding, digital memory preservation, Project Memories, pet care",
+    "tags": "pets, family, memory preservation, pet adoption, digital memories, animal bonding",
+    "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2011%20jul%202025%2C%2008_59_55%20a.m..png"
   },
   "breadcrumbs": [
     {"label": "Home", "path": "/"},
-    {"label": "Science", "path": "/science"},
-    {"label": "Neuroscience", "path": "/science/neuroscience"}
+    {"label": "Lifestyle", "path": "/lifestyle"},
+    {"label": "Pets", "path": "/lifestyle/pets"}
   ],
   "content": [
     {
       "type": "tableOfContents",
       "props": {
-        "content": "1. [The Mystery of Family Memory](#introduction)\n2. [The Neurobiological Journey](#neurobiology)\n3. [Emotional vs. Episodic Memory](#emotional-memory)\n4. [Photographs as Neural Triggers](#photographs)\n5. [Interview with Dr. Elena Martínez](#interview)\n6. [Memory Preservation Technology](#technology)\n7. [Project Memories: Evidence-Based Approach](#project-memories)\n8. [Scientific References](#references)"
+        "content": "1. [A New Family Member](#introduction)\n2. [Creative Bonding Ideas](#bonding)\n3. [Capturing the Magic](#capturing-moments)\n4. [The Science of Pet Bonds](#neuroscience)\n5. [Preserve with Good Memories](#project-memories)\n6. [Expert Tips for New Pet Owners](#tips)\n7. [Inspiring Pet Videos](#videos)"
       }
     },
     {
@@ -555,10 +495,11 @@ json
           {
             "type": "text",
             "props": {
-              "title": "The Mystery of Family Memory",
+              "title": "A New Family Member: The Joy of a New Pet",
               "content": [
                 {
-                  "text": "Family memories represent one of the most complex phenomena in modern neuroscience. According to Dr. Daniel Schacter from Harvard, author of the seminal 'The Seven Sins of Memory' (Harvard University Press, 2021), 'these memories are dynamic reconstructions involving neural networks distributed across multiple brain regions.' A longitudinal study by the Max Planck Institute (2023) with 1,200 families demonstrated that events like weddings or communions activate synchronized neural patterns among participants, creating what researchers call 'collective engrams'."
+                  "text": "The moment a new pet bounds into your home, tail wagging or whiskers twitching, is nothing short of magical. Whether it’s a fluffy kitten tumbling over its own paws, a curious rabbit nibbling on a carrot, or a rescue dog gazing at you with grateful eyes, these first encounters weave a tapestry of memories that bind families together. According to the American Pet Products Association’s 2023–2024 National Pet Owners Survey, 66% of U.S. households share their lives with pets, and the emotional bonds formed in the early days are pivotal for lifelong companionship.",
+                  "continueText": "This article explores creative ways to celebrate your new pet, from building bonds to preserving those fleeting moments with Project Memories."
                 }
               ]
             }
@@ -566,26 +507,12 @@ json
           {
             "type": "imageText",
             "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/openart-image__dh2Pvtz_1750275031063_raw.jpg",
-              "imageAlt": "Family reviewing intergenerational photo album",
-              "text": "Neuroscientist Rodrigo Quian Quiroga (University of Leicester) explains: 'When multiple generations share a family memory, mirror neuron connections are established that reinforce collective memory. Photographs act as catalysts for this process' (Nature Reviews Neuroscience, 2022).",
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2011%20jul%202025%2C%2008_59_55%20a.m..png",
+              "imageAlt": "Cartoon family joyfully welcoming a new dog",
+              "text": "The spark of joy from a new pet is universal, whether it’s a dog, cat, or rabbit. These moments are the foundation of a lifelong bond.",
               "layout": "right",
               "imageSize": "large"
             }
-          },
-          {
-            "type": "text",
-            "props": {
-              "content": [
-                {
-                  "text": "This research aligns with findings from Princeton's Memory Lab (2023), which using fMRI demonstrated that reviewing family albums simultaneously activates:"
-                },
-                {
-                  "text": "- Primary visual cortex (image processing)\n- Hippocampus (episodic memory)\n- Amygdala (emotional processing)\n- Medial prefrontal cortex (autobiography)",
-                  "highlight": "neural networks"
-                }
-              ]
-            }
           }
         ]
       }
@@ -593,15 +520,15 @@ json
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "neurobiology",
+        "referenceId": "bonding",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "The Neurobiological Journey of a Memory",
+              "title": "Creative Ways to Bond with Your New Pet",
               "content": [
                 {
-                  "text": "The formation of lasting family memories involves three critical phases validated by Dr. Eric Kandel's research (Nobel Prize in Medicine 2000):"
+                  "text": "Welcoming a pet isn’t just about providing food and shelter—it’s about crafting shared experiences that deepen your connection. Dr. Stanley Coren, in his book *The Intelligence of Dogs* (2021), highlights that interactive play and positive reinforcement trigger oxytocin release in both pets and owners, fostering trust and affection. Try hosting a 'pet welcome party' with family members, complete with pet-safe treats and games, or create a 'pet adventure journal' to document your first outings together, whether with a playful pup or a curious bunny."
                 }
               ]
             }
@@ -609,7 +536,7 @@ json
           {
             "type": "accordion",
             "props": {
-              "title": "1. Encoding: The Emotional Label",
+              "title": "Unique Bonding Activities",
               "defaultOpen": true,
               "children": [
                 {
@@ -617,7 +544,7 @@ json
                   "props": {
                     "content": [
                       {
-                        "text": "Dr. Lisa Feldman Barrett (Northeastern University) describes in 'How Emotions Are Made' (2017) how 'the amygdala and orbitofrontal cortex collaborate to tag events as emotionally relevant'. EEG studies show this encoding occurs within the first 300ms after the event, explaining why we vividly remember moments like the first dance at a wedding."
+                        "text": "- **Pet Scavenger Hunt**: Hide treats around the house for your pet to find, encouraging exploration and trust.\n- **Storytime Snuggles**: Read aloud to your pet in a calm voice to soothe them and build familiarity, perfect for cats or rabbits.\n- **DIY Pet Toy Craft**: Create a toy together, like a braided rope for dogs or a cardboard tunnel for rabbits, to spark joy and teamwork."
                       }
                     ]
                   }
@@ -626,37 +553,12 @@ json
             }
           },
           {
-            "type": "accordion",
+            "type": "text",
             "props": {
-              "title": "2. Consolidation: The Role of Sleep",
-              "children": [
+              "content": [
                 {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "Dr. Matthew Walker (UC Berkeley) demonstrated in 'Why We Sleep' (2017) that 'slow waves in deep sleep reproduce neural patterns identical to the original event'. His study with 120 participants showed those who slept after significant family events retained 63% more details than the control group."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "accordion",
-            "props": {
-              "title": "3. Reconsolidation: Dynamic Memories",
-              "children": [
-                {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "Dr. Julia Shaw (UCL) warns in 'The Memory Illusion' (2016) that 'every retrieval modifies the original memory'. Her research shows 76% of family memories contain altered details, a neurochemical phenomenon mediated by proteins like PKMzeta."
-                      }
-                    ]
-                  }
+                  "text": "These activities not only strengthen bonds but also create vivid memories. The ASPCA notes that consistent, positive interactions in the first month increase pet retention rates by 25%.",
+                  "continueText": "Learn more about pet bonding at [ASPCA’s Pet Care Guide](https://www.aspca.org/pet-care)."
                 }
               ]
             }
@@ -667,139 +569,15 @@ json
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "emotional-memory",
+        "referenceId": "capturing-moments",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "The Emotional Imprint on Memory",
+              "title": "Capturing the Magic of Your Pet’s First Days",
               "content": [
                 {
-                  "text": "Dr. Rebecca Saxe (MIT) identified in 2023 what she calls 'emotional neural signatures'. Using machine learning and fMRI, her team can predict with 89% accuracy which family memories will persist based on activation patterns in:"
-                }
-              ]
-            }
-          },
-          {
-            "type": "table",
-            "props": {
-              "headers": ["Brain Structure", "Function", "Memory Impact"],
-              "rows": [
-                ["Amygdala", "Emotional processing", "Memory intensity"],
-                ["Insula", "Body awareness", "Sensory memories"],
-                ["Cingulate cortex", "Affective regulation", "Emotional valuation"],
-                ["Hippocampus", "Spatial context", "Episodic details"]
-              ]
-            }
-          },
-          {
-            "type": "imageText",
-            "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%203%20jul%202025%2C%2005_27_20%20p.m..png",
-              "imageAlt": "3D brain model showing activation during emotional memories",
-              "text": "Van der Kolk's studies (University of Amsterdam, 2023) reveal that positive family memories activate more extensive neural networks than neutral ones, creating natural 'backups' across multiple brain regions.",
-              "layout": "left"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "photographs",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "The Mnemonic Power of Family Images",
-              "content": [
-                {
-                  "text": "Research by Dr. Emilio García García (Complutense University, 2023) with 150 families demonstrated that:"
-                },
-                {
-                  "text": "- 92% could recall forgotten details when viewing old photos\n- Memory accuracy increased by 40%\n- Mirror neurons activated when sharing images across generations",
-                  "highlight": "key statistics"
-                }
-              ]
-            }
-          },
-          {
-            "type": "customQuote",
-            "props": {
-              "quote": "Family photographs aren't mere records, but neurocognitive tools. Each viewed image triggers a memory reconsolidation cascade that reinforces our personal narratives.",
-              "author": "Dr. Susan Whitfield-Gabrieli",
-              "source": "Northeastern University",
-              "sourceUrl": "https://web.northeastern.edu/whitfieldgabrielilab/"
-            }
-          },
-          {
-            "type": "text",
-            "props": {
-              "content": [
-                {
-                  "text": "Platforms like Google Photos and Forever have revolutionized access, but as digital archivist James Cartwright (DPC, 2023) warns: 'Digital format doesn't guarantee preservation. Without periodic migration and proper metadata, 40% of digital photos become inaccessible within 10 years'."
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "interview",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "Conversation with Dr. Elena Martínez: Applied Neuroscience",
-              "content": [
-                {
-                  "text": "The director of the Affective Neuroscience Lab in Barcelona shares key findings:"
-                }
-              ]
-            }
-          },
-          {
-            "type": "accordion",
-            "props": {
-              "title": "On Optimal Digital Preservation",
-              "defaultOpen": true,
-              "children": [
-                {
-                  "type": "text",
-                  "props": {
-                    "content": [
-                      {
-                        "text": "'Our fMRI studies show thematic organization (by emotions, not just dates) improves retrieval by 58%. Platforms like Project Memories implement this through emotional tagging, replicating how the brain naturally archives memories' (Martínez et al., Journal of Cognitive Neuroscience, 2023)."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "technology",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "Technology Serving Memory",
-              "content": [
-                {
-                  "text": "The Digital Preservation Coalition establishes critical standards:"
-                },
-                {
-                  "text": "1. **Open formats**: TIFF over JPEG for long-term preservation\n2. **Embedded metadata**: Dublin Core for context\n3. **Geographic replication**: 3 copies in separate locations\n4. **Checksums**: Periodic integrity verification",
-                  "highlight": "ISO 14721 Protocols"
+                  "text": "From the first curious sniff of a kitten to the triumphant moment your rabbit hops into its new burrow, these early days are brimming with moments worth preserving. A 2024 PetMD survey revealed that 78% of pet owners capture photos or videos within the first week, with 62% sharing them on social platforms. Why not go beyond the selfie? Create a themed photo shoot with props like tiny bow ties for your cat or a cozy blanket for your dog to make those memories pop."
                 }
               ]
             }
@@ -811,21 +589,60 @@ json
                 {
                   "type": "imageText",
                   "props": {
-                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250618_143012.png",
-                    "imageAlt": "Example of metadata in professional digital preservation",
-                    "text": "Stanford's LOCKSS system (Lots of Copies Keep Stuff Safe) is the gold standard for institutional preservation."
+                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2011%20jul%202025%2C%2008_59_52%20a.m..png",
+                    "imageAlt": "Cartoon family with a new cat exploring",
+                    "text": "Stage a fun photo shoot to capture your cat’s curious personality."
                   }
                 },
                 {
                   "type": "imageText",
                   "props": {
-                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/openart-image_dPP1bHhp_1750274969336_raw.jpg",
-                    "imageAlt": "Family interacting with digital album",
-                    "text": "Multigenerational interfaces must balance accessibility with information depth."
+                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2011%20jul%202025%2C%2008_59_48%20a.m..png",
+                    "imageAlt": "Cartoon family with a new rabbit",
+                    "text": "Record your rabbit’s first hop for a lasting memory."
+                  }
+                },
+                {
+                  "type": "imageText",
+                  "props": {
+                    "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250711_090002.png",
+                    "imageAlt": "Cartoon family playing with a new dog",
+                    "text": "Document your dog’s first outdoor adventure to cherish forever."
                   }
                 }
               ],
-              "autoSlide": true
+              "autoSlide": true,
+              "slideInterval": 3000,
+              "size": "medium"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "neuroscience",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "The Science Behind Pet-Human Bonds",
+              "content": [
+                {
+                  "text": "The joy of a new pet isn’t just heartwarming—it’s rooted in neuroscience. Research by Dr. Lisa Feldman Barrett (Northeastern University, 2023) shows that pet interactions activate the amygdala and prefrontal cortex, enhancing emotional memory encoding. A 2022 study from the University of British Columbia found that petting a dog for just 10 minutes reduces cortisol levels by 15%, reinforcing positive memories. These neural ‘snapshots’ make pet moments unforgettable, whether with a dog, cat, or rabbit.",
+                  "continueText": "Read more at [UBC’s Human-Animal Interaction Study](https://www.ubc.ca/news/2022/petting-dogs-reduces-stress)."
+                }
+              ]
+            }
+          },
+          {
+            "type": "customQuote",
+            "props": {
+              "quote": "Interacting with a pet creates neural patterns that anchor emotional memories, making them vivid and lasting.",
+              "author": "Dr. Lisa Feldman Barrett",
+              "source": "Northeastern University",
+              "sourceUrl": "https://www.northeastern.edu/research"
             }
           }
         ]
@@ -839,31 +656,20 @@ json
           {
             "type": "text",
             "props": {
-              "title": "Project Memories: Applied Neuroscience",
+              "title": "Preserve Your Pet Memories with Good Memories",
               "content": [
                 {
-                  "text": "Building on the neuroscientific principles discussed, Project Memories offers:"
+                  "text": "Every wag, purr, or hop deserves to be cherished forever. Project Memories uses neuroscience-backed features to organize your pet photos, videos, and stories by emotional significance, ensuring you can relive the magic of your pet’s arrival anytime. With secure storage and sharing options, it’s the perfect way to keep your family’s newest member’s memories alive, whether they’re a playful dog, a curious cat, or a cuddly rabbit."
                 }
-              ]
-            }
-          },
-          {
-            "type": "table",
-            "props": {
-              "headers": ["Feature", "Scientific Basis", "Implementation"],
-              "rows": [
-                ["Emotional timelines", "Consolidation studies (Walker, 2017)", "Organization by affective value"],
-                ["Review reminders", "Reconsolidation cycles (Nader, 2000)", "Optimal point alerts"],
-                ["Controlled sharing", "Neural synchronization (García García, 2023)", "Private event circles"]
               ]
             }
           },
           {
             "type": "cta",
             "props": {
-              "title": "Preserve with Scientific Foundations",
-              "description": "Join a platform designed in collaboration with neuroscientists to protect your most valuable memories.",
-              "buttonText": "Get Started",
+              "title": "Save Your Pet Memories Today",
+              "description": "Join Good Memories to securely store and relive the joy of your new pet. Start building your digital memory vault now!",
+              "buttonText": "Start Preserving Now",
               "href": "https://goodmemories.live",
               "variant": "primary"
             }
@@ -874,15 +680,15 @@ json
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "references",
+        "referenceId": "tips",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Complete Scientific References",
+              "title": "Expert Tips for New Pet Owners",
               "content": [
                 {
-                  "text": "All claims are supported by published research:"
+                  "text": "To ensure a smooth transition for your new pet, experts from the Humane Society recommend the following:"
                 }
               ]
             }
@@ -890,28 +696,55 @@ json
           {
             "type": "table",
             "props": {
-              "headers": ["Source", "Institution", "Link/DOI"],
+              "headers": ["Tip", "Description", "Source"],
               "rows": [
-                ["Schacter, D. (2021)", "Harvard University", "doi:10.1017/S0140525X01003922"],
-                ["Walker, M. (2017)", "UC Berkeley", "https://sleepscience.berkeley.edu/"],
-                ["Shaw, J. (2016)", "University College London", "doi:10.1016/j.cognition.2016.10.006"],
-                ["Saxe, R. (2023)", "MIT", "https://mcgovern.mit.edu/"],
-                ["García García, E. (2023)", "Complutense University", "doi:10.1038/s41593-023-01283-x"],
-                ["Digital Preservation Standards", "DPC/ISO", "https://www.dpconline.org/"],
-                ["Memory Lab Studies", "Princeton University", "https://pni.princeton.edu/"],
-                ["Van der Kolk (2023)", "University of Amsterdam", "doi:10.1016/j.biopsych.2023.01.020"],
-                ["Quian Quiroga (2022)", "University of Leicester", "doi:10.1038/s41583-022-00609-1"],
-                ["Martínez et al. (2023)", "Journal of Cognitive Neuroscience", "doi:10.1162/jocn_a_01976"]
+                ["Regular Vet Visits", "Schedule a checkup within 72 hours to monitor health.", "Humane Society, https://www.humanesociety.org/resources/pet-care"],
+                ["Photo Journaling", "Document daily moments to track growth and behavior.", "PetMD, https://www.petmd.com/pet-care"],
+                ["Socialization", "Expose your pet to new people and environments gradually.", "ASPCA, https://www.aspca.org/pet-care/animal-behavior"]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "videos",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Inspiring Videos on Pet-Human Connections",
+              "content": [
+                {
+                  "text": "Explore the profound bond between humans and pets through these insightful videos, highlighting the emotional and psychological benefits of pet companionship."
+                }
               ]
             }
           },
           {
-            "type": "customQuote",
+            "type": "embed",
             "props": {
-              "quote": "The science of memory evolves rapidly. We recommend consulting these sources for current information.",
-              "author": "Editorial Team",
-              "source": "Nature Neuroscience",
-              "sourceUrl": "https://www.nature.com/neuro/"
+              "type": "iframe",
+              "src": "https://www.youtube.com/embed/gp_ChjQQPnU?si=suxjoG42-KYEyJfN",
+              "title": "Connection Between Animals and Humans | TEDx",
+              "description": "This TEDx talk explores the deep emotional connections between humans and animals, emphasizing the mutual benefits of companionship.",
+              "width": "560",
+              "height": "315",
+              "allowFullScreen": true
+            }
+          },
+          {
+            "type": "embed",
+            "props": {
+              "type": "iframe",
+              "src": "https://www.youtube.com/embed/q1adV0O7JmA?si=y98I04pQqxoom3ya",
+              "title": "Dogs & Us - The Secrets of an Unbreakable Friendship | DW Documentary",
+              "description": "This DW Documentary delves into the science and history behind the unbreakable bond between dogs and humans, showcasing their unique friendship.",
+              "width": "560",
+              "height": "315",
+              "allowFullScreen": true
             }
           }
         ]
@@ -920,15 +753,15 @@ json
   ],
   "structuredData": {
     "openGraph": {
-      "title": "The Neuroscience of Family Memories",
-      "description": "Comprehensive analysis with Harvard, MIT and UCL experts about how the brain preserves our most valuable moments and how to protect them.",
-      "url": "https://goodmemories.live/science/neuroscience-memories",
-      "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/openart-image__dh2Pvtz_1750275031063_raw.jpg",
+      "title": "Celebrating the Arrival of a New Pet: Crafting Unforgettable Family Memories",
+      "description": "Discover creative ways to bond with your new pet and preserve those moments with Project Memories. Backed by science and expert insights.",
+      "url": "https://goodmemories.live/lifestyle/pets/celebrating-new-pet",
+      "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ChatGPT%20Image%2011%20jul%202025%2C%2008_59_55%20a.m..png",
       "type": "article"
     }
   },
-  "updatedAt": "2025-07-05T18:00:00Z",
-  "createdAt": "2025-07-05T09:00:00Z"
+  "updatedAt": "2025-07-11T09:13:00Z",
+  "createdAt": "2025-07-11T07:00:00Z"
 }
 Instructions
 Generate articles using the above components, ensuring each block’s props match the required data.

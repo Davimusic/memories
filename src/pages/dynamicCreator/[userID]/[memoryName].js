@@ -396,6 +396,19 @@ const CollageDisplay = () => {
     { type: 'video-only', count: 1 },
   ];
 
+
+  
+  /*useEffect(() => {
+    if(!userEmail){ //
+      const path = window.location.pathname;
+      localStorage.setItem('redirectPath', path);
+      localStorage.setItem('reason', 'userEmailValidationOnly');
+      router.push('/login');
+    }
+  }, []);*/
+
+
+
   // Reset to home on critical error
   useEffect(() => {
     if (criticalError) {

@@ -9,6 +9,7 @@ import CTABlock from './CTABlock';
 import CustomQuote from './customQuote';
 import ContentSlider from './contentSlider';
 import FeedbackForm from './feedbackForm';
+import EmbedBlock from './embedBlock';
 
 const ContentBlockRenderer = ({ block }) => {
   console.log('ContentBlockRenderer block:', block);
