@@ -1,26 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Usa 'next/navigation' en vez de 'next/router'
-//import GeneralMold from "@/components/complex/generalMold";
-import '../estilos/general/projectPresentation.css'
-//import ProjectPresentation from "@/components/complex/projectPresentation";
-
-
-
-
-//import React, { useState, useEffect } from 'react';
-//import { useRouter } from 'next/router';
-import Head from 'next/head';
+import { useRouter } from "next/navigation";
+import Head from "next/head";
 import Menu from "@/components/complex/menu";
-//import InternetStatus from './internetStatus';
-
 import '../app/globals.css';
 import '../estilos/general/generalMold.css';
-
-
+import '../estilos/general/projectPresentation.css';
 import LoadingMemories from "@/components/complex/loading";
-//import ErrorComponent from './error';
-//import { auth } from '../../../firebase'; 
 
 const GeneralMold = ({
   pageTitle = 'Default Page',
@@ -45,19 +31,7 @@ const GeneralMold = ({
   const [permissionError, setPermissionError] = useState('');
   const [basePath, setBasePath] = useState('');
   const router = useRouter();
-  //const { userID, memoryName } = router.query;
 
-  
-  
-  
-
-  
-
-  
-
-  
-
-  // Toggle dark mode
   useEffect(() => {
     const savedMode = localStorage.getItem('darkMode');
     const initialMode = savedMode ? JSON.parse(savedMode) : false;
@@ -96,12 +70,8 @@ const GeneralMold = ({
     return <LoadingMemories />;
   }
 
-
-
-
-
   return (
-    <div  className={!(router.pathname === "/payment/payPlan" || basePath === "editMemories" || basePath === "uploadFiles") ? "general-mold" : ""}  role="main" aria-label="Main content">
+    <div className={!(router.pathname === "/payment/payPlan" || basePath === "editMemories" || basePath === "uploadFiles") ? "general-mold" : ""} role="main" aria-label="Main content">
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
@@ -110,12 +80,9 @@ const GeneralMold = ({
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
-        
         <meta name="robots" content={visibility === 'public' ? 'index, follow' : 'noindex'} />
-        
       </Head>
 
-      
       <header className="header">
         <button
           className="back-button button"
@@ -133,14 +100,9 @@ const GeneralMold = ({
         </button>
         {themeToggleButton}
         <div className="visibility">
-          <span className="visibility-icon" aria-hidden="true">
-            
-          </span>
-          <span className="visibility-label content-small">
-            
-          </span>
+          <span className="visibility-icon" aria-hidden="true"></span>
+          <span className="visibility-label content-small"></span>
         </div>
-
       </header>
 
       <Menu
@@ -151,26 +113,24 @@ const GeneralMold = ({
       />
 
       <div style={{marginTop: '80px'}} className={`content-container ${hasBothContent ? 'dual-content' : 'single-content'}`}>
-        
-          <>
-            {leftContent && (
-              <section
-                className={` card ${hasBothContent ? '' : 'full-width'}`}
-                aria-label="Left content"
-              >
-                {leftContent}
-              </section>
-            )}
-            {rightContent && (
-              <section
-                className={`right-container card ${hasBothContent ? '' : 'full-width'}`}
-                aria-label="Right content"
-              >
-                {rightContent}
-              </section>
-            )}
-          </>
-        
+        <>
+          {leftContent && (
+            <section
+              className={`card ${hasBothContent ? '' : 'full-width'}`}
+              aria-label="Left content"
+            >
+              {leftContent}
+            </section>
+          )}
+          {rightContent && (
+            <section
+              className={`right-container card ${hasBothContent ? '' : 'full-width'}`}
+              aria-label="Right content"
+            >
+              {rightContent}
+            </section>
+          )}
+        </>
       </div>
 
       {isModalOpen && (
@@ -223,19 +183,37 @@ const GeneralMold = ({
   );
 };
 
-
-
-
 const ProjectPresentation = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('images');
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([]);
+
+  const baseUrl = 'https://goodmemoriesapp.b-cdn.net/e55c81892694f42318e9b3b5131051559650dcba7d0fe0651c2aa472ea6a6c0c/ytrmrpGjnR5WfYvIFQm45SmoAWEGTynq54VgGIC7As/general/';
+  const dynamicMemoryUrl = 'https://www.goodmemories.live/dynamicMemory/e55c81892694f42318e9b3b5131051559650dcba7d0fe0651c2aa472ea6a6c0c/ytrmrpGjnR5WfYvIFQm45SmoAWEGTynq54VgGIC7As/520b84d9c1f48f6b05ef8f4bb4a86420cff83e0d2f875dfe78062dd8eb5d718a';
+
+  const heroImages = [
+    `${baseUrl}image/family-7638959_640.jpg`,
+    `${baseUrl}image/family-7638960_640.jpg`,
+    `${baseUrl}image/family-7638961_640.jpg`,
+    `${baseUrl}image/family-7638962_640.jpg`,
+    `${baseUrl}image/family-7638964_640.jpg`,
+    `${baseUrl}image/family-7638966_640.jpg`,
+    `${baseUrl}image/family-7638967_640.jpg`,
+    `${baseUrl}image/family-7638971_640.jpg`,
+    `${baseUrl}image/family-7638972_640.jpg`,
+  ];
+
+  // Removed dynamicMemoryUrl from previewImages to avoid duplicate rendering
+  const previewImages = [
+    `${baseUrl}image/family-7638973_640.jpg`,
+    `${baseUrl}image/park-2967756_640.jpg`,
+  ];
 
   const fileTypes = [
     { id: 'images', name: 'Imágenes', icon: '🖼️', extensions: ['JPG', 'PNG', 'GIF', 'WEBP'] },
     { id: 'videos', name: 'Videos', icon: '🎬', extensions: ['MP4', 'MOV', 'AVI', 'MKV'] },
     { id: 'audio', name: 'Audio', icon: '🎵', extensions: ['MP3', 'WAV', 'FLAC', 'OGG'] },
-    { id: 'docs', name: 'Documentos', icon: '📄', extensions: ['PDF', 'DOC', 'DOCX', 'TXT'] },
-    { id: 'other', name: 'Otros', icon: '📦', extensions: ['ZIP', 'RAR', 'EXE', 'ISO'] }
   ];
 
   const features = [
@@ -276,6 +254,14 @@ const ProjectPresentation = () => {
     }
   ];
 
+  const handleCommentSubmit = (e) => {
+    e.preventDefault();
+    if (comment.trim()) {
+      setComments([...comments, { text: comment, id: Date.now() }]);
+      setComment('');
+    }
+  };
+
   return (
     <div className="presentation-container">
       <section className="hero-section">
@@ -302,8 +288,16 @@ const ProjectPresentation = () => {
         </div>
         <div className="hero-visual">
           <div className="visual-grid">
-            {[...Array(9)].map((_, i) => (
-              <div key={i} className={`grid-item visual-item-${i+1}`}></div>
+            {heroImages.map((url, i) => (
+              <div
+                key={i}
+                className={`grid-item visual-item-${i + 1}`}
+                style={{
+                  backgroundImage: `url(${url})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              ></div>
             ))}
           </div>
         </div>
@@ -320,6 +314,17 @@ const ProjectPresentation = () => {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="dynamic-memory-section">
+        <h2 className="title-md color1 text-center">Recuerdo Dinámico Destacado</h2>
+        <iframe
+          src={dynamicMemoryUrl}
+          width="100%"
+          height="600"
+          style={{ border: "none", borderRadius: '20px' }}
+          title="Recuerdo Dinámico"
+        />
       </section>
 
       <section className="file-types-section">
@@ -340,90 +345,83 @@ const ProjectPresentation = () => {
           <div className="file-preview">
             {activeTab === 'images' && (
               <div className="image-preview">
-                <div className="preview-image img1"></div>
-                <div className="preview-image img2"></div>
-                <div className="preview-image img3"></div>
+                {previewImages.map((url, i) => (
+                  <div
+                    key={i}
+                    className={`preview-image img${i + 1}`}
+                    style={{
+                      backgroundImage: `url(${url})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }}
+                  ></div>
+                ))}
               </div>
             )}
-            
             {activeTab === 'videos' && (
               <div className="video-preview">
-                <div className="video-player">
-                  <div className="play-button">▶</div>
-                </div>
+                <video
+                  controls
+                  src={`${baseUrl}video/13018-243739870_tiny.mp4`}
+                  style={{ width: '100%', height: 'auto' }}
+                />
                 <div className="video-info">
-                  <h4 className="title-xs color1">Video de vacaciones</h4>
+                  <h4 className="title-xs color1">Chocar copas</h4>
                   <p className="content-small color1">MP4 • 1080p • 2:45 min</p>
                 </div>
               </div>
             )}
-            
             {activeTab === 'audio' && (
               <div className="audio-preview">
-                <div className="audio-player">
-                  <div className="waveform">
-                    {[...Array(20)].map((_, i) => (
-                      <div key={i} className="wave-bar" style={{ height: `${10 + Math.random() * 50}%` }}></div>
-                    ))}
-                  </div>
-                  <div className="player-controls">
-                    <button className="control-button">⏮</button>
-                    <button className="control-button play">▶</button>
-                    <button className="control-button">⏭</button>
-                  </div>
-                </div>
+                <audio
+                  controls
+                  src={`${baseUrl}audio/mommy.mp3`}
+                  style={{ width: '100%' }}
+                />
                 <div className="audio-info">
-                  <h4 className="title-xs color1">Canción favorita</h4>
+                  <h4 className="title-xs color1">Voz de la madre</h4>
                   <p className="content-small color1">MP3 • 3:22 min</p>
                 </div>
               </div>
             )}
-            
-            {activeTab === 'docs' && (
-              <div className="doc-preview">
-                <div className="document">
-                  <div className="doc-header">
-                    <div className="doc-icon">📄</div>
-                    <h4 className="title-xs color1">Receta familiar.pdf</h4>
-                  </div>
-                  <div className="doc-content">
-                    <p className="content-default color1">
-                      <strong>Ingredientes:</strong><br/>
-                      - Harina<br/>
-                      - Azúcar<br/>
-                      - Huevos<br/>
-                      - Leche<br/>
-                      <strong>Preparación:</strong><br/>
-                      1. Mezclar todos los ingredientes...
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            {activeTab === 'other' && (
-              <div className="other-preview">
-                <div className="archive">
-                  <div className="archive-icon">📦</div>
-                  <h4 className="title-xs color1">Fotos_vacaciones.zip</h4>
-                  <p className="content-small color1">125 MB • 48 archivos</p>
-                </div>
-              </div>
-            )}
           </div>
-          
           <div className="file-info">
             <h3 className="title-sm color1">{fileTypes.find(t => t.id === activeTab).name}</h3>
             <p className="content-default color1">
-              Good Memories soporta todos los formatos estándar para que puedas almacenar cualquier tipo de archivo sin preocupaciones.
+              Clasifica tus memorias por categorías, fechas o eventos importantes para una experiencia personalizada.
             </p>
-            <div className="supported-formats">
-              <h4 className="title-xxs color4">Formatos soportados:</h4>
-              <div className="format-badges">
-                {fileTypes.find(t => t.id === activeTab).extensions.map((ext, i) => (
-                  <span key={i} className="format-badge">{ext}</span>
-                ))}
-              </div>
+          </div>
+          <div className="comments-section">
+            <h3 className="title-sm color1">Comentarios</h3>
+            <form onSubmit={handleCommentSubmit}>
+              <textarea
+                className="comment-input"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Escribe un comentario..."
+                style={{
+                  width: '100%',
+                  minHeight: '80px',
+                  padding: '8px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc',
+                  marginBottom: '10px',
+                }}
+              />
+              <button
+                type="submit"
+                className="button"
+                style={{ padding: '8px 16px' }}
+              >
+                Enviar
+              </button>
+            </form>
+            <div className="comments-list">
+              {comments.map((c) => (
+                <div key={c.id} className="comment card" style={{ marginTop: '10px', padding: '10px' }}>
+                  <p className="content-default color1">{c.text}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -465,25 +463,16 @@ const ProjectPresentation = () => {
   );
 };
 
-
-
 export default function HomePage() {
-  
-
-  /*useEffect(() => {
-    router.push("/memories");
-  }, [router]);*/
-
   return (
     <main>
       <GeneralMold
-      pageTitle="Good Memories - Plataforma de gestión de recuerdos"
-      pageDescription="Descubre las posibilidades de Good Memories, la plataforma para guardar y compartir tus recuerdos más valiosos."
-      leftContent={<ProjectPresentation />}
-      visibility="public"
-      metaKeywords="good memories, presentación, recuerdos, fotos, videos, audios, almacenamiento"
-    />
+        pageTitle="Good Memories - Plataforma de gestión de recuerdos"
+        pageDescription="Descubre las posibilidades de Good Memories, la plataforma para guardar y compartir tus recuerdos más valiosos."
+        leftContent={<ProjectPresentation />}
+        visibility="public"
+        metaKeywords="good memories, presentación, recuerdos, fotos, videos, audios, almacenamiento"
+      />
     </main>
   );
 }
-

@@ -40,10 +40,18 @@ export const handleGoogleLogin = async (setError, setIsLoading, hasAgreedToTerms
     setIsLoading(false);
   }
 
-  const redirectPath = localStorage.getItem('redirectPath');
-  console.log(redirectPath);
-  localStorage.removeItem('redirectPath');
-  router.push(redirectPath);
+  
+  
+  if(reason != null){
+    const redirectPath = localStorage.getItem('redirectPath');
+    console.log(redirectPath);
+    localStorage.removeItem('redirectPath');
+    router.push(redirectPath);
+  } else {
+    router.push('/');
+  }
+  
+  
 
   return result;
 };
