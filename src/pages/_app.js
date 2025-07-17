@@ -1,9 +1,13 @@
-/*import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+'use client';
+
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { initializeApp, getApps } from 'firebase/app';
 import { ToastContainer } from 'react-toastify';
 import Head from 'next/head';
+import InternetStatus from '@/components/complex/internetStatus';
+import { useRouter } from 'next/router';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Initialize Firebase client SDK
@@ -49,10 +53,25 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to access auth context
 export const useAuth = () => useContext(AuthContext);
 
 export default function App({ Component, pageProps }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('config', 'G-2G9WD5EEKK', {
+          page_path: url,
+        });
+      }
+    };
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
+
   return (
     <AuthProvider>
       <Head>
@@ -60,8 +79,21 @@ export default function App({ Component, pageProps }) {
         <meta name="theme-color" content="#000000" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <link rel="apple-touch-icon" href="/photosLoging/f1.webp" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+
+        {/* Google Analytics Script */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-2G9WD5EEKK" />
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-2G9WD5EEKK');
+          `
+        }} />
       </Head>
+
+      <InternetStatus/>
       <PayPalScriptProvider
         options={{
           'client-id': 'AbyHsDXyJLxKBgCHv9BAeVbt-JLALZCJ4q_Z1m-dKA58ime8dXCgHL0ycehEvOH1ceJvjCzUOmzUAADN',
@@ -76,10 +108,43 @@ export default function App({ Component, pageProps }) {
       </PayPalScriptProvider>
     </AuthProvider>
   );
-}*/
+}
 
 
-'use client';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*'use client';
 
 
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
@@ -162,7 +227,7 @@ export default function App({ Component, pageProps }) {
       </PayPalScriptProvider>
     </AuthProvider>
   );
-}
+}*/
 
 
 

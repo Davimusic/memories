@@ -1,11 +1,33 @@
-/* Estilos originales */
+/* Estilos originales con scrollbars personalizados */
 .comments-container {
-  
   background: var(--card-bg);
   border-radius: 8px;
   max-height: 35vh;
   overflow-y: auto;
   width: 100%;
+  /* Personalización de la barra de desplazamiento */
+  scrollbar-width: thin; /* Para Firefox */
+  scrollbar-color: var(--accent) transparent; /* Color del thumb y track */
+}
+
+/* Para navegadores basados en WebKit (Chrome, Safari, Edge) */
+.comments-container::-webkit-scrollbar {
+  width: 6px; /* Ancho más delgado para un look discreto */
+}
+
+.comments-container::-webkit-scrollbar-track {
+  background: transparent; /* Fondo transparente */
+}
+
+.comments-container::-webkit-scrollbar-thumb {
+  background: var(--accent); /* Color del thumb */
+  border-radius: 10px; /* Bordes redondeados */
+  opacity: 0.5; /* Más discreto */
+}
+
+.comments-container::-webkit-scrollbar-thumb:hover {
+  background: var(--accent); /* Color al pasar el ratón */
+  opacity: 0.8; /* Algo más visible al interactuar */
 }
 
 .reply-input, .comment-edit {
@@ -42,7 +64,7 @@ textarea:focus {
   position: relative;
 }
 
-.comments-list{
+.comments-list {
   width: 100%;
 }
 
