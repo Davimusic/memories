@@ -44,7 +44,7 @@ const UserValidation = () => {
         localStorage.setItem('userName', user.displayName || 'User');
         localStorage.setItem('userImage', user.photoURL || '');
 
-        const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+        const redirectPath = localStorage.getItem('redirectPath');// || '/memories';
         try {
           localStorage.removeItem('reason');
           localStorage.removeItem('redirectPath');
@@ -69,6 +69,49 @@ const UserValidation = () => {
   }, [router]);
 
   const handleEmailPasswordSubmit = async (e) => {
+  e.preventDefault();
+  if (isLoading) return;
+  if (!hasAgreedToTerms) {
+    setError('You must agree to the terms and conditions to proceed.');
+    toast.error('You must agree to the terms and conditions to proceed.');
+    return;
+  }
+  setError('');
+  setIsLoading(true);
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log('User signed in:', userCredential);
+  } catch (error) {
+    if (error.code === 'auth/invalid-credential') {
+      try {
+        const newUserCredential = await createUserWithEmailAndPassword(auth, email, password);
+        console.log('User created and signed in:', newUserCredential);
+      } catch (createError) {
+        console.error('Error creating user:', createError);
+        const errorMessage = getErrorMessage(createError);
+        setError(errorMessage);
+        toast.error(errorMessage);
+      }
+    } else {
+      console.error('Error signing in with email/password:', error);
+      const errorMessage = getErrorMessage(error);
+      setError(errorMessage);
+      toast.error(errorMessage);
+    }
+  } finally {
+    setIsLoading(false);
+  }
+  try{
+      const redirectPath = localStorage.getItem('redirectPath')  ;
+      router.push(redirectPath);
+      localStorage.removeItem('redirectPath');
+    } catch (error){
+      console.log(error);
+    }
+};
+
+  /*const handleEmailPasswordSubmit = async (e) => {
     e.preventDefault();
     if (isLoading) return;
     if (!hasAgreedToTerms) {
@@ -79,13 +122,18 @@ const UserValidation = () => {
     setError('');
 
     setIsLoading(true);
+
+
+    console.log(auth);
+    console.log(email);
+    console.log(password);
+    
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      const redirectPath = localStorage.getItem('redirectPath') || '/memories';
-      localStorage.removeItem('redirectPath');
-      localStorage.removeItem('reason');
-      router.push(redirectPath);
+      console.log(userCredential);
+      
+      
+      
     } catch (error) {
       console.error('Error signing in with email/password:', error);
       const errorMessage = getErrorMessage(error);
@@ -94,7 +142,14 @@ const UserValidation = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+    try{
+      const redirectPath = localStorage.getItem('redirectPath')  ;
+      router.push(redirectPath);
+      localStorage.removeItem('redirectPath');
+    } catch (error){
+      console.log(error);
+    }
+  };*/
 
   const handleGoogleSubmit = async () => {
     if (isLoading) return;
@@ -103,12 +158,12 @@ const UserValidation = () => {
     setIsLoading(true);
     try {
       const { user } = await handleGoogleLogin(setError, setIsLoading, hasAgreedToTerms, 'userEmailValidationOnly', router);
-      if (user) {
+      /*if (user) {
         const redirectPath = localStorage.getItem('redirectPath') || '/memories';
         localStorage.removeItem('redirectPath');
         localStorage.removeItem('reason');
         router.push(redirectPath);
-      }
+      }*/
     } catch (error) {
       // Error already handled in handleGoogleLogin
     }

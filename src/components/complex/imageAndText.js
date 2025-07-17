@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from '../simple/image';
 import Text from '../simple/text';
-import HeartIcon from './heartIcon';
+import HeartIcon from './icons/heartIcon';
 import '../../estilos/general/general.css';
 import handleLike from '@/functions/music/handleLike';
 import ShareIcon from './shareIcon';

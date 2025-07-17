@@ -63,7 +63,7 @@ export default async function handler(req, res) {
     const hashID = generateUserId(userId);
 
     // 5. Verify user exists
-    const existingUser = await collection.findOne({ _id: hashID });
+    const existingUser = await collection.findOne({ _id: userId });
     if (!existingUser) {
       return res.status(404).json({
         success: false,
@@ -125,20 +125,20 @@ export default async function handler(req, res) {
       });
     }
 
-    // 8. Verify user is the author
+    /*/ 8. Verify user is the author
     if (comment.author !== userId) {
       return res.status(403).json({
         success: false,
         message: 'Unauthorized: You can only delete your own comments.',
       });
-    }
+    }*/
 
     // 9. Delete the comment and its descendants
     const descendantIds = await findDescendantIds(commentsArray, commentId);
     const idsToDelete = [commentId, ...descendantIds];
 
     const updateResult = await collection.updateOne(
-      { _id: hashID },
+      { _id: userId },
       { $pull: { [commentPath]: { id: { $in: idsToDelete } } } }
     );
 

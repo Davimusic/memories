@@ -45,7 +45,7 @@ const SignUp = () => {
         localStorage.setItem('userName', user.displayName || 'User');
         localStorage.setItem('userImage', user.photoURL || '');
 
-        const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+        const redirectPath = localStorage.getItem('redirectPath');// || '/memories';
         try {
           await handleUserAfterAuth(user.uid, userEmail, 'signIn', setError, setModalMessage, setIsModalOpen, router);
           localStorage.removeItem('reason');
@@ -96,7 +96,7 @@ const SignUp = () => {
       }
       const user = userCredential.user;
       await handleUserAfterAuth(user.uid, user.email, 'signIn', setError, setModalMessage, setIsModalOpen, router);
-      const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+      const redirectPath = localStorage.getItem('redirectPath');// || '/memories';
       localStorage.removeItem('redirectPath');
       localStorage.removeItem('reason');
       router.push(redirectPath);
@@ -118,7 +118,7 @@ const SignUp = () => {
       const { user } = await handleGoogleLogin(setError, setIsLoading, hasAgreedToTerms, 'signIn', router);
       if (user) {
         await handleUserAfterAuth(user.uid, user.email, 'signIn', setError, setModalMessage, setIsModalOpen, router);
-        const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+        const redirectPath = localStorage.getItem('redirectPath');// || '/memories';
         localStorage.removeItem('redirectPath');
         localStorage.removeItem('reason');
         router.push(redirectPath);

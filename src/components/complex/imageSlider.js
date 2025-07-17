@@ -35,6 +35,7 @@ const ImageSlider = ({
   onIndexChange = () => {},
   commentsData = [],
   userId = null,
+  userEmail = null,
   memoryId = null,
   token = null,
   uid = null,
@@ -443,6 +444,7 @@ const ImageSlider = ({
           <Comments
             commentsData={commentsData}
             userId={userId}
+            userEmail={userEmail}
             memoryId={memoryId}
             token={token}
             uid={uid}

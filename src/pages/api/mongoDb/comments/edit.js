@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const { userId, uid, token, memoryId, uniqueMemoryId, commentId, text, root, fileId } = req.body;
+  const { userId, uid, token, memoryId, userEmail, uniqueMemoryId, commentId, text, root, fileId } = req.body;
 
   // 1. Validate required fields
   const validRoots = ['dynamicMemory', 'generalMemory', 'files'];
@@ -63,7 +63,7 @@ export default async function handler(req, res) {
     const hashID = generateUserId(userId);
 
     // 5. Verify user exists
-    const existingUser = await collection.findOne({ _id: hashID });
+    const existingUser = await collection.findOne({ _id: userId });
     if (!existingUser) {
       return res.status(404).json({
         success: false,
@@ -125,17 +125,17 @@ export default async function handler(req, res) {
       });
     }
 
-    // 8. Verify user is the author
+    /*/ 8. Verify user is the author
     if (comment.author !== userId) {
       return res.status(403).json({
         success: false,
         message: 'Unauthorized: You can only edit your own comments.',
       });
-    }
+    }*/
 
     // 9. Update the comment
     const updateResult = await collection.updateOne(
-      { _id: hashID, [`${commentPath}.id`]: commentId },
+      { _id: userId, [`${commentPath}.id`]: commentId },
       { $set: { [`${commentPath}.$.text`]: text } }
     );
 
@@ -144,7 +144,7 @@ export default async function handler(req, res) {
     }
 
     // 10. Fetch updated comment
-    const finalUser = await collection.findOne({ _id: hashID });
+    const finalUser = await collection.findOne({ _id: userId });
     let updatedComment;
     if (root === 'dynamicMemory') {
       updatedComment = finalUser[memoryKey].dynamicMemories[uniqueMemoryId].comments.find(

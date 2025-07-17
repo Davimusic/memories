@@ -526,7 +526,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import '../../estilos/music/video.css';
 import TogglePlayPause from '../complex/TogglePlayPause';
 import DownloadIcon from '../complex/downloadIcon';
-import HeartIcon from '../complex/heartIcon';
+import HeartIcon from '../complex/icons/heartIcon';
 import ShuffleButton from '../complex/ShuffleButton';
 import RepeatButton from '../complex/RepeatButton';
 import NextBeforeIcon from '../complex/nextBeforeIcon';
@@ -560,6 +560,7 @@ const Video = ({
   buttonColor = 'white',
   commentsData = [], // Comments for the current video
   userId = null, // User email for comment authorship
+  userEmail = null,
   memoryId = null, // Memory ID for endpoint
   token = null, // Firebase auth token
   uid = null, // Firebase user UID
@@ -1034,6 +1035,7 @@ const Video = ({
           <Comments
             commentsData={commentsData}
             userId={userId}
+            userEmail={userEmail}
             memoryId={memoryId}
             token={token}
             uid={uid}

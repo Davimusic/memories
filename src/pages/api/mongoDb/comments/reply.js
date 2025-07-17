@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     const hashID = generateUserId(userId);
 
     // 5. Verify if user exists
-    const existingUser = await collection.findOne({ _id: hashID });
+    const existingUser = await collection.findOne({ _id: userId });
     if (!existingUser) {
       return res.status(404).json({
         success: false,
@@ -131,7 +131,7 @@ export default async function handler(req, res) {
     // 8. Initialize comments structure if it doesn't exist
     if (!commentsArray) {
       await collection.updateOne(
-        { _id: hashID },
+        { _id: userId },
         { $set: { [commentPath]: [] } }
       );
       commentsArray = [];
@@ -143,7 +143,7 @@ export default async function handler(req, res) {
     const replyData = {
       id: commentId,
       text,
-      userId: hashID,
+      userId: userId,
       author: userId,
       createdAt: now.toISOString(),
       likes: [],
@@ -151,7 +151,7 @@ export default async function handler(req, res) {
 
     // 10. Add the reply to the parent comment's replies array
     const updateResult = await collection.updateOne(
-      { _id: hashID, [`${commentPath}.id`]: parentId },
+      { _id: userId, [`${commentPath}.id`]: parentId },
       { $push: { [`${commentPath}.$.replies`]: replyData } }
     );
 

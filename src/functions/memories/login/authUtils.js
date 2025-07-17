@@ -14,7 +14,42 @@ const provider = new GoogleAuthProvider();
 provider.addScope('email');
 provider.addScope('profile');
 
+
 export const handleGoogleLogin = async (setError, setIsLoading, hasAgreedToTerms, reason, router) => {
+  if ((reason === 'createNewUser' || reason === 'userEmailValidationOnly') && !hasAgreedToTerms) {
+    const errorMessage = 'You must agree to the terms and conditions to proceed.';
+    setError(errorMessage);
+    toast.error(errorMessage);
+    return;
+  }
+
+  setIsLoading(true);
+  let result;
+  try {
+    const signInResult = await signInWithPopup(auth, provider);
+    const user = signInResult.user;
+    const email = user.providerData[0]?.email || user.email;
+    result = { user, email };
+  } catch (error) {
+    console.error('Error signing in with Google:', error);
+    const errorMessage = getErrorMessage(error);
+    setError(errorMessage);
+    toast.error(errorMessage);
+    throw error;
+  } finally {
+    setIsLoading(false);
+  }
+
+  const redirectPath = localStorage.getItem('redirectPath');
+  console.log(redirectPath);
+  localStorage.removeItem('redirectPath');
+  router.push(redirectPath);
+
+  return result;
+};
+
+
+/*export const handleGoogleLogin = async (setError, setIsLoading, hasAgreedToTerms, reason, router) => {
   if ((reason === 'createNewUser' || reason === 'userEmailValidationOnly') && !hasAgreedToTerms) {
     const errorMessage = 'You must agree to the terms and conditions to proceed.';
     setError(errorMessage);
@@ -28,10 +63,7 @@ export const handleGoogleLogin = async (setError, setIsLoading, hasAgreedToTerms
     const user = result.user;
     const email = user.providerData[0]?.email || user.email;
 
-    const redirectPath = localStorage.getItem('redirectPath') || '/memories';
-    console.log(redirectPath);
-    localStorage.removeItem('redirectPath');
-    router.push(redirectPath);
+    
 
 
     return { user, email };
@@ -44,7 +76,12 @@ export const handleGoogleLogin = async (setError, setIsLoading, hasAgreedToTerms
   } finally {
     setIsLoading(false);
   }
-};
+
+  const redirectPath = localStorage.getItem('redirectPath');// || '/memories';
+  console.log(redirectPath);
+  localStorage.removeItem('redirectPath');
+  router.push(redirectPath);
+};*/
 
 export const handleLogout = async (setError, setIsLoading) => {
   //setIsLoading(true);

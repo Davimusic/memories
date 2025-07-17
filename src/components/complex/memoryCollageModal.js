@@ -135,7 +135,9 @@ const MemoryCollageModal = ({
 
         const handleAudioError = () => {
           console.log('Voice audio error, skipping:', currentVoiceAudio.url);
-          setFailMessage('Voice audio playback failed');
+          console.log('Voice audio playback failed');
+          
+          //setFailMessage('Voice audio playback failed');
           goToNextScene();
         };
 
@@ -167,7 +169,8 @@ const MemoryCollageModal = ({
         backgroundAudioRef.current.volume = (isVoicePlaying || isVideoOnlyPlaying) ? 0.2 : 1.0;
         backgroundAudioRef.current.play().catch(() => {
           console.log('Background audio play failed:', selectedBackgroundAudios[currentBackgroundAudioIndex]);
-          setFailMessage('Background audio playback failed');
+          console.log('Background audio playback failed');
+          //setFailMessage('Background audio playback failed');
         });
       };
 
@@ -178,7 +181,9 @@ const MemoryCollageModal = ({
 
       const handleAudioError = () => {
         console.log('Background audio error, skipping:', selectedBackgroundAudios[currentBackgroundAudioIndex]);
-        setFailMessage('Background audio playback failed');
+        console.log('Background audio playback failed');
+        
+        //setFailMessage('Background audio playback failed');
         const nextIndex = (currentBackgroundAudioIndex + 1) % selectedBackgroundAudios.length;
         setCurrentBackgroundAudioIndex(nextIndex);
       };
@@ -219,7 +224,7 @@ const MemoryCollageModal = ({
         voiceAudioRef.current.currentTime = 0;
         voiceAudioRef.current.play().catch(() => {
           console.log('Voice audio play failed:', currentVoiceAudio.url);
-          setFailMessage('Voice audio playback failed');
+          //setFailMessage('Voice audio playback failed');
         });
         if (backgroundAudioRef.current) {
           backgroundAudioRef.current.volume = 0.2;
@@ -433,7 +438,9 @@ const MemoryCollageModal = ({
                               playsInline
                               onError={() => {
                                 console.log('Foreground video failed:', item.url);
-                                setFailMessage('Foreground video playback failed');
+                                console.log('Foreground video playback failed');
+                                
+                                //setFailMessage('Foreground video playback failed');
                               }}
                             >
                               Your browser does not support the video tag.
@@ -455,7 +462,9 @@ const MemoryCollageModal = ({
               style={{ display: 'none' }}
               onError={() => {
                 console.log('Background audio error:', backgroundAudioRef.current?.src);
-                setFailMessage('Background audio playback failed');
+                console.log('Background audio playback failed');
+                
+                //setFailMessage('Background audio playback failed');
                 const nextIndex = (currentBackgroundAudioIndex + 1) % selectedBackgroundAudios.length;
                 setCurrentBackgroundAudioIndex(nextIndex);
               }}
@@ -465,7 +474,9 @@ const MemoryCollageModal = ({
               style={{ display: 'none' }}
               onError={() => {
                 console.log('Voice audio error:', voiceAudioRef.current?.src);
-                setFailMessage('Voice audio playback failed');
+                console.log('Voice audio playback failed');
+                
+                //setFailMessage('Voice audio playback failed');
                 setCurrentGroupIndex(prev => (prev + 1) % groups.length);
               }}
             />

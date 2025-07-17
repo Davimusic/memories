@@ -315,11 +315,6 @@ export default MemoryViewer;*/
 
 
 
-
-
-
-
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -329,10 +324,13 @@ import MemoryCollageModal from '@/components/complex/memoryCollageModal';
 import Comments from '@/components/complex/comments';
 import QRIcon from '@/components/complex/icons/qrIcon';
 import QRGenerator from '@/components/complex/QRGenerator';
-import TogglePlayPause from '@/components/complex/TogglePlayPause'; // Importación crucial
+import TogglePlayPause from '@/components/complex/TogglePlayPause';
 import QRCodeStyling from 'qr-code-styling';
 import '../../../../estilos/general/dynamicCreator.css';
 
+
+
+// MemoryViewer Component
 const MemoryViewer = () => {
   // Estados principales
   const [memoryData, setMemoryData] = useState(null);
@@ -347,15 +345,20 @@ const MemoryViewer = () => {
   const [token, setToken] = useState(null);
   const [Uid, setUid] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
-  const defaultDuration = 10000; // Mismo valor que en CollageDisplay
+  //const [userID, setUserID] = useState(null);
+  const defaultDuration = 10000;
 
   // Router y referencias
   const router = useRouter();
-  const { dynamicMemoryID, memoryID, memoryName } = router.query;
-  const userId = userEmail;
+  const { dynamicMemoryID, userID, memoryName } = router.query;
   const qrCodeRef = useRef(null);
 
-  // Layouts disponibles (debe coincidir con CollageDisplay)
+  console.log(dynamicMemoryID);
+  console.log(userID);
+  console.log(memoryName);
+  
+
+  // Layouts disponibles
   const layouts = [
     { type: 'single', count: 1 },
     { type: 'double', count: 2 },
@@ -387,12 +390,12 @@ const MemoryViewer = () => {
   // Cargar comentarios
   useEffect(() => {
     const dynamicMemory = memoryData?.dynamicMemories?.[dynamicMemoryID];
-    
+
     if (dynamicMemory?.comments) {
       setComments(dynamicMemory.comments);
     }
 
-    if (!memoryData || !dynamicMemoryID || !memoryID || !userEmail) return;
+    if (!memoryData || !dynamicMemoryID || !userID || !userEmail) return;
 
     const fetchComments = async () => {
       setIsLoading(true);
@@ -418,14 +421,16 @@ const MemoryViewer = () => {
     };
 
     fetchComments();
-  }, [memoryData, dynamicMemoryID, memoryID, userEmail, token]);
+  }, [memoryData, dynamicMemoryID, userID, userEmail, token]);
 
-  // Función para calcular duraciones de escena (idéntica a CollageDisplay)
+  // Función para calcular duraciones de escena
   const calculateSceneDurations = (groups, audios) => {
     return groups.map((group, index) => {
-      const voiceAudio = audios.find(a => a.isActive && a.type === 'Voice' && a.groupIndex === index);
+      const voiceAudio = audios.find(
+        (a) => a.isActive && a.type === 'Voice' && a.groupIndex === index
+      );
       if (voiceAudio?.duration) {
-        return voiceAudio.duration * 1000; // Convertir a milisegundos
+        return voiceAudio.duration * 1000;
       } else if (group.layout === 'video-only' && group.items[0]?.type === 'video') {
         return (group.items[0].metadata?.duration || defaultDuration) * 1000;
       }
@@ -433,7 +438,7 @@ const MemoryViewer = () => {
     });
   };
 
-  // Cargar y preparar datos del recuerdo
+  // Cargar y preparar datos del recuerdo con validación de URLs
   useEffect(() => {
     if (!memoryData || !dynamicMemoryID) return;
 
@@ -444,39 +449,46 @@ const MemoryViewer = () => {
       return;
     }
 
-    // 1. Procesar grupos (filtrado y validación)
-    const groups = dynamicMemory.groups || [];
-    const validatedGroups = groups
+    // Validar y procesar grupos
+    const validatedGroups = (dynamicMemory.groups || [])
       .map((group) => ({
         ...group,
-        items: group.layout === 'video-only' 
-          ? group.items.filter((item) => item.type === 'video') 
-          : group.items,
+        items: group.layout === 'video-only'
+          ? group.items.filter((item) => item.type === 'video' && item.url && item.url.startsWith('http'))
+          : group.items.filter((item) => item.url && item.url.startsWith('http')),
       }))
       .filter((group) => group.items.length > 0);
 
+    if (validatedGroups.length === 0) {
+      setError('No valid media items to display.');
+      setIsModalOpen(false);
+      return;
+    }
+
     setGroups(validatedGroups);
 
-    // 2. Procesar audioSelections con la estructura CORRECTA
-    const updatedAudioSelections = (dynamicMemory.audioSelections || []).map(audio => {
-      // Asegurar que todos los audios tengan la estructura esperada por MemoryCollageModal
+    // Validar y procesar audioSelections
+    const updatedAudioSelections = (dynamicMemory.audioSelections || []).map((audio) => {
+      const isValid = !!audio.url && audio.url.startsWith('http');
+      if (!isValid) {
+        setError(`Invalid audio URL: ${audio.url || 'undefined'}`);
+      }
       return {
         url: audio.url,
         isActive: audio.isActive !== undefined ? audio.isActive : false,
         type: audio.type || 'Background',
         duration: audio.duration || null,
-        isValid: audio.isValid !== undefined ? audio.isValid : true,
-        groupIndex: audio.groupIndex !== undefined ? audio.groupIndex : -1
+        isValid,
+        groupIndex: audio.groupIndex !== undefined ? audio.groupIndex : -1,
       };
     });
 
-    // Activar al menos un audio de fondo si no hay ninguno activo
-    const hasActiveBackground = updatedAudioSelections.some(a => 
-      a.isActive && a.type === 'Background'
+    // Activar un audio de fondo si no hay ninguno activo
+    const hasActiveBackground = updatedAudioSelections.some(
+      (a) => a.isActive && a.type === 'Background'
     );
-    
     if (!hasActiveBackground) {
-      const firstBackground = updatedAudioSelections.find(a => a.type === 'Background');
+      const firstBackground = updatedAudioSelections.find((a) => a.type === 'Background');
       if (firstBackground) {
         firstBackground.isActive = true;
       }
@@ -484,11 +496,11 @@ const MemoryViewer = () => {
 
     setAudioSelections(updatedAudioSelections);
 
-    // 3. Calcular sceneDurations correctamente
+    // Calcular duraciones
     const durations = dynamicMemory.sceneDurations?.length > 0
       ? dynamicMemory.sceneDurations
       : calculateSceneDurations(validatedGroups, updatedAudioSelections);
-    
+
     setSceneDurations(durations);
     setIsModalOpen(true);
   }, [memoryData, dynamicMemoryID]);
@@ -512,9 +524,9 @@ const MemoryViewer = () => {
 
   const handleDownloadQR = () => {
     if (qrCodeRef.current) {
-      qrCodeRef.current.download({ 
-        name: `memory-${memoryData?.memoryMetadata?.title || 'qr'}`, 
-        extension: 'png' 
+      qrCodeRef.current.download({
+        name: `memory-${memoryData?.memoryMetadata?.title || 'qr'}`,
+        extension: 'png',
       });
     }
   };
@@ -523,14 +535,14 @@ const MemoryViewer = () => {
     if (navigator.share) {
       try {
         const qrBlob = await new Promise((resolve) => {
-          qrCodeRef.current.getRawData('png').then((blob) => {
-            resolve(blob);
-          });
+          qrCodeRef.current.getRawData('png').then((blob) => resolve(blob));
         });
 
-        const qrFile = new File([qrBlob], `memory-qr-${memoryData?.memoryMetadata?.title || 'qr'}.png`, {
-          type: 'image/png',
-        });
+        const qrFile = new File(
+          [qrBlob],
+          `memory-qr-${memoryData?.memoryMetadata?.title || 'qr'}.png`,
+          { type: 'image/png' }
+        );
 
         await navigator.share({
           title: memoryData?.memoryMetadata?.title || 'Memory Collage',
@@ -557,13 +569,14 @@ const MemoryViewer = () => {
       <p>{memoryData?.memoryMetadata?.description || 'No description available.'}</p>
 
       {isLoading && <p>Loading memory data...</p>}
-      {error && <p className="error-message">{error}</p>}
-      {!isLoading && !error && (
+      {/*error && <p className="error-message">{error}</p>*/}
+      {!isLoading &&  (
         <>
           <Comments
             commentsData={comments}
             endpoint={`/api/mongoDb/comments/uploadComment`}
-            userId={userEmail}
+            userId={userID}
+            userEmail={userEmail}
             memoryId={memoryName}
             uniqueMemoryId={dynamicMemoryID}
             token={token}
@@ -576,7 +589,6 @@ const MemoryViewer = () => {
         </>
       )}
 
-      {/* Modal del collage - con todos los props necesarios */}
       <MemoryCollageModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
@@ -586,11 +598,10 @@ const MemoryViewer = () => {
         sceneDurations={sceneDurations}
         audioSelections={audioSelections}
         defaultDuration={defaultDuration}
-        PlayPauseComponent={TogglePlayPause} // Componente crucial para controles
-        setFailMessage={setError} // Usamos setError para mensajes de fallo
+        PlayPauseComponent={TogglePlayPause}
+        setFailMessage={setError}
       />
 
-      {/* Modal del QR */}
       {isQRModalOpen && (
         <div
           className="modal-overlay"
@@ -623,6 +634,15 @@ const MemoryViewer = () => {
             <button
               onClick={handleCloseQRModal}
               className="closeButton"
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                background: 'none',
+                border: 'none',
+                fontSize: '20px',
+                cursor: 'pointer',
+              }}
             >
               ×
             </button>

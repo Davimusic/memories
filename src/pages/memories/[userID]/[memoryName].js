@@ -572,7 +572,8 @@ const MemoryDetail = () => {
           </p>
           <Comments
             commentsData={memoryData?.comments || []}
-            userId={userEmail}
+            userEmail={userEmail}
+            userId={userID}
             memoryId={memoryName}
             token={token}
             uid={uid}
@@ -654,7 +655,8 @@ const MemoryDetail = () => {
                       isHybridView={mediaState.isHybridView}
                       buttonColor="white"
                       commentsData={mediaState.content || []} //mediaState.content[mediaState.currentIndex]?.comments || [] Pass file-specific comments
-                      userId={userEmail}
+                      userId={userID}
+                      userEmail={userEmail}
                       memoryId={memoryName}
                       token={token}
                       uid={uid}
@@ -668,7 +670,8 @@ const MemoryDetail = () => {
                         audioFiles={mediaState.content}
                         className={styles.customAudioPlayer}
                         commentsData={mediaState.content[mediaState.currentIndex]?.comments || []} // Pass file-specific comments
-                        userId={userEmail}
+                        userId={userID}
+                        userEmail={userEmail}
                         memoryId={memoryName}
                         token={token}
                         uid={uid}
@@ -692,7 +695,8 @@ const MemoryDetail = () => {
                       timeToShow={5000}
                       showControls={true}
                       commentsData={mediaState || []} //{mediaState.content[mediaState.currentIndex]?.comments || []} Pass file-specific comments
-                      userId={userEmail}
+                      userId={userID}
+                      userEmail={userEmail}
                       memoryId={memoryName}
                       token={token}
                       uid={uid}

@@ -42,7 +42,7 @@ const RegularLogin = () => {
         localStorage.setItem('userName', user.displayName || 'User');
         localStorage.setItem('userImage', user.photoURL || '');
 
-        const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+        const redirectPath = localStorage.getItem('redirectPath');// || '/memories';
         console.log(redirectPath);
         
         try {
@@ -76,7 +76,7 @@ const RegularLogin = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       await handleUserAfterAuth(user.uid, user.email, 'login', setError, setModalMessage, setIsModalOpen, router);
-      const redirectPath = localStorage.getItem('redirectPath') || '/memories';
+      const redirectPath = localStorage.getItem('redirectPath') || '/';
       console.log(redirectPath);
       
       localStorage.removeItem('redirectPath');
