@@ -6,38 +6,38 @@ import ArticleRenderer from '@/components/complex/articles/articleRenderer';
 
 
 const test = {
-  "slug": "saying-goodbye-to-a-loved-one",
-  "title": "Saying Goodbye to a Loved One: Honoring Their Memory with Love and Care",
+  "slug": "nelson-mandela-international-day",
+  "title": "International Nelson Mandela Day: Celebrating His Life, Legacy, and the Power of Memories",
   "seo": {
-    "description": "Explore meaningful ways to honor a loved one’s memory after their passing. Learn how to cope, celebrate their life, and preserve their legacy with Project Memories.",
-    "keywords": "grief, loss, honoring a loved one, memorial ideas, digital memory preservation, Project Memories, coping with death",
-    "tags": "grief, memorial, memory preservation, loss, digital memories, emotional healing",
-    "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250716_184142.png"
+    "description": "Explore the life and enduring legacy of Nelson Mandela on International Nelson Mandela Day. Discover how his journey inspires us to preserve our own stories with Good Memories.",
+    "keywords": "Nelson Mandela, International Nelson Mandela Day, legacy, memory preservation, Good Memories, social justice, inspiration, apartheid, reconciliation",
+    "tags": "Nelson Mandela, legacy, memories, preservation, Good Memories, history, social justice, inspiration",
+    "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/nelson-mandela-539834_640.jpg"
   },
   "breadcrumbs": [
     {"label": "Home", "path": "/"},
-    {"label": "Lifestyle", "path": "/lifestyle"},
-    {"label": "Grief and Healing", "path": "/lifestyle/grief-and-healing"}
+    {"label": "Culture", "path": "/culture"},
+    {"label": "International Days", "path": "/culture/international-days"}
   ],
   "content": [
     {
       "type": "tableOfContents",
       "props": {
-        "content": "1. [Understanding Grief](#introduction)\n2. [Seeking Support](#seeking-support)\n3. [Meaningful Ways to Say Goodbye](#farewell-ideas)\n4. [The Healing Power of Memories](#healing-memories)\n5. [Preserve Their Legacy with Project Memories](#project-memories)\n6. [Expert Advice on Coping with Loss](#expert-advice)\n7. [Inspiring Stories of Remembrance](#stories)"
-      }
+        "content": "1. [Who Was Nelson Mandela?](#who-was-nelson-mandela)\n2. [International Nelson Mandela Day](#mandela-day)\n3. [His Enduring Legacy](#legacy)\n4. [Mandela's Quotes: Words That Inspire](#quotes)\n5. [The Power of Memories](#memories)\n6. [Mandela’s Leadership Lessons](#leadership)\n7. [Preserve Your Legacy with Good Memories](#good-memories)\n8. [Inspiring Stories of Mandela’s Impact](#stories)\n9. [Mandela’s Global Influence: A Timeline](#timeline)"
+    }
     },
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "introduction",
+        "referenceId": "who-was-nelson-mandela",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Understanding Grief: The Journey of Saying Goodbye",
+              "title": "Who Was Nelson Mandela? A Life of Courage and Compassion",
               "content": [
                 {
-                  "text": "Losing a loved one is one of life’s most profound experiences, filled with a complex mix of emotions—sorrow, love, and even gratitude for the time shared. According to a 2023 study by the American Psychological Association, 85% of people find solace in creating rituals or keepsakes to honor those they’ve lost. This article explores heartfelt ways to say goodbye, celebrate a loved one’s life, and preserve their memory using Project Memories."
+                  "text": "Nelson Rolihlahla Mandela, born on July 18, 1918, in Mvezo, South Africa, was a global icon of resilience and justice. Raised in the Thembu royal family, he pursued law and joined the African National Congress (ANC) in 1944, co-founding its Youth League. His fight against apartheid led to 27 years in prison, mostly on Robben Island. Released in 1990, Mandela negotiated the end of apartheid and became South Africa’s first Black president in 1994, fostering reconciliation. His life inspires millions to pursue equality and unity. [Learn more about his life on the Nelson Mandela Foundation website](https://www.nelsonmandela.org/biography)."
                 }
               ]
             }
@@ -45,9 +45,9 @@ const test = {
           {
             "type": "imageText",
             "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250716_184142.png",
-              "imageAlt": "Family crying",
-              "text": "Grief is a natural response to loss, and it’s important to find ways to honor and remember our loved ones.",
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/nelson-mandela-539834_640.jpg",
+              "imageAlt": "Portrait of Nelson Mandela smiling",
+              "text": "Mandela’s journey from prisoner to president embodies the power of perseverance and compassion.",
               "layout": "right",
               "imageSize": "medium"
             }
@@ -58,31 +58,15 @@ const test = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "seeking-support",
+        "referenceId": "mandela-day",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Seeking Support: Grief Support Groups",
+              "title": "International Nelson Mandela Day: A Global Call to Action",
               "content": [
                 {
-                  "text": "Grief can be overwhelming, and it’s important to know that you’re not alone. Many organizations offer grief support groups where you can connect with others who are experiencing similar feelings. Some reliable options include:"
-                }
-              ]
-            }
-          },
-          {
-            "type": "text",
-            "props": {
-              "content": [
-                {
-                  "text": "- **GriefShare**: Offers both in-person and online support groups worldwide. Visit [GriefShare](https://www.griefshare.org/) to find a group near you."
-                },
-                {
-                  "text": "- **The Compassionate Friends**: Provides support for families who have lost a child. Find a chapter near you at [The Compassionate Friends](https://www.compassionatefriends.org/)."
-                },
-                {
-                  "text": "- **My Grief Angels**: Offers a directory of free virtual support groups. Visit [My Grief Angels](https://www.mygriefangels.org/)."
+                  "text": "Declared by the United Nations in November 2009, International Nelson Mandela Day is celebrated annually on July 18, Mandela’s birthday. It encourages people to dedicate 67 minutes to community service, symbolizing the 67 years he fought for social justice. From cleanups in South Africa to human rights workshops in Mexico, this day promotes his values of equality and service. [Find out more on the UN website](https://www.un.org/en/events/mandeladay/)."
                 }
               ]
             }
@@ -90,9 +74,9 @@ const test = {
           {
             "type": "imageText",
             "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/f2.png",
-              "imageAlt": "Couple crying at the airport",
-              "text": "Grief support groups can provide a community to share your experiences and find comfort.",
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/south-africa-997558_640.jpg",
+              "imageAlt": "South African flag with Nelson Mandela imagery",
+              "text": "Mandela Day inspires global acts of service, reflecting his legacy of unity and compassion.",
               "layout": "left",
               "imageSize": "medium"
             }
@@ -103,15 +87,53 @@ const test = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "farewell-ideas",
+        "referenceId": "legacy",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Meaningful Ways to Say Goodbye: Creating Rituals",
+              "title": "His Enduring Legacy: Awards, Honors, and Cultural Impact",
               "content": [
                 {
-                  "text": "Saying goodbye doesn’t mean letting go—it means honoring a loved one’s impact on your life. Creating personal rituals can help you process your grief and keep their memory alive. Here are some ideas:"
+                  "text": "Mandela received over 250 awards, including the Nobel Peace Prize in 1993, shared with F.W. de Klerk for dismantling apartheid. His life inspired films like *Mandela: Long Walk to Freedom* (2013) and songs like 'Free Nelson Mandela' by The Specials. The Nelson Mandela Foundation and Children’s Fund continue his work in education and human rights. [Explore his legacy on Britannica](https://www.britannica.com/biography/Nelson-Mandela)."
+                }
+              ]
+            }
+          },
+          {
+            "type": "customQuote",
+            "props": {
+              "quote": "Education is the most powerful weapon which you can use to change the world.",
+              "author": "Nelson Mandela",
+              "source": "Speech at the launch of Mindset Network, 2003",
+              "sourceUrl": "https://www.nelsonmandela.org/biography"
+            }
+          },
+          {
+            "type": "imageText",
+            "props": {
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/politician-150383_640.webp",
+              "imageAlt": "Nelson Mandela addressing a crowd",
+              "text": "Mandela’s leadership continues to shape a more just world.",
+              "layout": "right",
+              "imageSize": "medium"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "quotes",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Mandela's Quotes: Words That Inspire",
+              "content": [
+                {
+                  "text": "Mandela’s words carry timeless wisdom, inspiring action and reflection. Here are some of his most impactful quotes, drawn from his speeches and writings."
                 }
               ]
             }
@@ -119,7 +141,7 @@ const test = {
           {
             "type": "accordion",
             "props": {
-              "title": "Unique Farewell Ideas",
+              "title": "Inspirational Quotes by Nelson Mandela",
               "defaultOpen": true,
               "children": [
                 {
@@ -127,10 +149,29 @@ const test = {
                   "props": {
                     "content": [
                       {
-                        "text": "- **Memory Garden**: Plant a tree or flowers in their honor, creating a living tribute.\n- **Shared Storytelling**: Host a virtual or in-person event where loved ones share stories about the departed.\n- **Custom Keepsake**: Craft a photo album or digital slideshow to capture their life’s milestones.\n- **Remembrance Altar**: Create a space with candles, photos, and personal items to spend time remembering them.\n- **Favorite Meal**: Cook their favorite dish and invite friends and family to share it, toasting to their memory."
+                        "text": "- 'It always seems impossible until it’s done.' (*Long Walk to Freedom*, 1994)\n- 'The greatest glory in living lies not in never falling, but in rising every time we fall.' (Speech, 1990)\n- 'For to be free is not merely to cast off one’s chains, but to live in a way that respects and enhances the freedom of others.' (*Long Walk to Freedom*, 1994) [Read more quotes on Biography.com](https://www.biography.com/political-figures/nelson-mandela)."
                       }
                     ]
                   }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "memories",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "The Power of Memories in Honoring History",
+              "content": [
+                {
+                  "text": "Memories bridge the past and future, preserving lessons of courage and compassion. Mandela’s letters from prison and recorded speeches, preserved by organizations like the Nelson Mandela Foundation, inspire generations. Similarly, documenting personal stories ensures their impact endures. [Discover more about his preserved works](https://www.nelsonmandela.org/)."
                 }
               ]
             }
@@ -138,9 +179,9 @@ const test = {
           {
             "type": "imageText",
             "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250716_184204.png",
-              "imageAlt": "Family at the cemetery",
-              "text": "Visiting the cemetery or creating a commemorative space can be a way to connect with your loved one’s memory.",
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/man-156732_1280.webp",
+              "imageAlt": "Symbolic image of unity and reflection",
+              "text": "Preserving memories honors those who shape our lives and histories.",
               "layout": "left",
               "imageSize": "medium"
             }
@@ -151,37 +192,17 @@ const test = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "healing-memories",
+        "referenceId": "leadership",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "The Healing Power of Memories: Journaling for Grief",
+              "title": "Mandela’s Leadership Lessons: A Guide for Today",
               "content": [
                 {
-                  "text": "Journaling can be a powerful tool for processing grief. It allows you to express your thoughts and emotions freely, without fear of judgment. According to Harvard Health, writing about grief can help you make sense of your feelings and even improve your physical health. Here are some journaling prompts to get you started:"
+                  "text": "Mandela’s leadership was defined by humility, patience, and reconciliation. He listened to adversaries, endured decades of hardship, and forgave to unite a nation. These principles guide modern leaders and inspire us to document our own journeys of impact. [Learn more about his leadership](http://www.mandela.gov.za/biography/)."
                 }
               ]
-            }
-          },
-          {
-            "type": "text",
-            "props": {
-              "content": [
-                {
-                  "text": "- Today, I’m struggling with…\n- One thing I want to remember about them is…\n- Describe a memory with your loved one that makes you laugh.\n- Describe a memory with your loved one that makes you cry.\n- What was their favorite holiday?\n- Write about a moment when you felt close to them.\n- What is something you wish you could tell them now?"
-                }
-              ]
-            }
-          },
-          {
-            "type": "imageText",
-            "props": {
-              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/f1.png",
-              "imageAlt": "Couple crying on a train",
-              "text": "Journaling can help you navigate the complex emotions of grief.",
-              "layout": "right",
-              "imageSize": "medium"
             }
           }
         ]
@@ -190,15 +211,15 @@ const test = {
     {
       "type": "createSectionWrapper",
       "props": {
-        "referenceId": "project-memories",
+        "referenceId": "good-memories",
         "children": [
           {
             "type": "text",
             "props": {
-              "title": "Preserve Their Legacy with Project Memories",
+              "title": "Preserve Your Legacy with Good Memories",
               "content": [
                 {
-                  "text": "Good Memories is designed to help you honor and preserve the legacy of your loved one. Our platform allows you to securely store photos, videos, and stories, organizing them by emotional significance so you can revisit them anytime. With options for private or shared albums, Good Memories ensures their legacy lives on."
+                  "text": "Inspired by Mandela’s legacy, Good Memories empowers you to preserve your stories. Our platform securely stores photos, videos, and narratives, organized by emotional significance, so you can relive and share moments that matter. Create a digital legacy that inspires, just as Mandela’s story does."
                 }
               ]
             }
@@ -206,50 +227,21 @@ const test = {
           {
             "type": "cta",
             "props": {
-              "title": "Keep Their Memory Alive",
-              "description": "Join Good Memories to create a digital vault for your loved one’s stories, photos, and videos. Start preserving their legacy today!",
-              "buttonText": "Start Preserving Now",
+              "title": "Start Preserving Your Memories",
+              "description": "Join Good Memories to keep your most meaningful moments alive. Create your digital memory vault today!",
+              "buttonText": "Get Started Now",
               "href": "https://goodmemories.live",
               "variant": "primary"
             }
-          }
-        ]
-      }
-    },
-    {
-      "type": "createSectionWrapper",
-      "props": {
-        "referenceId": "expert-advice",
-        "children": [
-          {
-            "type": "text",
-            "props": {
-              "title": "Expert Advice on Coping with Loss",
-              "content": [
-                {
-                  "text": "Grief is a personal journey, but expert guidance can help. Here are some strategies recommended by professionals:"
-                }
-              ]
-            }
           },
           {
-            "type": "table",
+            "type": "imageText",
             "props": {
-              "headers": ["Strategy", "Description", "Source"],
-              "rows": [
-                ["Seek Support", "Join a grief support group to connect with others.", "[GriefShare](https://www.griefshare.org/)"],
-                ["Create Rituals", "Hold annual events to honor their memory.", "[Wendt Center](https://www.wendtcenter.org/)"],
-                ["Journaling", "Write about your feelings to process emotions.", "[Harvard Health](https://www.health.harvard.edu/mind-and-mood/writing-to-ease-grief)"]
-              ]
-            }
-          },
-          {
-            "type": "customQuote",
-            "props": {
-              "quote": "Grief is love with nowhere to go. Honoring memories gives it a home.",
-              "author": "Dr. Alan Wolfelt",
-              "source": "Center for Loss and Life Transition",
-              "sourceUrl": "https://www.centerforloss.com/"
+              "imageUrl": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/ai-generated-8194044_640.png",
+              "imageAlt": "Digital memory vault illustration",
+              "text": "Good Memories helps you build a lasting tribute to your life’s moments.",
+              "layout": "right",
+              "imageSize": "medium"
             }
           }
         ]
@@ -263,10 +255,10 @@ const test = {
           {
             "type": "text",
             "props": {
-              "title": "Inspiring Stories of Remembrance",
+              "title": "Inspiring Stories of Mandela’s Impact",
               "content": [
                 {
-                  "text": "Stories of how others have honored their loved ones can inspire your own journey. Watch these videos to see how people around the world celebrate and preserve memories."
+                  "text": "These videos capture Nelson Mandela’s global influence and the celebration of his legacy, showcasing how his life continues to inspire action and change."
                 }
               ]
             }
@@ -275,9 +267,9 @@ const test = {
             "type": "embed",
             "props": {
               "type": "iframe",
-              "src": "https://www.youtube.com/embed/Dkffpibi-Dc?si=EXM7Bc1tB-7dVeNc",
-              "title": "The art of saying goodbye: Isabel Stenzel Byrnes at TEDxStanford",
-              "description": "This TEDx talk explores the art of saying goodbye and how to honor loved ones.",
+              "src": "https://www.youtube.com/embed/FV-c2FnPnDE?si=VLy_qjWOGkTWelsr",
+              "title": "Nelson Mandela’s Life and Legacy",
+              "description": "This video explores the key moments of Nelson Mandela’s life and his global impact.",
               "width": "560",
               "height": "315",
               "allowFullScreen": true
@@ -287,12 +279,46 @@ const test = {
             "type": "embed",
             "props": {
               "type": "iframe",
-              "src": "https://www.youtube.com/embed/khkJkR-ipfw?si=pt4S0AE8EV_ytFwK",
-              "title": "We don't 'move on' from grief. We move forward with it | Nora McInerny | TED",
-              "description": "Nora McInerny shares her perspective on grief and how to live with it.",
+              "src": "https://www.youtube.com/embed/zEuoLPUSDEw?si=K50BfegDu7oRGRfj",
+              "title": "Mandela Day: Inspiring Change",
+              "description": "A tribute to Mandela Day, showcasing how his legacy inspires action worldwide.",
               "width": "560",
               "height": "315",
               "allowFullScreen": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "createSectionWrapper",
+      "props": {
+        "referenceId": "timeline",
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "title": "Mandela’s Global Influence: A Timeline",
+              "content": [
+                {
+                  "text": "Key moments in Nelson Mandela’s life highlight his profound impact on the world. [See a detailed timeline on Google Arts & Culture](https://artsandculture.google.com/story/a-brief-history-of-nelson-mandela-s-life-nelson-mandela-centre-of-memory/8gXhEWID5fOgLA?hl=en)."
+                }
+              ]
+            }
+          },
+          {
+            "type": "table",
+            "props": {
+              "headers": ["Year", "Event"],
+              "rows": [
+                ["1918", "Born in Mvezo, South Africa"],
+                ["1944", "Co-founds the ANC Youth League"],
+                ["1964", "Sentenced to life imprisonment in the Rivonia Trial"],
+                ["1990", "Released from prison after 27 years"],
+                ["1993", "Awarded the Nobel Peace Prize"],
+                ["1994", "Elected South Africa’s first Black president"],
+                ["2013", "Passes away at age 95"]
+              ]
             }
           }
         ]
@@ -301,15 +327,15 @@ const test = {
   ],
   "structuredData": {
     "openGraph": {
-      "title": "Saying Goodbye to a Loved One: Honoring Their Memory with Love and Care",
-      "description": "Discover meaningful ways to honor a loved one’s memory and preserve their legacy with Project Memories. Backed by expert advice and neuroscience.",
-      "url": "https://goodmemories.live/lifestyle/grief-and-healing/saying-goodbye-to-a-loved-one",
-      "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/Copilot_20250716_184142.png",
+      "title": "International Nelson Mandela Day: Celebrating His Life, Legacy, and the Power of Memories",
+      "description": "Discover the life and legacy of Nelson Mandela on International Nelson Mandela Day, and learn how Good Memories helps you preserve your own stories.",
+      "url": "https://goodmemories.live/culture/international-days/nelson-mandela-international-day",
+      "image": "https://goodmemoriesapp.b-cdn.net/mediaDinamicWeb/images/nelson-mandela-539834_640.jpg",
       "type": "article"
     }
   },
-  "updatedAt": "2025-07-16T18:56:00-05:00",
-  "createdAt": "2025-07-16T14:00:00-05:00"
+  "updatedAt": "2025-07-18T12:00:00-05:00",
+  "createdAt": "2025-07-18T09:00:00-05:00"
 }
 
 

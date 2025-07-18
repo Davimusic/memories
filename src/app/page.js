@@ -204,53 +204,52 @@ const ProjectPresentation = () => {
     `${baseUrl}image/family-7638972_640.jpg`,
   ];
 
-  // Removed dynamicMemoryUrl from previewImages to avoid duplicate rendering
   const previewImages = [
     `${baseUrl}image/family-7638973_640.jpg`,
     `${baseUrl}image/park-2967756_640.jpg`,
   ];
 
   const fileTypes = [
-    { id: 'images', name: 'Imágenes', icon: '🖼️', extensions: ['JPG', 'PNG', 'GIF', 'WEBP'] },
+    { id: 'images', name: 'Images', icon: '🖼️', extensions: ['JPG', 'PNG', 'GIF', 'WEBP'] },
     { id: 'videos', name: 'Videos', icon: '🎬', extensions: ['MP4', 'MOV', 'AVI', 'MKV'] },
     { id: 'audio', name: 'Audio', icon: '🎵', extensions: ['MP3', 'WAV', 'FLAC', 'OGG'] },
   ];
 
   const features = [
     {
-      title: "Organiza tus recuerdos",
-      description: "Clasifica tus memorias por categorías, fechas o eventos importantes.",
+      title: "Organize your memories",
+      description: "Sort your memories by categories, dates, or important events.",
       icon: "📂"
     },
     {
-      title: "Comparte selectivamente",
-      description: "Controla quién puede ver cada memoria con configuraciones de privacidad granular.",
+      title: "Share selectively",
+      description: "Control who can view each memory with granular privacy settings.",
       icon: "🔒"
     },
     {
-      title: "Acceso multiplataforma",
-      description: "Disponible en web, móvil y tablet para que nunca pierdas acceso a tus recuerdos.",
+      title: "Multi-platform access",
+      description: "Available on web, mobile, and tablet so you never lose access to your memories.",
       icon: "📱"
     },
     {
-      title: "Almacenamiento seguro",
-      description: "Tus archivos están protegidos con encriptación de grado profesional.",
+      title: "Secure storage",
+      description: "Your files are protected with professional-grade encryption.",
       icon: "🔐"
     }
   ];
 
   const testimonials = [
     {
-      text: "Good Memories me ha permitido revivir momentos especiales con mi familia de una manera organizada y segura.",
-      author: "María López"
+      text: "Good Memories has allowed me to relive special moments with my family in an organized and secure way.",
+      author: "Maria Lopez"
     },
     {
-      text: "La facilidad para subir y organizar mis videos de viajes ha transformado cómo preservo mis recuerdos.",
-      author: "Carlos Martínez"
+      text: "The ease of uploading and organizing my travel videos has transformed how I preserve my memories.",
+      author: "Carlos Martinez"
     },
     {
-      text: "Como fotógrafo profesional, valoro la calidad con la que Good Memories maneja mis imágenes sin comprimirlas.",
-      author: "Ana Rodríguez"
+      text: "As a professional photographer, I value the quality with which Good Memories handles my images without compression.",
+      author: "Ana Rodriguez"
     }
   ];
 
@@ -267,22 +266,22 @@ const ProjectPresentation = () => {
       <section className="hero-section">
         <div className="hero-content">
           <h1 className="title-lg color1">Good Memories</h1>
-          <h2 className="title-md color4">Preserva tus momentos especiales para siempre</h2>
+          <h2 className="title-md color4">Preserve your special moments forever</h2>
           <p className="content-default color1">
-            Una plataforma diseñada para guardar, organizar y compartir tus recuerdos más valiosos con la máxima calidad y seguridad.
+            A platform designed to store, organize, and share your most valuable memories with maximum quality and security.
           </p>
           <div className="cta-buttons">
             <button 
               className="button2"
               onClick={() => router.push('/signup')}
             >
-              Crear cuenta gratis
+              Create a free account
             </button>
             <button 
-              className="button"
+              className="button2"
               onClick={() => router.push('/features')}
             >
-              Ver características
+              View features
             </button>
           </div>
         </div>
@@ -304,7 +303,7 @@ const ProjectPresentation = () => {
       </section>
 
       <section className="features-section">
-        <h2 className="title-md color1 text-center">Por qué elegir Good Memories</h2>
+        <h2 className="title-md color1 text-center">Why Choose Good Memories</h2>
         <div className="features-grid">
           {features.map((feature, index) => (
             <div key={index} className="feature-card card">
@@ -317,18 +316,18 @@ const ProjectPresentation = () => {
       </section>
 
       <section className="dynamic-memory-section">
-        <h2 className="title-md color1 text-center">Recuerdo Dinámico Destacado</h2>
+        <h2 className="title-md color1 text-center">Featured Dynamic Memory</h2>
         <iframe
           src={dynamicMemoryUrl}
           width="100%"
           height="600"
           style={{ border: "none", borderRadius: '20px' }}
-          title="Recuerdo Dinámico"
+          title="Dynamic Memory"
         />
       </section>
 
       <section className="file-types-section">
-        <h2 className="title-md color1 text-center">Soporta todos tus formatos</h2>
+        <h2 className="title-md color1 text-center">Supports all your formats</h2>
         <div className="tabs-container">
           {fileTypes.map(type => (
             <button
@@ -366,7 +365,7 @@ const ProjectPresentation = () => {
                   style={{ width: '100%', height: 'auto' }}
                 />
                 <div className="video-info">
-                  <h4 className="title-xs color1">Chocar copas</h4>
+                  <h4 className="title-xs color1">Clinking Glasses</h4>
                   <p className="content-small color1">MP4 • 1080p • 2:45 min</p>
                 </div>
               </div>
@@ -379,7 +378,7 @@ const ProjectPresentation = () => {
                   style={{ width: '100%' }}
                 />
                 <div className="audio-info">
-                  <h4 className="title-xs color1">Voz de la madre</h4>
+                  <h4 className="title-xs color1">Mother's Voice</h4>
                   <p className="content-small color1">MP3 • 3:22 min</p>
                 </div>
               </div>
@@ -388,17 +387,17 @@ const ProjectPresentation = () => {
           <div className="file-info">
             <h3 className="title-sm color1">{fileTypes.find(t => t.id === activeTab).name}</h3>
             <p className="content-default color1">
-              Clasifica tus memorias por categorías, fechas o eventos importantes para una experiencia personalizada.
+              Organize your memories by categories, dates, or important events for a personalized experience.
             </p>
           </div>
           <div className="comments-section">
-            <h3 className="title-sm color1">Comentarios</h3>
+            <h3 className="title-sm color1">Comments</h3>
             <form onSubmit={handleCommentSubmit}>
               <textarea
                 className="comment-input"
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Escribe un comentario..."
+                placeholder="Write a comment..."
                 style={{
                   width: '100%',
                   minHeight: '80px',
@@ -410,10 +409,10 @@ const ProjectPresentation = () => {
               />
               <button
                 type="submit"
-                className="button"
+                className="button2"
                 style={{ padding: '8px 16px' }}
               >
-                Enviar
+                Submit
               </button>
             </form>
             <div className="comments-list">
@@ -428,7 +427,7 @@ const ProjectPresentation = () => {
       </section>
 
       <section className="testimonials-section">
-        <h2 className="title-md color1 text-center">Lo que dicen nuestros usuarios</h2>
+        <h2 className="title-md color1 text-center">What Our Users Say</h2>
         <div className="testimonials-grid">
           {testimonials.map((testimonial, index) => (
             <div key={index} className="testimonial-card card">
@@ -440,22 +439,22 @@ const ProjectPresentation = () => {
       </section>
 
       <section className="final-cta card">
-        <h2 className="title-md color1 text-center">Comienza a preservar tus recuerdos hoy</h2>
+        <h2 className="title-md color1 text-center">Start Preserving Your Memories Today</h2>
         <p className="content-default color1 text-center">
-          Únete a miles de usuarios que ya están conservando sus momentos más preciados con Good Memories
+          Join thousands of users already preserving their most cherished moments with Good Memories
         </p>
         <div className="cta-buttons center">
           <button 
             className="button2 large"
-            onClick={() => router.push('/signup')}
+            onClick={() => router.push('/login/createNewUser')}
           >
-            Crear cuenta gratuita
+            Create a Free Account
           </button>
           <button 
-            className="button large"
-            onClick={() => router.push('/demo')}
+            className="button2 large"
+            onClick={() => router.push('/dynamicMemory/e55c81892694f42318e9b3b5131051559650dcba7d0fe0651c2aa472ea6a6c0c/ytrmrpGjnR5WfYvIFQm45SmoAWEGTynq54VgGIC7As/520b84d9c1f48f6b05ef8f4bb4a86420cff83e0d2f875dfe78062dd8eb5d718a')}
           >
-            Ver demostración
+            View Demo
           </button>
         </div>
       </section>
@@ -467,11 +466,11 @@ export default function HomePage() {
   return (
     <main>
       <GeneralMold
-        pageTitle="Good Memories - Plataforma de gestión de recuerdos"
-        pageDescription="Descubre las posibilidades de Good Memories, la plataforma para guardar y compartir tus recuerdos más valiosos."
+        pageTitle="Good Memories - Memory Management Platform"
+        pageDescription="Discover the possibilities of Good Memories, the platform for storing and sharing your most valuable memories."
         leftContent={<ProjectPresentation />}
         visibility="public"
-        metaKeywords="good memories, presentación, recuerdos, fotos, videos, audios, almacenamiento"
+        metaKeywords="good memories, presentation, memories, photos, videos, audios, storage"
       />
     </main>
   );

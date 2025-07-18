@@ -98,18 +98,18 @@ const Layout = ({ children }) => {
             id="mobile-menu"
             aria-hidden={!mobileMenuOpen}
           >
-            <a href="#" title="Go to Home page">
+            <a href="/" title="Go to Home page">
               <i className="fas fa-home"></i> Home
             </a>
             <a href="/articles" title="View Articles">
               <i className="fas fa-book"></i> Articles
             </a>
-            <a href="#" title="Explore Gallery">
+            {/*<a href="#" title="Explore Gallery">
               <i className="fas fa-images"></i> Gallery
             </a>
             <a href="#" title="Join Community">
               <i className="fas fa-user-friends"></i> Community
-            </a>
+            </a>*/}
             <button
               className="theme-toggle"
               onClick={toggleDarkMode}
